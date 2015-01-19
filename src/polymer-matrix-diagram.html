@@ -1,0 +1,43 @@
+<!--
+	POLYMER-MATRIX-DIAGRAM
+
+	DESCRIPTION:
+		- `polymer-matrix-diagram` is a UI element for displaying matrix diagrams.
+
+	EXAMPLE:
+		<polymer-matrix-diagram id="chart"></polymer-matrix-diagram>
+		...
+		var chart = this.$.chart;
+
+	@element polymer-matrix-diagram
+	@status unstable
+-->
+
+<!-- POLYMER -->
+<link rel="import" href="../../polymer/polymer.html">
+
+<!-- DEPENDENCIES -->
+<link rel="import" href="../../polymer-uuid/polymer-uuid.html">
+<link rel="import" href="../../polymer-d3/polymer-d3.html">
+
+<!-- ELEMENT -->
+<polymer-element name="polymer-matrix-diagram" attributes="config width height chartTitle paddingLeft paddingRight paddingBottom paddingTop autoResize autoUpdate">
+
+	<template>
+
+		<!-- STYLESHEETS -->
+		<link rel="stylesheet" href="./css/reset.css">
+		<link rel="stylesheet" href="./css/colors.css">
+		<link rel="stylesheet" href="./css/styles.css">
+		<link rel="stylesheet" href="./css/chart.css">
+		<link rel="stylesheet" href="./css/media-queries.css">
+
+		<!-- PRESENTATION CONTENT -->
+		<div class="chart" id="chart"></div>
+
+	</template>
+
+	<!-- REGISTRATION -->
+	<script src="./js/script.js"></script>
+
+</polymer-element>

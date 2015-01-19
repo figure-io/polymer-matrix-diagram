@@ -1,0 +1,51 @@
+{
+  "name": "polymer-matrix-diagram",
+  "version": "0.0.0",
+  "description": "A Polymer web component for displaying matrix diagrams.",
+  "authors": [
+    {
+      "name": "Athan Reines",
+      "email": "kgryte@gmail.com"
+    }
+  ],
+  "main": "./polymer-matrix-diagram.html",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/figure-io/polymer-matrix-diagram"
+  },
+  "keywords": [
+    "polymer",
+  	"web component",
+    "visualization",
+    "viz",
+    "ui",
+    "figure",
+    "chart",
+    "graph",
+    "data",
+    "matrix",
+    "diagram",
+    "d3"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#~0.5.1",
+    "polymer-d3": "figure-io/polymer-d3#~0.0.1",
+    "polymer-uuid": "kgryte/polymer-uuid#~0.0.0"
+  },
+  "devDependencies": {
+    "web-component-tester": "~2.0.5"
+  },
+  "ignore": [
+    "test",
+    "node_modules",
+    "bower",
+    "src",
+    "etc",
+    "TODO.md",
+    ".*",
+    "Makefile",
+    "package.json",
+    "wct.conf.js"
+  ],
+  "license": "MIT"
+}
