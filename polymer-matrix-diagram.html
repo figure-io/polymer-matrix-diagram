@@ -859,6 +859,8 @@ Chart.prototype.init = function() {
 	this._yScale = d3.scale.ordinal()
 		.rangeBands( [ this.graphHeight(), 0 ] )
 		.domain( [ 0 ] );
+	this._zScale = d3.scale.category10()
+		.domain( [ 0, 1 ] );
 
 	// Labels:
 	this._getRowName = this.getRowName.bind( this );
@@ -867,6 +869,9 @@ Chart.prototype.init = function() {
 	// Marks...
 	this._x = this.x.bind( this );
 	this._y = this.y.bind( this );
+
+	this._createCells = this.createCells.bind( this );
+	this._resetCells = this.resetCells.bind( this );
 
 	// Interaction...
 	this._onResize = delayed( this.onResize.bind( this ), 400 );
@@ -952,7 +957,6 @@ Chart.prototype.create = function() {
 		.createMarks()
 		.createRows()
 		.createCols()
-		.createCells()
 		.createTitle();
 
 	return this;
@@ -1066,6 +1070,8 @@ Chart.prototype.createRows = function() {
 		.attr( 'text-anchor', 'end' )
 		.text( this._getRowName );
 
+	this.$.rows.each( this._createCells );
+
 	return this;
 }; // end METHOD createRows()
 
@@ -1098,12 +1104,30 @@ Chart.prototype.createCols = function() {
 }; // end METHOD createCols()
 
 /**
-* METHOD: createCells()
+* METHOD: createCells( d, i )
 *	Create cell elements.
 *
+* @param {String} d - row name
+* @param {Number} i - row index
 * @returns {DOMElement} element instance
 */
-Chart.prototype.createCells = function() {
+Chart.prototype.createCells = function( d, i ) {
+	var row = this._d3.select( this.$.rows[0][i] );
+
+	row.selectAll( '.cell' )
+		.data( this.data.data()[i] )
+		.enter()
+		.append( 'svg:rect' )
+			.attr( 'class', 'cell' )
+			.attr( 'x', function ( d, i ) {
+				return this._xScale( i );
+			})
+			.attr( 'width', this._xScale.rangeBand() )
+			.attr( 'height', this._yScale.rangeBand() )
+			.attr( 'fill', function ( d ) {
+				return this._zScale( d );
+			});
+
 	return this;
 }; // end METHOD createCells()
 
@@ -1150,10 +1174,18 @@ Chart.prototype.clear = function() {
 * @returns {DOMElement} element instance
 */
 Chart.prototype.resetMarks = function() {
-	var rows, cols, cells;
+	return this.resetRows().resetCols();
+}; // end METHOD resetMarks()
 
-	// [0] Bind the data and update existing rows:
-	rows = this.$.marks.selectAll( '.row' )
+/**
+* METHOD: resetRows()
+*	Resets row elements.
+*
+* @returns {DOMElement} element instance
+*/
+Chart.prototype.resetRows = function() {
+	// Bind the data and update existing rows:
+	var rows = this.$.marks.selectAll( '.row' )
 		.data( this.data.rownames() )
 		.attr( 'transform', this._y );
 
@@ -1176,11 +1208,22 @@ Chart.prototype.resetMarks = function() {
 		.attr( 'text-anchor', 'end' )
 		.text( this._getRowName );
 
-	// Cache a reference to the rows:
 	this.$.rows = rows;
 
-	// [1] Bind the data and update existing columns:
-	cols = this.$.marks.selectAll( '.col' )
+	rows.each( this._resetCells );
+
+	return this;
+}; // end METHOD resetRows()
+
+/**
+* METHOD: resetCols()
+*	Resets column elements.
+*
+* @returns {DOMElement} element instance
+*/
+Chart.prototype.resetCols = function() {
+	// Bind the data and update existing columns:
+	var cols = this.$.marks.selectAll( '.col' )
 		.data( this.data.colnames() )
 		.attr( 'transform', this._x );
 
@@ -1206,10 +1249,50 @@ Chart.prototype.resetMarks = function() {
 	// Cache a reference to the columns:
 	this.$.cols = cols;
 
-	// [2] Bind cell data and update existing cells:
+	return this;
+}; // end METHOD resetCols()
+
+/**
+* METHOD: resetCells( d, i )
+*	Resets cell elements.
+*
+* @param {String} d - row name
+* @param {Number} i - row index
+* @returns {DOMElement} element instance
+*/
+Chart.prototype.resetCells = function( d, i ) {
+	var self = this,
+		row,
+		cells;
+
+	row = this._d3.select( this.$.rows[0][i] );
+
+	cells = row.selectAll( '.cell' )
+		.data( this.data.data()[i] )
+		.attr( 'x', function ( d, i ) {
+			return self._xScale( i );
+		})
+		.attr( 'fill', function ( d ) {
+			return self._zScale( d );
+		});
+
+	// Remove any old cells:
+	cells.exit().remove();
+
+	// Add any new cells:
+	cells.enter().append( 'svg:rect' )
+		.attr( 'class', 'cell' )
+		.attr( 'x', function ( d, i ) {
+			return self._xScale( i );
+		})
+		.attr( 'width', this._xScale.rangeBand() )
+		.attr( 'height', this._yScale.rangeBand() )
+		.attr( 'fill', function ( d ) {
+			return self._zScale( d );
+		});
 
 	return this;
-}; // end METHOD resetMarks()
+}; // end METHOD resetCells()
 
 /**
 * METHOD: graphWidth()
