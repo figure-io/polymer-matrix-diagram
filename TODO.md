@@ -4,7 +4,8 @@ TODO
 1. data frame
 2. row order
 3. col order
-4. cell hover event
+4. documentation
+5. 
 
 
 ## Tests
