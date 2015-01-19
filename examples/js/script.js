@@ -55,9 +55,23 @@
 
 		// [1] Configure the figure...
 		el = charts[ 0 ];
+
+		el.zScale = zScale;
 		el.data = new DataFrame( JSON.parse( body ) );
 
 	} // end FUNCTION onData()
+
+	/**
+	* FUNCTION: zScale( d, i )
+	*	Maps a z-value to a color string.
+	*
+	* @param {Number} d - datum
+	* @param {Number} i - index
+	* @returns {String} color string
+	*/
+	function zScale( d ) {
+		return ( d ) ? '#474747' : '#eee';
+	} // end FUNCTION zScale()
 
 	/**
 	* FUNCTION: DataFrame( arr[, opts] )

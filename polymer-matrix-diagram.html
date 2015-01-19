@@ -18,7 +18,7 @@
 <link rel="import" href="../polymer-d3/polymer-d3.html">
 
 <!-- ELEMENT -->
-</head><body><polymer-element name="polymer-matrix-diagram" attributes="data config width height chartTitle paddingLeft paddingRight paddingBottom paddingTop autoResize autoUpdate" assetpath="build/">
+</head><body><polymer-element name="polymer-matrix-diagram" attributes="data config width height chartTitle paddingLeft paddingRight paddingBottom paddingTop zScale autoResize autoUpdate" assetpath="build/">
 
 	<template>
 
@@ -792,6 +792,18 @@ Chart.prototype.height = null;
 Chart.prototype.chartTitle = '';
 
 /**
+* METHOD: zScale( d, i )
+*	Maps a datum to a color value.
+*
+* @param {*} d - datum
+* @param {Number} i - index
+* @returns {String} color string
+*/
+Chart.prototype.zScale = function(){
+	return '#eee';
+}; // end METHOD zScale()
+
+/**
 * ATTRIBUTE: autoUpdate
 *	Boolean flag indicating whether a chart should auto update DOM elements whenever an attribute changes.
 *
@@ -859,8 +871,6 @@ Chart.prototype.init = function() {
 	this._yScale = d3.scale.ordinal()
 		.rangeBands( [ this.graphHeight(), 0 ] )
 		.domain( [ 0 ] );
-	this._zScale = d3.scale.category10()
-		.domain( [ 0, 1 ] );
 
 	// Labels:
 	this._getRowName = this.getRowName.bind( this );
@@ -869,6 +879,8 @@ Chart.prototype.init = function() {
 	// Marks...
 	this._x = this.x.bind( this );
 	this._y = this.y.bind( this );
+
+	this._cx = this.cx.bind( this );
 
 	this._createCells = this.createCells.bind( this );
 	this._resetCells = this.resetCells.bind( this );
@@ -1119,14 +1131,10 @@ Chart.prototype.createCells = function( d, i ) {
 		.enter()
 		.append( 'svg:rect' )
 			.attr( 'class', 'cell' )
-			.attr( 'x', function ( d, i ) {
-				return this._xScale( i );
-			})
+			.attr( 'x', this._cx )
 			.attr( 'width', this._xScale.rangeBand() )
 			.attr( 'height', this._yScale.rangeBand() )
-			.attr( 'fill', function ( d ) {
-				return this._zScale( d );
-			});
+			.attr( 'fill', this.zScale );
 
 	return this;
 }; // end METHOD createCells()
@@ -1261,20 +1269,15 @@ Chart.prototype.resetCols = function() {
 * @returns {DOMElement} element instance
 */
 Chart.prototype.resetCells = function( d, i ) {
-	var self = this,
-		row,
+	var row,
 		cells;
 
 	row = this._d3.select( this.$.rows[0][i] );
 
 	cells = row.selectAll( '.cell' )
 		.data( this.data.data()[i] )
-		.attr( 'x', function ( d, i ) {
-			return self._xScale( i );
-		})
-		.attr( 'fill', function ( d ) {
-			return self._zScale( d );
-		});
+		.attr( 'x', this._cx )
+		.attr( 'fill', this.zScale );
 
 	// Remove any old cells:
 	cells.exit().remove();
@@ -1282,14 +1285,10 @@ Chart.prototype.resetCells = function( d, i ) {
 	// Add any new cells:
 	cells.enter().append( 'svg:rect' )
 		.attr( 'class', 'cell' )
-		.attr( 'x', function ( d, i ) {
-			return self._xScale( i );
-		})
+		.attr( 'x', this._cx )
 		.attr( 'width', this._xScale.rangeBand() )
 		.attr( 'height', this._yScale.rangeBand() )
-		.attr( 'fill', function ( d ) {
-			return self._zScale( d );
-		});
+		.attr( 'fill', this.zScale );
 
 	return this;
 }; // end METHOD resetCells()
@@ -1337,6 +1336,18 @@ Chart.prototype.x = function( d, i ) {
 Chart.prototype.y = function( d, i ) {
 	return 'translate(0,' + this._yScale( i ) + ')';
 }; // end METHOD y()
+
+/**
+* METHOD: cx( d, i )
+*	Maps a row cell to a pixel value.
+*
+* @param {Array} d - datum
+* @param {Number} i - index
+* @returns {String} transform string
+*/
+Chart.prototype.cx = function( d, i ) {
+	return this._xScale( i );
+}; // end METHOD cx()
 
 /**
 * METHOD: getRowName( d, i )
@@ -1676,6 +1687,32 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 		'curr': newVal
 	});
 }; // end METHOD paddingTopChanged()
+
+/**
+* METHOD: zScaleChanged( oldVal, newVal )
+*	Event handler invoked when the `zScale` attribute changes.
+*
+* @param {Number} oldVal - old value
+* @param {Number} newVal - new value
+*/
+Chart.prototype.zScaleChanged = function( oldVal, newVal ) {
+	var err;
+	if ( typeof newVal !== 'function' ) {
+		err = new TypeError( 'zScale::invalid assignment. Must be a function.  Value: `' + newVal + '.' );
+		this.fire( 'err', err );
+		this.zScale = oldVal;
+		return;
+	}
+	if ( this.autoUpdate ) {
+		this.$.rows.selectAll( '.cell' )
+			.attr( 'fill', newVal );
+	}
+	this.fire( 'changed', {
+		'attr': 'zScale',
+		'prev': oldVal,
+		'curr': newVal
+	});
+}; // end METHOD zScaleChanged()
 
 /**
 * METHOD: autoUpdateChanged( oldVal, newVal )
