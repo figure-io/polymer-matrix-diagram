@@ -6,7 +6,7 @@ TODO
 
 ## Tests
 
-1. 
+1. `clear()`
 
 
 

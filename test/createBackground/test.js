@@ -12,7 +12,7 @@ describe( 'createBackground', function tests() {
 	});
 
 	it( 'should create a background element', function test() {
-		var el = document.createElement( 'polymer-force-layout' );
+		var el = document.createElement( 'polymer-matrix-diagram' );
 
 		document.body.appendChild( el );
 		el.$.chart.innerHTML = '';

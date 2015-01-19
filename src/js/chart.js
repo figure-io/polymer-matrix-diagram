@@ -38,7 +38,7 @@ var // Utility to create delayed event listeners:
 // VARIABLES //
 
 var EVENTS = [
-	
+	'data',
 
 	'width',
 	'height',
@@ -186,6 +186,9 @@ Chart.prototype.init = function() {
 
 	// Events: (hint an array)
 	this.events = EVENTS;
+
+	// Data: (hint an array)
+	this.data = [];
 
 	// Private methods...
 
@@ -402,7 +405,7 @@ Chart.prototype.clear = function() {
 	// TODO: should meta data (e.g., title) be cleared as well?
 
 	// Remove the graph:
-	
+	this.data.length = 0;
 
 	// TODO: need call update method
 

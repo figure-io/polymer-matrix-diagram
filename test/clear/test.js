@@ -21,7 +21,7 @@ describe( 'clear', function tests() {
 		assert.notOk( el.data.length );
 	});
 
-	it( 'should not display any marks', function test( done ) {
+	xit( 'should not display any marks', function test( done ) {
 		var selection;
 
 		selection = el.$.chart.querySelectorAll( '.marks' );
