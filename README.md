@@ -116,6 +116,11 @@ el.chartTitle = 'Awesome chart.';
 ```
 
 
+#### el.zScale
+
+TODO: document.
+
+
 #### el.autoUpdate
 
 Specifies whether the element should auto update whenever an attribute changes. Default is `true`.

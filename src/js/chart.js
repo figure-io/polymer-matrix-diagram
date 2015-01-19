@@ -226,6 +226,8 @@ Chart.prototype.init = function() {
 	this._resetCells = this.resetCells.bind( this );
 
 	// Interaction...
+	this._onRowClick = this.onRowClick.bind( this );
+	this._onColClick = this.onColClick.bind( this );
 	this._onResize = delayed( this.onResize.bind( this ), 400 );
 
 	// Element cache...
@@ -416,11 +418,13 @@ Chart.prototype.createRows = function() {
 		.attr( 'x1', this.graphWidth() );
 
 	this.$.rows.append( 'svg:text' )
+		.attr( 'class', 'noselect name' )
 		.attr( 'x', -6 )
 		.attr( 'y', this._yScale.rangeBand() / 2 )
 		.attr( 'dy', '.32em' )
 		.attr( 'text-anchor', 'end' )
-		.text( this._getRowName );
+		.text( this._getRowName )
+		.on( 'click', this._onRowClick );
 
 	this.$.rows.each( this._createCells );
 
@@ -446,11 +450,13 @@ Chart.prototype.createCols = function() {
 		.attr( 'x1', -this.graphHeight() );
 
 	this.$.cols.append( 'svg:text' )
+		.attr( 'class', 'noselect name' )
 		.attr( 'x', 6 )
 		.attr( 'y', this._xScale.rangeBand() / 2 )
 		.attr( 'dy', '.32em' )
 		.attr( 'text-anchor', 'start' )
-		.text( this._getColName );
+		.text( this._getColName )
+		.on( 'click', this._onColClick );
 
 	return this;
 }; // end METHOD createCols()
@@ -550,11 +556,13 @@ Chart.prototype.resetRows = function() {
 		.attr( 'x1', this.graphWidth() );
 
 	rows.append( 'svg:text' )
+		.attr( 'class', 'noselect name' )
 		.attr( 'x', -6 )
 		.attr( 'y', this._yScale.rangeBand() / 2 )
 		.attr( 'dy', '.32em' )
 		.attr( 'text-anchor', 'end' )
-		.text( this._getRowName );
+		.text( this._getRowName )
+		.on( 'click', this._onRowClick );
 
 	this.$.rows = rows;
 
@@ -588,11 +596,13 @@ Chart.prototype.resetCols = function() {
 		.attr( 'x1', -this.graphHeight() );
 
 	cols.append( 'svg:text' )
+		.attr( 'class', 'noselect name' )
 		.attr( 'x', 6 )
 		.attr( 'y', this._xScale.rangeBand() / 2 )
 		.attr( 'dy', '.32em' )
 		.attr( 'text-anchor', 'start' )
-		.text( this._getColName );
+		.text( this._getColName )
+		.on( 'click', this._onColClick );
 
 	// Cache a reference to the columns:
 	this.$.cols = cols;
@@ -632,6 +642,30 @@ Chart.prototype.resetCells = function( d, i ) {
 
 	return this;
 }; // end METHOD resetCells()
+
+/**
+* METHOD: rowOrder( arr )
+*	Update the row order.
+*
+* @param {Array} arr - order
+*/
+Chart.prototype.rowOrder = function( arr ) {
+	var yScale = this._yScale,
+		selection;
+
+	yScale.domain( arr );
+
+	selection = this.$.marks.transition()
+		.duration( 2500 );
+
+    selection.selectAll( '.row' )
+		.delay( function ( d, i ) {
+			return yScale( i ) * 4;
+		})
+		.attr( 'transform', this._y );
+
+	return this;
+}; // end METHOD rowOrder()
 
 /**
 * METHOD: graphWidth()
@@ -1102,6 +1136,38 @@ Chart.prototype.autoResizeChanged = function( oldVal, newVal ) {
 		'curr': newVal
 	});
 }; // end METHOD autoResizeChanged()
+
+/**
+* METHOD: onRowClick( d, i )
+*	Click listener for rows.
+*
+* @param {String} d - row name
+* @param {Number} i - row index
+* @returns {Boolean} false
+*/
+Chart.prototype.onRowClick = function( d, i ) {
+	var evt = this._d3.event;
+	evt.datum = d;
+	evt.index = i;
+	this.fire( 'clicked.row', evt );
+	return false;
+}; // end METHOD onRowClick()
+
+/**
+* METHOD: onColClick( d, i )
+*	Click listener for columns.
+*
+* @param {String} d - row name
+* @param {Number} i - row index
+* @returns {Boolean} false
+*/
+Chart.prototype.onColClick = function( d, i ) {
+	var evt = this._d3.event;
+	evt.datum = d;
+	evt.index = i;
+	this.fire( 'clicked.col', evt );
+	return false;
+}; // end METHOD onColClick()
 
 /**
 * METHOD: onResize()

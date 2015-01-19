@@ -18,6 +18,10 @@
 	stroke-width: 1;
 }
 
+.name {
+	cursor: pointer;
+}
+
 .meta .title {
 	display: block;
 	/*font-size: 2em;*/

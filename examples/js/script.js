@@ -39,7 +39,9 @@
 	* @param {String} body - HTTP response body
 	*/
 	function onData( body ) {
-		var figs,
+		var data = JSON.parse( body ),
+			orders,
+			figs,
 			len,
 			charts,
 			el;
@@ -57,7 +59,14 @@
 		el = charts[ 0 ];
 
 		el.zScale = zScale;
-		el.data = new DataFrame( JSON.parse( body ) );
+		el.data = new DataFrame( data );
+
+		el.addEventListener( 'clicked.row', function onClick( evt ) {
+			var idx = evt.detail.index;
+			el.rowOrder( orders[ idx ] );
+		});
+
+		orders = getOrderings( data );
 
 	} // end FUNCTION onData()
 
@@ -72,6 +81,56 @@
 	function zScale( d ) {
 		return ( d ) ? '#474747' : '#eee';
 	} // end FUNCTION zScale()
+
+	/**
+	* FUNCTION: getOrderings( arr )
+	*	Computes orderings based on Hamming distance.
+	*
+	* @param {Array} arr - data array
+	* @returns {Array} ordering array
+	*/
+	function getOrderings( arr ) {
+		var len = arr.length,
+			N = arr[ 0 ].length,
+			tmp,
+			out,
+			sum,
+			x, y,
+			i, j, k;
+
+		out = new Array( len );
+		for ( i = 0; i < len; i++ ) {
+			x = arr[ i ];
+			tmp = new Array( len );
+			for ( j = 0; j < len; j++ ) {
+				y = arr[ j ];
+				sum = 0;
+				for ( k = 0; k < N; k++ ) {
+					if ( x[k] === y[k] ) {
+						sum += 1;
+					}
+				}
+				tmp[ j ] = {
+					'idx': j,
+					'sum': sum
+				};
+			}
+			tmp.sort( sort );
+			for ( j = 0; j < len; j++ ) {
+				tmp[ j ] = tmp[ j ].idx;
+			}
+			out[ i ] = tmp;
+		}
+		return out;
+	} // end FUNCTION getOrderings()
+
+	/**
+	* FUNCTION: sort( a, b )
+	*
+	*/
+	function sort( a, b ) {
+		return b.sum - a.sum;
+	} // end FUNCTION sort()
 
 	/**
 	* FUNCTION: DataFrame( arr[, opts] )
