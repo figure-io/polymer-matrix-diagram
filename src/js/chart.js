@@ -48,7 +48,19 @@ var EVENTS = [
 
 	'resized',
 
-	'clicked'
+	'clicked',
+	'clicked.row',
+	'clicked.col',
+
+	'hovered',
+	'hovered.row',
+	'hovered.col',
+	'hovered.cell',
+
+	'hoverended',
+	'hoverended.row',
+	'hoverended.col',
+	'hoverended.cell'
 ];
 
 
@@ -226,8 +238,17 @@ Chart.prototype.init = function() {
 	this._resetCells = this.resetCells.bind( this );
 
 	// Interaction...
+	this._onRowHover = this.onRowHover.bind( this );
+	this._onColHover = this.onColHover.bind( this );
+	this._onCellHover = this.onCellHover.bind( this );
+
+	this._onRowHoverEnd = this.onRowHoverEnd.bind( this );
+	this._onColHoverEnd = this.onColHoverEnd.bind( this );
+	this._onCellHoverEnd = this.onCellHoverEnd.bind( this );
+
 	this._onRowClick = this.onRowClick.bind( this );
 	this._onColClick = this.onColClick.bind( this );
+
 	this._onResize = delayed( this.onResize.bind( this ), 400 );
 
 	// Element cache...
@@ -411,7 +432,9 @@ Chart.prototype.createRows = function() {
 		.enter()
 		.append( 'svg:g' )
 			.attr( 'class', 'row' )
-			.attr( 'transform', this._y );
+			.attr( 'transform', this._y )
+			.on( 'mouseover', this._onRowHover )
+			.on( 'mouseout', this._onRowHoverEnd );
 
 	this.$.rows.append( 'svg:line' )
 		.attr( 'class', 'grid x' )
@@ -443,7 +466,9 @@ Chart.prototype.createCols = function() {
 		.enter()
 		.append( 'svg:g' )
 			.attr( 'class', 'col y' )
-			.attr( 'transform', this._x );
+			.attr( 'transform', this._x )
+			.on( 'mouseover', this._onColHover )
+			.on( 'mouseout', this._onColHoverEnd );
 
 	this.$.cols.append( 'svg:line' )
 		.attr( 'class', 'grid' )
@@ -480,7 +505,9 @@ Chart.prototype.createCells = function( d, i ) {
 			.attr( 'x', this._cx )
 			.attr( 'width', this._xScale.rangeBand() )
 			.attr( 'height', this._yScale.rangeBand() )
-			.attr( 'fill', this.zScale );
+			.attr( 'fill', this.zScale )
+			.on( 'mouseover', this._onCellHover )
+			.on( 'mouseout', this._onCellHoverEnd );
 
 	return this;
 }; // end METHOD createCells()
@@ -549,7 +576,9 @@ Chart.prototype.resetRows = function() {
 	// Add any new rows:
 	rows.enter().append( 'svg:g' )
 		.attr( 'class', 'row' )
-		.attr( 'transform', this._y );
+		.attr( 'transform', this._y )
+		.on( 'mouseover', this._onRowHover )
+		.on( 'mouseout', this._onRowHoverEnd );
 
 	rows.append( 'svg:line' )
 		.attr( 'class', 'grid x' )
@@ -589,7 +618,9 @@ Chart.prototype.resetCols = function() {
 	// Add any new columns:
 	cols.enter().append( 'svg:g' )
 		.attr( 'class', 'col' )
-		.attr( 'transform', this._x );
+		.attr( 'transform', this._x )
+		.on( 'mouseover', this._onColHover )
+		.on( 'mouseout', this._onColHoverEnd );
 
 	cols.append( 'svg:line' )
 		.attr( 'class', 'grid y' )
@@ -638,7 +669,9 @@ Chart.prototype.resetCells = function( d, i ) {
 		.attr( 'x', this._cx )
 		.attr( 'width', this._xScale.rangeBand() )
 		.attr( 'height', this._yScale.rangeBand() )
-		.attr( 'fill', this.zScale );
+		.attr( 'fill', this.zScale )
+		.on( 'mouseover', this._onCellHover )
+		.on( 'mouseout', this._onCellHoverEnd );
 
 	return this;
 }; // end METHOD resetCells()
@@ -653,6 +686,10 @@ Chart.prototype.rowOrder = function( arr ) {
 	var yScale = this._yScale,
 		selection;
 
+	if ( !Array.isArray( arr ) ) {
+		throw new TypeError( 'rowOrder()::invalid input argument. Must provide an array. Value' );
+	}
+	// TODO: validate that the arr length equals the data dimensions
 	yScale.domain( arr );
 
 	selection = this.$.marks.transition()
@@ -1168,6 +1205,120 @@ Chart.prototype.onColClick = function( d, i ) {
 	this.fire( 'clicked.col', evt );
 	return false;
 }; // end METHOD onColClick()
+
+/**
+* METHOD: onRowHover( d, i )
+*	Mouseover listener for rows.
+*
+* @param {String} d - row name
+* @param {Number} i - row index
+* @returns {Boolean} false
+*/
+Chart.prototype.onRowHover = function( d, i ) {
+	var evt = this._d3.event;
+
+	this.$.rows[ 0 ][ i ].classList.add( 'active' );
+
+	evt.datum = d;
+	evt.index = i;
+	this.fire( 'hovered.row', evt );
+	return false;
+}; // end METHOD onRowHover()
+
+/**
+* METHOD: onColHover( d, i )
+*	Mouseover listener for columns.
+*
+* @param {String} d - row name
+* @param {Number} i - row index
+* @returns {Boolean} false
+*/
+Chart.prototype.onColHover = function( d, i ) {
+	var evt = this._d3.event;
+
+	this.$.cols[ 0 ][ i ].classList.add( 'active' );
+
+	evt.datum = d;
+	evt.index = i;
+	this.fire( 'hovered.col', evt );
+	return false;
+}; // end METHOD onColHover()
+
+/**
+* METHOD: onCellHover( d, i )
+*	Mouseover listener for cells.
+*
+* @param {String} d - row name
+* @param {Number} i - row index
+* @returns {Boolean} false
+*/
+Chart.prototype.onCellHover = function( d, i ) {
+	var evt = this._d3.event;
+
+	this.$.cols[ 0 ][ i ].classList.add( 'active' );
+
+	evt.datum = d;
+	evt.index = i;
+	this.fire( 'hovered.cell', evt );
+	return false;
+}; // end METHOD onCellHover()
+
+/**
+* METHOD: onRowHoverEnd( d, i )
+*	Mouseout listener for rows.
+*
+* @param {String} d - row name
+* @param {Number} i - row index
+* @returns {Boolean} false
+*/
+Chart.prototype.onRowHoverEnd = function( d, i ) {
+	var evt = this._d3.event;
+
+	this.$.rows[ 0 ][ i ].classList.remove( 'active' );
+
+	evt.datum = d;
+	evt.index = i;
+	this.fire( 'hoverended.row', evt );
+	return false;
+}; // end METHOD onRowHoverEnd()
+
+/**
+* METHOD: onColHoverEnd( d, i )
+*	Mouseout listener for columns.
+*
+* @param {String} d - row name
+* @param {Number} i - row index
+* @returns {Boolean} false
+*/
+Chart.prototype.onColHoverEnd = function( d, i ) {
+	var evt = this._d3.event;
+
+	this.$.cols[ 0 ][ i ].classList.remove( 'active' );
+
+	evt.datum = d;
+	evt.index = i;
+	this.fire( 'hoverended.col', evt );
+	return false;
+}; // end METHOD onColHoverEnd()
+
+/**
+* METHOD: onCellHoverEnd( d, i )
+*	Mouseout listener for cells.
+*
+* @param {String} d - row name
+* @param {Number} i - row index
+* @returns {Boolean} false
+*/
+Chart.prototype.onCellHoverEnd = function( d, i ) {
+	var evt = this._d3.event;
+
+	this.$.cols[ 0 ][ i ].classList.remove( 'active' );
+
+	evt.datum = d;
+	evt.index = i;
+	this.fire( 'hoverended.cell', evt );
+	return false;
+}; // end METHOD onCellHoverEnd()
 
 /**
 * METHOD: onResize()

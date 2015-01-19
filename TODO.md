@@ -2,7 +2,9 @@ TODO
 ====
 
 1. data frame
-2. 
+2. row order
+3. col order
+4. cell hover event
 
 
 ## Tests
