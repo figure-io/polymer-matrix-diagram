@@ -9,8 +9,13 @@
 }
 
 .background {
-	fill: none;
+	fill: #eee;
 	stroke: none;
+}
+
+.grid {
+	stroke: #fff;
+	stroke-width: 1;
 }
 
 .meta .title {

@@ -1,12 +1,26 @@
 TODO
 ====
 
-1. 
+1. data frame
+2. 
 
 
 ## Tests
 
 1. `clear()`
+
+
+## DataFrame
+
+1. see R/python
+2. enforce type (?)
+3. move to separate module
+4. tests
+5. observers (?)
+	-	prevent side effects (e.g., col names length no longer corresponding to number of columns, data being externally mutated)
+	- 	maybe copy to immutable arrays?
+	-	event emitter when does mutate
+6. `toString()`
 
 
 

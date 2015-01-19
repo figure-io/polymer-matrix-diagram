@@ -187,10 +187,22 @@ Chart.prototype.init = function() {
 	// Events: (hint an array)
 	this.events = EVENTS;
 
-	// Data: (hint an array)
-	this.data = [];
+	// Data:
+	this.data = null;
 
 	// Private methods...
+
+	// Scales...
+	this._xScale = d3.scale.ordinal()
+		.rangeBands( [ 0, this.graphWidth() ] )
+		.domain( [ 0 ] );
+	this._yScale = d3.scale.ordinal()
+		.rangeBands( [ this.graphHeight(), 0 ] )
+		.domain( [ 0 ] );
+
+	// Marks...
+	this._x = this.x.bind( this );
+	this._y = this.y.bind( this );
 
 	// Interaction...
 	this._onResize = delayed( this.onResize.bind( this ), 400 );
@@ -211,6 +223,9 @@ Chart.prototype.init = function() {
 
 	// Data elements...
 	$.marks = null;
+	$.rows = null;
+	$.cols = null;
+	$.cells = null;
 
 	// Clip path...
 	this._clipPathID = this._uuid.v4();
@@ -273,7 +288,6 @@ Chart.prototype.create = function() {
 		.createBase()
 		.createBackground()
 		.createMarks()
-		// TODO: insert here
 		.createTitle();
 
 	return this;
@@ -362,15 +376,42 @@ Chart.prototype.createBackground = function() {
 * @returns {DOMElement} element instance
 */
 Chart.prototype.createMarks = function() {
+	var marks;
 	// Remove any existing marks...
 	if ( this.$.marks ) {
 		this.$.marks.remove();
 	}
 	// Create a `marks` group:
-	this.$.marks = this.$.graph.append( 'svg:g' )
+	marks = this.$.graph.append( 'svg:g' )
 		.attr( 'property', 'marks' )
 		.attr( 'class', 'marks' )
 		.attr( 'clip-path', 'url(#' + this._clipPathID + ')' );
+
+	this.$.marks = marks;
+
+	// Create a `rows` group:
+	this.$.rows = marks.selectAll( '.row' )
+		.data( (this.data) ? this.data.data() : [] )
+		.enter()
+		.append( 'svg:g' )
+			.attr( 'class', 'row' )
+			.attr( 'transform', this._y );
+
+	this.$.rows.append( 'svg:line' )
+		.attr( 'class', 'grid x' )
+		.attr( 'x1', this.graphWidth() );
+
+	// Create a `cols` group:
+	this.$.cols = marks.selectAll( '.col' )
+		.data( (this.data) ? this.data.colnames() :  [] )
+		.enter()
+		.append( 'svg:g' )
+			.attr( 'class', 'col y' )
+			.attr( 'transform', this._x );
+
+	this.$.cols.append( 'svg:line' )
+		.attr( 'class', 'grid' )
+		.attr( 'x1', -this.graphHeight() );
 
 	return this;
 }; // end METHOD createMarks()
@@ -413,6 +454,58 @@ Chart.prototype.clear = function() {
 }; // end METHOD clear()
 
 /**
+* METHOD: resetMarks()
+*	Resets graph mark elements.
+*
+* @returns {DOMElement} element instance
+*/
+Chart.prototype.resetMarks = function() {
+	var rows, cols, cells;
+
+	// Bind the data and update existing rows:
+	rows = this.$.marks.selectAll( '.row' )
+		.data( this.data.data() )
+		.attr( 'transform', this._y );
+
+	// Remove any old rows:
+	rows.exit().remove();
+
+	// Add any new rows:
+	rows.enter().append( 'svg:g' )
+		.attr( 'class', 'row' )
+		.attr( 'transform', this._y );
+
+	rows.append( 'svg:line' )
+		.attr( 'class', 'grid x' )
+		.attr( 'x1', this.graphWidth() );
+
+	// Cache a reference to the rows:
+	this.$.rows = rows;
+
+	// Bind the data and update existing columns:
+	cols = this.$.marks.selectAll( '.col' )
+		.data( this.data.colnames() )
+		.attr( 'transform', this._x );
+
+	// Remove any old columns:
+	cols.exit().remove();
+
+	// Add any new columns:
+	cols.enter().append( 'svg:g' )
+		.attr( 'class', 'col' )
+		.attr( 'transform', this._x );
+
+	cols.append( 'svg:line' )
+		.attr( 'class', 'grid y' )
+		.attr( 'x1', -this.graphHeight() );
+
+	// Cache a reference to the columns:
+	this.$.cols = cols;
+
+	return this;
+}; // end METHOD resetMarks()
+
+/**
 * METHOD: graphWidth()
 *	Returns the graph width.
 *
@@ -431,6 +524,54 @@ Chart.prototype.graphWidth = function() {
 Chart.prototype.graphHeight = function() {
 	return this.height - this.paddingTop - this.paddingBottom;
 }; // end METHOD graphHeight()
+
+/**
+* METHOD: x( d, i )
+*	Maps a column to a pixel value.
+*
+* @param {Array} d - datum
+* @param {Number} i - index
+* @returns {String} transform string
+*/
+Chart.prototype.x = function( d, i ) {
+	return 'translate(' + this._xScale( i ) + ')rotate(-90)';
+}; // end METHOD x()
+
+/**
+* METHOD: y( d, i )
+*	Maps a row to a pixel value.
+*
+* @param {Array} d - datum
+* @param {Number} i - index
+* @returns {String} transform string
+*/
+Chart.prototype.y = function( d, i ) {
+	return 'translate(0,' + this._yScale( i ) + ')';
+}; // end METHOD y()
+
+/**
+* METHOD: dataChanged( oldVal newVal )
+*	Event handler invoked when the `data` attribute changes.
+*
+* @param {Array} oldVal - old value
+* @param {Array} newVal - new value
+*/
+Chart.prototype.dataChanged = function( oldVal, newVal ) {
+	this._xScale.domain( this.data.colnames() );
+	this._yScale.domain( this.data.rownames() );
+
+	if ( this.autoUpdate ) {
+		this.resetMarks();
+	}
+	this.fire( 'data', {
+		'type': 'changed'
+	});
+	this.fire( 'changed', {
+		'attr': 'data',
+		'prev': oldVal,
+		'curr': newVal
+	});
+}; // end METHOD dataChanged()
 
 /**
 * METHOD: configChanged( oldConfig, newConfig )
@@ -494,15 +635,20 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 	}
 	width = newVal - this.paddingLeft - this.paddingRight;
 
+	// [0] Update the x-scale:
+	this._xScale.rangeBands( [ 0, width ] );
+
 	if ( this.$.canvas && this.autoUpdate ) {
-		// [0] Update the SVG canvas:
+		// [1] Update the SVG canvas:
 		this.$.canvas.attr( 'width', newVal );
 
-		// [1] Update the background:
+		// [2] Update the background:
 		this.$.bkgd.attr( 'width', width );
 
-		// [2] Update the clipPath:
+		// [3] Update the clipPath:
 		this.$.clipPath.attr( 'width', width );
+
+		// TODO: update marks
 	}
 	this.fire( 'width', {
 		'type': 'changed'
@@ -532,15 +678,20 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 	}
 	height = newVal - this.paddingTop - this.paddingBottom;
 
+	// [0] Update the y-scale:
+	this._yScale.rangeBands( [ 0, height ] );
+
 	if ( this.$.canvas && this.autoUpdate ) {
-		// [0] Update the SVG canvas:
+		// [1] Update the SVG canvas:
 		this.$.canvas.attr( 'height', newVal );
 
-		// [1] Update the background:
+		// [2] Update the background:
 		this.$.bkgd.attr( 'height', height );
 
-		// [2] Update the clipPath:
+		// [3] Update the clipPath:
 		this.$.clipPath.attr( 'height', height );
+
+		// TODO: update marks
 	}
 	this.fire( 'height', {
 		'type': 'changed'
@@ -595,15 +746,20 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 	}
 	width = this.width - newVal - this.paddingRight;
 
+	// [0] Update the x-scale:
+	this._xScale.rangeBands( [ 0, width ] );
+
 	if ( this.autoUpdate ) {
-		// [0] Update the background:
+		// [1] Update the background:
 		this.$.bkgd.attr( 'width', width );
 
-		// [1] Update the clipPath:
+		// [2] Update the clipPath:
 		this.$.clipPath.attr( 'width', width );
 
-		// [2] Update the graph:
+		// [3] Update the graph:
 		this.$.graph.attr( 'transform', 'translate(' + newVal + ',' + this.paddingTop + ')' );
+
+		// TODO: update marks
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingLeft',
@@ -630,12 +786,17 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 	}
 	width = this.width - this.paddingLeft - newVal;
 
+	// [0] Update the x-scale:
+	this._xScale.rangeBands( [ 0, width ] );
+
 	if ( this.autoUpdate ) {
-		// [0] Update the background:
+		// [1] Update the background:
 		this.$.bkgd.attr( 'width', width );
 
-		// [1] Update the clipPath:
+		// [2] Update the clipPath:
 		this.$.clipPath.attr( 'width', width );
+
+		// TODO: update marks
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingRight',
@@ -662,12 +823,17 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 	}
 	height = this.height - this.paddingTop - newVal;
 
+	// [0] Update the y-scale:
+	this._yScale.rangeBands( [ 0, height ] );
+
 	if ( this.autoUpdate ) {
-		// [0] Update the background:
+		// [1] Update the background:
 		this.$.bkgd.attr( 'height', height );
 
-		// [1] Update the clipPath:
+		// [2] Update the clipPath:
 		this.$.clipPath.attr( 'height', height );
+
+		// TODO: update marks
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingBottom',
@@ -694,15 +860,20 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 	}
 	height = this.height - newVal - this.paddingBottom;
 
+	// [0] Update the y-scale:
+	this._yScale.rangeBands( [ 0, height ] );
+
 	if ( this.autoUpdate ) {
-		// [0] Update the background:
+		// [1] Update the background:
 		this.$.bkgd.attr( 'height', height );
 
-		// [1] Update the clipPath:
+		// [2] Update the clipPath:
 		this.$.clipPath.attr( 'height', height );
 
-		// [2] Update the graph:
+		// [3] Update the graph:
 		this.$.graph.attr( 'transform', 'translate(' + this.paddingLeft + ',' + newVal + ')' );
+
+		// TODO: update marks
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingTop',
