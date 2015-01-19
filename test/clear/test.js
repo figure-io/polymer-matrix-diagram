@@ -16,11 +16,6 @@ describe( 'clear', function tests() {
 		expect( el.clear ).to.be.a( 'function' );
 	});
 
-	it( 'should reset the chart data', function test() {
-		el.clear();
-		assert.notOk( el.data.length );
-	});
-
 	xit( 'should not display any marks', function test( done ) {
 		var selection;
 

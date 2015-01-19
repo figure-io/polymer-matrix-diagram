@@ -200,6 +200,10 @@ Chart.prototype.init = function() {
 		.rangeBands( [ this.graphHeight(), 0 ] )
 		.domain( [ 0 ] );
 
+	// Labels:
+	this._getRowName = this.getRowName.bind( this );
+	this._getColName = this.getColName.bind( this );
+
 	// Marks...
 	this._x = this.x.bind( this );
 	this._y = this.y.bind( this );
@@ -213,7 +217,6 @@ Chart.prototype.init = function() {
 	// Base elements...
 	$.root = null;
 	$.canvas = null;
-	$.clipPath = null;
 	$.graph = null;
 	$.bkgd = null;
 
@@ -225,7 +228,6 @@ Chart.prototype.init = function() {
 	$.marks = null;
 	$.rows = null;
 	$.cols = null;
-	$.cells = null;
 
 	// Clip path...
 	this._clipPathID = this._uuid.v4();
@@ -288,6 +290,9 @@ Chart.prototype.create = function() {
 		.createBase()
 		.createBackground()
 		.createMarks()
+		.createRows()
+		.createCols()
+		.createCells()
 		.createTitle();
 
 	return this;
@@ -321,15 +326,6 @@ Chart.prototype.createBase = function() {
 		.attr( 'width', width )
 		.attr( 'height', height );
 	this.$.canvas = canvas;
-
-	// Create the clip-path:
-	this.$.clipPath = canvas.append( 'svg:defs' )
-		.append( 'svg:clipPath' )
-			.attr( 'id', this._clipPathID )
-			.append( 'svg:rect' )
-				.attr( 'class', 'clipPath' )
-				.attr( 'width', this.graphWidth() )
-				.attr( 'height', this.graphHeight() );
 
 	// Create the graph element:
 	this.$.graph = canvas.append( 'svg:g' )
@@ -376,22 +372,24 @@ Chart.prototype.createBackground = function() {
 * @returns {DOMElement} element instance
 */
 Chart.prototype.createMarks = function() {
-	var marks;
-	// Remove any existing marks...
 	if ( this.$.marks ) {
 		this.$.marks.remove();
 	}
-	// Create a `marks` group:
-	marks = this.$.graph.append( 'svg:g' )
+	this.$.marks = this.$.graph.append( 'svg:g' )
 		.attr( 'property', 'marks' )
-		.attr( 'class', 'marks' )
-		.attr( 'clip-path', 'url(#' + this._clipPathID + ')' );
+		.attr( 'class', 'marks' );
+	return this;
+}; // end METHOD createMarks()
 
-	this.$.marks = marks;
-
-	// Create a `rows` group:
-	this.$.rows = marks.selectAll( '.row' )
-		.data( (this.data) ? this.data.data() : [] )
+/**
+* METHOD: createRows()
+*	Creates row elements.
+*
+* @returns {DOMElement} element instance
+*/
+Chart.prototype.createRows = function() {
+	this.$.rows = this.$.marks.selectAll( '.row' )
+		.data( (this.data) ? this.data.rownames() : [] )
 		.enter()
 		.append( 'svg:g' )
 			.attr( 'class', 'row' )
@@ -401,8 +399,24 @@ Chart.prototype.createMarks = function() {
 		.attr( 'class', 'grid x' )
 		.attr( 'x1', this.graphWidth() );
 
-	// Create a `cols` group:
-	this.$.cols = marks.selectAll( '.col' )
+	this.$.rows.append( 'svg:text' )
+		.attr( 'x', -6 )
+		.attr( 'y', this._yScale.rangeBand() / 2 )
+		.attr( 'dy', '.32em' )
+		.attr( 'text-anchor', 'end' )
+		.text( this._getRowName );
+
+	return this;
+}; // end METHOD createRows()
+
+/**
+* METHOD: createCols()
+*	Creates column elements.
+*
+* @returns {DOMElement} element instance
+*/
+Chart.prototype.createCols = function() {
+	this.$.cols = this.$.marks.selectAll( '.col' )
 		.data( (this.data) ? this.data.colnames() :  [] )
 		.enter()
 		.append( 'svg:g' )
@@ -413,8 +427,25 @@ Chart.prototype.createMarks = function() {
 		.attr( 'class', 'grid' )
 		.attr( 'x1', -this.graphHeight() );
 
+	this.$.cols.append( 'svg:text' )
+		.attr( 'x', 6 )
+		.attr( 'y', this._xScale.rangeBand() / 2 )
+		.attr( 'dy', '.32em' )
+		.attr( 'text-anchor', 'start' )
+		.text( this._getColName );
+
 	return this;
-}; // end METHOD createMarks()
+}; // end METHOD createCols()
+
+/**
+* METHOD: createCells()
+*	Create cell elements.
+*
+* @returns {DOMElement} element instance
+*/
+Chart.prototype.createCells = function() {
+	return this;
+}; // end METHOD createCells()
 
 /**
 * METHOD: createTitle()
@@ -446,9 +477,8 @@ Chart.prototype.clear = function() {
 	// TODO: should meta data (e.g., title) be cleared as well?
 
 	// Remove the graph:
-	this.data.length = 0;
-
-	// TODO: need call update method
+	this.$.rows.remove();
+	this.$.cols.remove();
 
 	return this;
 }; // end METHOD clear()
@@ -462,9 +492,9 @@ Chart.prototype.clear = function() {
 Chart.prototype.resetMarks = function() {
 	var rows, cols, cells;
 
-	// Bind the data and update existing rows:
+	// [0] Bind the data and update existing rows:
 	rows = this.$.marks.selectAll( '.row' )
-		.data( this.data.data() )
+		.data( this.data.rownames() )
 		.attr( 'transform', this._y );
 
 	// Remove any old rows:
@@ -479,10 +509,17 @@ Chart.prototype.resetMarks = function() {
 		.attr( 'class', 'grid x' )
 		.attr( 'x1', this.graphWidth() );
 
+	rows.append( 'svg:text' )
+		.attr( 'x', -6 )
+		.attr( 'y', this._yScale.rangeBand() / 2 )
+		.attr( 'dy', '.32em' )
+		.attr( 'text-anchor', 'end' )
+		.text( this._getRowName );
+
 	// Cache a reference to the rows:
 	this.$.rows = rows;
 
-	// Bind the data and update existing columns:
+	// [1] Bind the data and update existing columns:
 	cols = this.$.marks.selectAll( '.col' )
 		.data( this.data.colnames() )
 		.attr( 'transform', this._x );
@@ -499,8 +536,17 @@ Chart.prototype.resetMarks = function() {
 		.attr( 'class', 'grid y' )
 		.attr( 'x1', -this.graphHeight() );
 
+	cols.append( 'svg:text' )
+		.attr( 'x', 6 )
+		.attr( 'y', this._xScale.rangeBand() / 2 )
+		.attr( 'dy', '.32em' )
+		.attr( 'text-anchor', 'start' )
+		.text( this._getColName );
+
 	// Cache a reference to the columns:
 	this.$.cols = cols;
+
+	// [2] Bind cell data and update existing cells:
 
 	return this;
 }; // end METHOD resetMarks()
@@ -548,6 +594,30 @@ Chart.prototype.x = function( d, i ) {
 Chart.prototype.y = function( d, i ) {
 	return 'translate(0,' + this._yScale( i ) + ')';
 }; // end METHOD y()
+
+/**
+* METHOD: getRowName( d, i )
+*	Returns a row name based on a provided index.
+*
+* @param {Array} d - datum
+* @param {Number} i - index
+* @returns {String} row name
+*/
+Chart.prototype.getRowName = function( d ) {
+	return d;
+}; // end METHOD getRowName()
+
+/**
+* METHOD: getColName( d, i )
+*	Returns a column name based on a provided index.
+*
+* @param {Array} d - datum
+* @param {Number} i - index
+* @returns {String} column name
+*/
+Chart.prototype.getColName = function( d ) {
+	return d;
+}; // end METHOD getColName()
 
 /**
 * METHOD: dataChanged( oldVal newVal )
@@ -645,9 +715,6 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 		// [2] Update the background:
 		this.$.bkgd.attr( 'width', width );
 
-		// [3] Update the clipPath:
-		this.$.clipPath.attr( 'width', width );
-
 		// TODO: update marks
 	}
 	this.fire( 'width', {
@@ -687,9 +754,6 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 
 		// [2] Update the background:
 		this.$.bkgd.attr( 'height', height );
-
-		// [3] Update the clipPath:
-		this.$.clipPath.attr( 'height', height );
 
 		// TODO: update marks
 	}
@@ -753,10 +817,7 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 		// [1] Update the background:
 		this.$.bkgd.attr( 'width', width );
 
-		// [2] Update the clipPath:
-		this.$.clipPath.attr( 'width', width );
-
-		// [3] Update the graph:
+		// [2] Update the graph:
 		this.$.graph.attr( 'transform', 'translate(' + newVal + ',' + this.paddingTop + ')' );
 
 		// TODO: update marks
@@ -793,9 +854,6 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 		// [1] Update the background:
 		this.$.bkgd.attr( 'width', width );
 
-		// [2] Update the clipPath:
-		this.$.clipPath.attr( 'width', width );
-
 		// TODO: update marks
 	}
 	this.fire( 'changed', {
@@ -829,9 +887,6 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 	if ( this.autoUpdate ) {
 		// [1] Update the background:
 		this.$.bkgd.attr( 'height', height );
-
-		// [2] Update the clipPath:
-		this.$.clipPath.attr( 'height', height );
 
 		// TODO: update marks
 	}
@@ -867,10 +922,7 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 		// [1] Update the background:
 		this.$.bkgd.attr( 'height', height );
 
-		// [2] Update the clipPath:
-		this.$.clipPath.attr( 'height', height );
-
-		// [3] Update the graph:
+		// [2] Update the graph:
 		this.$.graph.attr( 'transform', 'translate(' + this.paddingLeft + ',' + newVal + ')' );
 
 		// TODO: update marks

@@ -81,8 +81,6 @@ describe( 'width', function tests() {
 
 	it( 'should update the background width' );
 
-	it( 'should update the clipPath width' );
-
 	it( 'should update the marks' );
 
 });

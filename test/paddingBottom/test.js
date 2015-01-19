@@ -64,8 +64,6 @@ describe( 'paddingBottom', function tests() {
 
 	it( 'should update the background height' );
 
-	it( 'should update the clipPath height' );
-
 	it( 'should update the marks' );
 
 });

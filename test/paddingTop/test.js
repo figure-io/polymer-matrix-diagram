@@ -64,8 +64,6 @@ describe( 'paddingTop', function tests() {
 
 	it( 'should update the background height' );
 
-	it( 'should update the clipPath height' );
-
 	it( 'should update the graph position' );
 
 	it( 'should update the marks' );

@@ -29,10 +29,6 @@ describe( 'createBase', function tests() {
 		assert.ok( el.$.chart.querySelector( '.graph' ) );
 	});
 
-	it( 'should create a clipPath element', function test() {
-		assert.ok( el.$.chart.querySelector( '.clipPath' ) );
-	});
-
 	it( 'should remove an existing canvas', function test() {
 		var id = 'testtesttest1234',
 			svg;

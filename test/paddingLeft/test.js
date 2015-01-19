@@ -64,8 +64,6 @@ describe( 'paddingLeft', function tests() {
 
 	it( 'should update the background width' );
 
-	it( 'should update the clipPath width' );
-
 	it( 'should update the graph position' );
 
 	it( 'should update the marks' );
