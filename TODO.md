@@ -5,9 +5,11 @@ TODO
 2. row order
 3. col order
 4. documentation
-5. example using column click events
+5. animation parameters
+	- 	delay
+	- 	animation length
+	- 	...
 6. formalize hover interaction
-	-	do we always want a red hover?
 
 
 ## Tests

@@ -51,6 +51,7 @@ var EVENTS = [
 	'clicked',
 	'clicked.row',
 	'clicked.col',
+	'clicked.cell',
 
 	'hovered',
 	'hovered.row',
@@ -651,8 +652,7 @@ Chart.prototype.resetCols = function() {
 * @returns {DOMElement} element instance
 */
 Chart.prototype.resetCells = function( d, i ) {
-	var row,
-		cells;
+	var row, cells;
 
 	row = this._d3.select( this.$.rows[0][i] );
 
@@ -764,7 +764,7 @@ Chart.prototype.cx = function( d, i ) {
 
 /**
 * METHOD: getRowName( d, i )
-*	Returns a row name based on a provided index.
+*	Returns a row name.
 *
 * @param {Array} d - datum
 * @param {Number} i - index
@@ -776,7 +776,7 @@ Chart.prototype.getRowName = function( d ) {
 
 /**
 * METHOD: getColName( d, i )
-*	Returns a column name based on a provided index.
+*	Returns a column name.
 *
 * @param {Array} d - datum
 * @param {Number} i - index
@@ -1189,6 +1189,7 @@ Chart.prototype.onRowClick = function( d, i ) {
 	evt.datum = d;
 	evt.index = i;
 	this.fire( 'clicked.row', evt );
+	this.fire( 'clicked', evt );
 	return false;
 }; // end METHOD onRowClick()
 
@@ -1205,6 +1206,7 @@ Chart.prototype.onColClick = function( d, i ) {
 	evt.datum = d;
 	evt.index = i;
 	this.fire( 'clicked.col', evt );
+	this.fire( 'clicked', evt );
 	return false;
 }; // end METHOD onColClick()
 
@@ -1235,6 +1237,7 @@ Chart.prototype.onCellClick = function( d, i ) {
 	evt.row = j;
 
 	this.fire( 'clicked.cell', evt );
+	this.fire( 'clicked', evt );
 	return false;
 }; // end METHOD onCellClick()
 
@@ -1254,6 +1257,7 @@ Chart.prototype.onRowHover = function( d, i ) {
 	evt.datum = d;
 	evt.index = i;
 	this.fire( 'hovered.row', evt );
+	this.fire( 'hovered', evt );
 	return false;
 }; // end METHOD onRowHover()
 
@@ -1273,6 +1277,7 @@ Chart.prototype.onColHover = function( d, i ) {
 	evt.datum = d;
 	evt.index = i;
 	this.fire( 'hovered.col', evt );
+	this.fire( 'hovered', evt );
 	return false;
 }; // end METHOD onColHover()
 
@@ -1305,6 +1310,7 @@ Chart.prototype.onCellHover = function( d, i ) {
 	evt.row = j;
 
 	this.fire( 'hovered.cell', evt );
+	this.fire( 'hovered', evt );
 	return false;
 }; // end METHOD onCellHover()
 
@@ -1324,6 +1330,7 @@ Chart.prototype.onRowHoverEnd = function( d, i ) {
 	evt.datum = d;
 	evt.index = i;
 	this.fire( 'hoverended.row', evt );
+	this.fire( 'hoverended', evt );
 	return false;
 }; // end METHOD onRowHoverEnd()
 
@@ -1343,6 +1350,7 @@ Chart.prototype.onColHoverEnd = function( d, i ) {
 	evt.datum = d;
 	evt.index = i;
 	this.fire( 'hoverended.col', evt );
+	this.fire( 'hoverended', evt );
 	return false;
 }; // end METHOD onColHoverEnd()
 
@@ -1375,6 +1383,7 @@ Chart.prototype.onCellHoverEnd = function( d, i ) {
 	evt.row = j;
 
 	this.fire( 'hoverended.cell', evt );
+	this.fire( 'hoverended', evt );
 	return false;
 }; // end METHOD onCellHoverEnd()
 

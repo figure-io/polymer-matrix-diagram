@@ -118,7 +118,13 @@ el.chartTitle = 'Awesome chart.';
 
 #### el.zScale
 
-TODO: document.
+Maps a datum to a color value.
+
+``` javascript
+el.zScale = function zScale( d, i ) {
+	return ( d ) ? 'red' : 'blue';
+};
+```
 
 
 #### el.autoUpdate
@@ -150,6 +156,14 @@ el.clear();
 ```
 
 
+#### el.rowOrder( arr )
+
+Updates the row order.
+
+``` javascript
+el.rowOrder( [ 4, 2, 1, 3 ] );
+```
+
 
 ### Events
 
@@ -176,6 +190,16 @@ The element emits a `changed` event whenever an attribute changes.
 ``` javascript
 el.addEventListener( 'changed', function onChange( evt ) {
 	console.log( evt.attr, evt.prev, evt.curr, evt.data );	
+});
+```
+
+#### 'data'
+
+The element emits a `data` event when the `data` attribute changes.
+
+``` javascript
+el.addEventListener( 'data', function onEvent( evt ) {
+	console.log( this.data );
 });
 ```
 
@@ -220,6 +244,123 @@ el.addEventListener( 'clicked', function onClick( evt ) {
 });
 ```
 
+
+#### 'clicked.row'
+
+The element emits a `clicked.row` event when a row is clicked.
+
+``` javascript
+el.addEventListener( 'clicked.row', function onClick( evt ) {
+	console.log( evt.detail.datum, evt.detail.index );
+});
+```
+
+#### 'clicked.col'
+
+The element emits a `clicked.col` event when a column is clicked.
+
+``` javascript
+el.addEventListener( 'clicked.col', function onClick( evt ) {
+	console.log( evt.detail.datum, evt.detail.index );
+});
+```
+
+#### 'clicked.cell'
+
+The element emits a `clicked.cell` event when a cell is clicked.
+
+``` javascript
+el.addEventListener( 'clicked.cell', function onClick( evt ) {
+	console.log( evt.detail.datum, evt.detail.row, evt.detail.col );
+});
+```
+
+
+#### 'hovered'
+
+The element emits a `hovered` event when an element having a `mouseover` handler has a `mouseover` event.
+
+``` javascript
+el.addEventListener( 'hovered', function onClick( evt ) {
+	console.log( evt.detail.datum, evt.detail.index );
+});
+```
+
+
+#### 'hovered.row'
+
+The element emits a `hovered.row` event when a row has a `mouseover` event.
+
+``` javascript
+el.addEventListener( 'hovered.row', function onClick( evt ) {
+	console.log( evt.detail.datum, evt.detail.index );
+});
+```
+
+
+#### 'hovered.col'
+
+The element emits a `hovered.col` event when a column has a `mouseover` event.
+
+``` javascript
+el.addEventListener( 'hovered.col', function onClick( evt ) {
+	console.log( evt.detail.datum, evt.detail.index );
+});
+```
+
+
+#### 'hovered.cell'
+
+The element emits a `hovered.cell` event when a cell has a `mouseover` event.
+
+``` javascript
+el.addEventListener( 'hovered.cell', function onClick( evt ) {
+	console.log( evt.detail.datum, evt.detail.row, evt.detail.col );
+});
+```
+
+
+#### 'hoverended'
+
+The element emits a `hoverended` event when an element having a `mouseout` handler has a `mouseout` event.
+
+``` javascript
+el.addEventListener( 'hoverended', function onClick( evt ) {
+	console.log( evt.detail.datum, evt.detail.index );
+});
+```
+
+
+#### 'hoverended.row'
+
+The element emits a `hoverended.row` event when a row has a `mouseout` event.
+
+``` javascript
+el.addEventListener( 'hoverended.row', function onClick( evt ) {
+	console.log( evt.detail.datum, evt.detail.index );
+});
+```
+
+
+#### 'hoverended.col'
+
+The element emits a `hoverended.col` event when a column has a `mouseout` event.
+
+``` javascript
+el.addEventListener( 'hoverended.col', function onClick( evt ) {
+	console.log( evt.detail.datum, evt.detail.index );
+});
+```
+
+#### 'hoverended.cell'
+
+The element emits a `hoverended.cell` event when a cell has a `mouseout` event.
+
+``` javascript
+el.addEventListener( 'hoverended.cell', function onClick( evt ) {
+	console.log( evt.detail.datum, evt.detail.row, evt.detail.col );
+});
+```
 
 
 
