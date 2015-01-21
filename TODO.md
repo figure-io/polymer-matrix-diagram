@@ -10,6 +10,8 @@ TODO
 	- 	animation length
 	- 	...
 6. formalize hover interaction
+7. update README regarding df
+8. 
 
 
 ## Tests
