@@ -381,6 +381,15 @@ el.addEventListener( 'hoverended.cell', function onClick( evt ) {
 });
 ```
 
+#### 'transitionEnd'
+
+The element emits a `transitionEnd` event when a transition ends; e.g., when setting the row or column order.
+
+``` javascript
+el.addEventListener( 'transitionEnd', function onEnd() {
+	console.log( '...transition ended...' );
+});
+```
 
 
 ## Examples

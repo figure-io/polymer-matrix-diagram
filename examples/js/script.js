@@ -74,6 +74,10 @@
 			// console.log( evt.detail.col, evt.detail.row );
 		});
 
+		el.addEventListener( 'transitionEnd', function onEnd() {
+			// console.log( '...transition ended...' );
+		});
+
 		rowOrders = rowOrderings( data );
 
 	} // end FUNCTION onData()

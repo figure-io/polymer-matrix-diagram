@@ -5,10 +5,10 @@ TODO
 2. 
 3. 
 4. 
-5. animation parameters
-	- 	delay
-	- 	animation length
-	- 	...
+5. transition parameters
+	- 	transition duration
+	- 	only transition if duration is a positive number; otherwise, just update
+	- 	if duration is allowed, need to update 'transitionEnd' documentation
 6. formalize hover interaction
 7. update README regarding df
 8. `on()` as an alias to `addEventListener()`?

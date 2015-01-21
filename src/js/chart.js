@@ -61,7 +61,9 @@ var EVENTS = [
 	'hoverended',
 	'hoverended.row',
 	'hoverended.col',
-	'hoverended.cell'
+	'hoverended.cell',
+
+	'transitionEnd'
 ];
 
 
@@ -237,6 +239,9 @@ Chart.prototype.init = function() {
 
 	this._createCells = this.createCells.bind( this );
 	this._resetCells = this.resetCells.bind( this );
+
+	// Transitions...
+	this._onTransitionEnd = this.onTransitionEnd.bind( this );
 
 	// Interaction...
 	this._onRowHover = this.onRowHover.bind( this );
@@ -698,7 +703,8 @@ Chart.prototype.rowOrder = function( arr ) {
 	yScale.domain( arr );
 
 	selection = this.$.marks.transition()
-		.duration( 2500 );
+		.duration( 2500 )
+		.each( 'end', this._onTransitionEnd );
 
     selection.selectAll( '.row' )
 		.delay( function ( d, i ) {
@@ -728,8 +734,11 @@ Chart.prototype.colOrder = function( arr ) {
 	}
 	xScale.domain( arr );
 
+	// TODO: only transition if duration is a positive number (?)
+
 	selection = this.$.marks.transition()
-		.duration( 2500 );
+		.duration( 2500 )
+		.each( 'end', this._onTransitionEnd );
 
     selection.selectAll( '.col' )
 		.delay( function ( d, i ) {
@@ -1429,6 +1438,17 @@ Chart.prototype.onCellHoverEnd = function( d, i ) {
 	this.fire( 'hoverended', evt );
 	return false;
 }; // end METHOD onCellHoverEnd()
+
+/**
+* METHOD: onTransitionEnd()
+*	Event listener for transition `end` events.
+*
+* @returns {Boolean} false
+*/
+Chart.prototype.onTransitionEnd = function() {
+	this.fire( 'transitionEnd', null );
+	return false;
+}; // end METHOD onTransitionEnd()
 
 /**
 * METHOD: onResize()
