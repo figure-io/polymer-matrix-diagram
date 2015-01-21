@@ -685,13 +685,16 @@ Chart.prototype.resetCells = function( d, i ) {
 * @param {Array} arr - order
 */
 Chart.prototype.rowOrder = function( arr ) {
-	var yScale = this._yScale,
+	var len = this.data.rownames().length,
+		yScale = this._yScale,
 		selection;
 
 	if ( !Array.isArray( arr ) ) {
 		throw new TypeError( 'rowOrder()::invalid input argument. Must provide an array. Value' );
 	}
-	// TODO: validate that the arr length equals the data dimensions
+	if ( arr.length !== len ) {
+		throw new Error( 'rowOrder()::invalid input argument. Array length must equal the number of rows. Number of rows: ' + len + '.' );
+	}
 	yScale.domain( arr );
 
 	selection = this.$.marks.transition()
@@ -713,13 +716,16 @@ Chart.prototype.rowOrder = function( arr ) {
 * @param {Array} arr - order
 */
 Chart.prototype.colOrder = function( arr ) {
-	var xScale = this._xScale,
+	var len = this.data.colnames().length,
+		xScale = this._xScale,
 		selection;
 
 	if ( !Array.isArray( arr ) ) {
-		throw new TypeError( 'colOrder()::invalid input argument. Must provide an array. Value' );
+		throw new TypeError( 'colOrder()::invalid input argument. Must provide an array. Value: `' + arr + '`.' );
 	}
-	// TODO: validate that the arr length equals the data dimensions
+	if ( arr.length !== len ) {
+		throw new Error( 'colOrder()::invalid input argument. Array length must equal the number of columns. Number of columns: ' + len + '.' );
+	}
 	xScale.domain( arr );
 
 	selection = this.$.marks.transition()
@@ -829,6 +835,8 @@ Chart.prototype.getColName = function( d ) {
 * @param {Array} newVal - new value
 */
 Chart.prototype.dataChanged = function( oldVal, newVal ) {
+	// TODO: validate new value is a data frame
+
 	this._xScale.domain( this.data.colnames() );
 	this._yScale.domain( this.data.rownames() );
 
