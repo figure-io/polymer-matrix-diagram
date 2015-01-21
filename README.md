@@ -172,7 +172,15 @@ el.clear();
 Sets the row order.
 
 ``` javascript
-el.rowOrder( [ 4, 2, 1, 3 ] );
+el.rowOrder( [ 3, 1, 0, 2 ] );
+```
+
+#### el.colOrder( arr )
+
+Sets the column order.
+
+``` javascript
+el.colOrder( [ 0, 1, 4, 3, 2,... ] );
 ```
 
 

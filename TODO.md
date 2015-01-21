@@ -2,8 +2,8 @@ TODO
 ====
 
 1. data frame
-2. row order
-3. col order
+2. row order validation
+3. col order validation
 4. documentation
 5. animation parameters
 	- 	delay

@@ -40,7 +40,7 @@
 	*/
 	function onData( body ) {
 		var data = JSON.parse( body ),
-			orders,
+			rowOrders,
 			figs,
 			len,
 			charts,
@@ -63,14 +63,18 @@
 
 		el.addEventListener( 'clicked.row', function onClick( evt ) {
 			var idx = evt.detail.index;
-			el.rowOrder( orders[ idx ] );
+			el.rowOrder( rowOrders[ idx ] );
+		});
+
+		el.addEventListener( 'clicked.col', function onClick( evt ) {
+			el.colOrder( colOrder( data[ 0 ].length ) );
 		});
 
 		el.addEventListener( 'clicked.cell', function onClick( evt ) {
 			// console.log( evt.detail.col, evt.detail.row );
 		});
 
-		orders = getOrderings( data );
+		rowOrders = rowOrderings( data );
 
 	} // end FUNCTION onData()
 
@@ -87,13 +91,13 @@
 	} // end FUNCTION zScale()
 
 	/**
-	* FUNCTION: getOrderings( arr )
-	*	Computes orderings based on Hamming distance.
+	* FUNCTION: rowOrderings( arr )
+	*	Computes row orderings based on Hamming distance.
 	*
 	* @param {Array} arr - data array
 	* @returns {Array} ordering array
 	*/
-	function getOrderings( arr ) {
+	function rowOrderings( arr ) {
 		var len = arr.length,
 			N = arr[ 0 ].length,
 			tmp,
@@ -126,7 +130,32 @@
 			out[ i ] = tmp;
 		}
 		return out;
-	} // end FUNCTION getOrderings()
+	} // end FUNCTION rowOrderings()
+
+	/**
+	* FUNCTION: colOrder( N )
+	*	Computes random column orderings.
+	*
+	* @param {Number} N - array length
+	* @returns {Array} ordering array
+	*/
+	function colOrder( N ) {
+		var out = new Array( N ),
+			i,
+			j,
+			tmp;
+
+		for ( i = 0; i < N; i++ ) {
+			out[ i ] = i;
+		}
+		for ( i = N - 1; i > 0; i-- ) {
+			j = Math.floor( Math.random() * (i+1) );
+			tmp = out[ i ];
+			out[ i ] = out[ j ];
+			out[ j ] = tmp;
+		}
+		return out;
+	} // end FUNCTION colOrder()
 
 	/**
 	* FUNCTION: sort( a, b )

@@ -1375,6 +1375,41 @@ Chart.prototype.rowOrder = function( arr ) {
 }; // end METHOD rowOrder()
 
 /**
+* METHOD: colOrder( arr )
+*	Set the column order.
+*
+* @param {Array} arr - order
+*/
+Chart.prototype.colOrder = function( arr ) {
+	var xScale = this._xScale,
+		selection;
+
+	if ( !Array.isArray( arr ) ) {
+		throw new TypeError( 'colOrder()::invalid input argument. Must provide an array. Value' );
+	}
+	// TODO: validate that the arr length equals the data dimensions
+	xScale.domain( arr );
+
+	selection = this.$.marks.transition()
+		.duration( 2500 );
+
+    selection.selectAll( '.col' )
+		.delay( function ( d, i ) {
+			return xScale( i ) * 4;
+		})
+		.attr( 'transform', this._x );
+
+	selection.selectAll( '.row' )
+		.selectAll( '.cell' )
+		.delay( function ( d, i ) {
+			return xScale( i ) * 4;
+		})
+		.attr( 'x', this._cx );
+
+	return this;
+}; // end METHOD colOrder()
+
+/**
 * METHOD: graphWidth()
 *	Returns the graph width.
 *
