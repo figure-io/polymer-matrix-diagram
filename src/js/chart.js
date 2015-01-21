@@ -248,6 +248,7 @@ Chart.prototype.init = function() {
 
 	this._onRowClick = this.onRowClick.bind( this );
 	this._onColClick = this.onColClick.bind( this );
+	this._onCellClick = this.onCellClick.bind( this );
 
 	this._onResize = delayed( this.onResize.bind( this ), 400 );
 
@@ -269,8 +270,7 @@ Chart.prototype.init = function() {
 	$.rows = null;
 	$.cols = null;
 
-	// Clip path...
-	this._clipPathID = this._uuid.v4();
+	return this;
 }; // end METHOD init()
 
 /**
@@ -507,7 +507,8 @@ Chart.prototype.createCells = function( d, i ) {
 			.attr( 'height', this._yScale.rangeBand() )
 			.attr( 'fill', this.zScale )
 			.on( 'mouseover', this._onCellHover )
-			.on( 'mouseout', this._onCellHoverEnd );
+			.on( 'mouseout', this._onCellHoverEnd )
+			.on( 'click', this._onCellClick );
 
 	return this;
 }; // end METHOD createCells()
@@ -671,7 +672,8 @@ Chart.prototype.resetCells = function( d, i ) {
 		.attr( 'height', this._yScale.rangeBand() )
 		.attr( 'fill', this.zScale )
 		.on( 'mouseover', this._onCellHover )
-		.on( 'mouseout', this._onCellHoverEnd );
+		.on( 'mouseout', this._onCellHoverEnd )
+		.on( 'click', this._onCellClick );
 
 	return this;
 }; // end METHOD resetCells()
@@ -1207,6 +1209,36 @@ Chart.prototype.onColClick = function( d, i ) {
 }; // end METHOD onColClick()
 
 /**
+* METHOD: onCellClick( d, i )
+*	Click listener for cells.
+*
+* @param {String} d - cell data
+* @param {Number} i - cell index
+* @returns {Boolean} false
+*/
+Chart.prototype.onCellClick = function( d, i ) {
+	var evt = this._d3.event,
+		rows = this.$.rows[ 0 ],
+		row,
+		j;
+
+	evt.datum = d;
+	evt.col = i;
+
+	// Determine the row index...
+	row = evt.path[ 1 ];
+	for ( j = 0; j < rows.length; j++ ) {
+		if ( rows[ j ] === row ) {
+			break;
+		}
+	}
+	evt.row = j;
+
+	this.fire( 'clicked.cell', evt );
+	return false;
+}; // end METHOD onCellClick()
+
+/**
 * METHOD: onRowHover( d, i )
 *	Mouseover listener for rows.
 *
@@ -1248,17 +1280,30 @@ Chart.prototype.onColHover = function( d, i ) {
 * METHOD: onCellHover( d, i )
 *	Mouseover listener for cells.
 *
-* @param {String} d - row name
-* @param {Number} i - row index
+* @param {String} d - cell data
+* @param {Number} i - cell index
 * @returns {Boolean} false
 */
 Chart.prototype.onCellHover = function( d, i ) {
-	var evt = this._d3.event;
+	var evt = this._d3.event,
+		rows = this.$.rows[ 0 ],
+		row,
+		j;
 
 	this.$.cols[ 0 ][ i ].classList.add( 'active' );
 
 	evt.datum = d;
-	evt.index = i;
+	evt.col = i;
+
+	// Determine the row index...
+	row = evt.path[ 1 ];
+	for ( j = 0; j < rows.length; j++ ) {
+		if ( rows[ j ] === row ) {
+			break;
+		}
+	}
+	evt.row = j;
+
 	this.fire( 'hovered.cell', evt );
 	return false;
 }; // end METHOD onCellHover()
@@ -1305,17 +1350,30 @@ Chart.prototype.onColHoverEnd = function( d, i ) {
 * METHOD: onCellHoverEnd( d, i )
 *	Mouseout listener for cells.
 *
-* @param {String} d - row name
-* @param {Number} i - row index
+* @param {String} d - cell data
+* @param {Number} i - cell index
 * @returns {Boolean} false
 */
 Chart.prototype.onCellHoverEnd = function( d, i ) {
-	var evt = this._d3.event;
+	var evt = this._d3.event,
+		rows = this.$.rows[ 0 ],
+		row,
+		j;
 
 	this.$.cols[ 0 ][ i ].classList.remove( 'active' );
 
 	evt.datum = d;
-	evt.index = i;
+	evt.col = i;
+
+	// Determine the row index...
+	row = evt.path[ 1 ];
+	for ( j = 0; j < rows.length; j++ ) {
+		if ( rows[ j ] === row ) {
+			break;
+		}
+	}
+	evt.row = j;
+
 	this.fire( 'hoverended.cell', evt );
 	return false;
 }; // end METHOD onCellHoverEnd()

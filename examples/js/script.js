@@ -66,6 +66,10 @@
 			el.rowOrder( orders[ idx ] );
 		});
 
+		el.addEventListener( 'clicked.cell', function onClick( evt ) {
+			// console.log( evt.detail.col, evt.detail.row );
+		});
+
 		orders = getOrderings( data );
 
 	} // end FUNCTION onData()
