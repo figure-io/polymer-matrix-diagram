@@ -4,14 +4,15 @@ TODO
 1. data frame
 2. row order validation
 3. col order validation
-4. documentation
+4. 
 5. animation parameters
 	- 	delay
 	- 	animation length
 	- 	...
 6. formalize hover interaction
 7. update README regarding df
-8. 
+8. `on()` as an alias to `addEventListener()`?
+	- could have it only accept the publicized events and do input validation
 
 
 ## Tests
@@ -28,7 +29,8 @@ TODO
 5. observers (?)
 	-	prevent side effects (e.g., col names length no longer corresponding to number of columns, data being externally mutated)
 	- 	maybe copy to immutable arrays?
-	-	event emitter when does mutate
+		- 	or just do a deep copy and store internally
+	-	event emitter when does mutate (?)
 6. `toString()`
 
 
