@@ -680,7 +680,7 @@ Chart.prototype.resetCells = function( d, i ) {
 
 /**
 * METHOD: rowOrder( arr )
-*	Update the row order.
+*	Set the row order.
 *
 * @param {Array} arr - order
 */

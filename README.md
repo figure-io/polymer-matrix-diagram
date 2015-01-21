@@ -43,7 +43,18 @@ The component has the following public attributes and methods...
 
 #### el.data
 
-TODO: document.
+Chart data. The expected format is an `array` of `arrays`.
+
+``` javascript
+el.data = [
+	[{'a':1},{'a':0},...],
+	[{'a':0},{'a':0},...],
+	[{'a':1},{'a':0},...],
+	[{'a':1},{'a':1},...]
+];
+```
+
+Each nested `array` is visually encoded as a row, and each nested `array` element is visually encoded as a row cell. The nested `array` elements may be of any type.
 
 
 #### el.config
@@ -158,7 +169,7 @@ el.clear();
 
 #### el.rowOrder( arr )
 
-Updates the row order.
+Sets the row order.
 
 ``` javascript
 el.rowOrder( [ 4, 2, 1, 3 ] );
