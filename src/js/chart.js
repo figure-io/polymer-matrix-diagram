@@ -147,14 +147,15 @@ Chart.prototype.height = null;
 Chart.prototype.chartTitle = '';
 
 /**
-* METHOD: zValue( d )
+* METHOD: zValue( d, i )
 *	z-value accessor.
 *
 * @param {*} d - datum
+* @param {Number} i - index
 * @return {Number} z-value
 */
-Chart.prototype.zValue = function( d ) {
-	return d;
+Chart.prototype.zValue = function() {
+	return 1;
 }; // end METHOD zValue()
 
 /**
@@ -839,7 +840,7 @@ Chart.prototype.y = function( d, i ) {
 
 /**
 * METHOD: z( d, i )
-*	Maps a cell datum to a fill-opacity value.
+*	Maps a datum to a fill-opacity value.
 *
 * @param {Array} d - datum
 * @param {Number} i - index

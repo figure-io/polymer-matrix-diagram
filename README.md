@@ -128,12 +128,12 @@ el.chartTitle = 'Awesome chart.';
 
 #### el.zValue
 
-Defines the z-value accessor.
+Defines the z-value accessor. Each z-value is mapped to a value on the interval `[0,1]`, which then determines the `fill-opacity` for a cell. The default `fill-opacity` for all cells is `1`.
 
 ``` javascript
 // Default:
 el.zValue = function zValue( d, i ) {
-	return d;
+	return 1;
 };
 
 // Example of object based accessor:
@@ -141,6 +141,7 @@ el.zValue = function zValue( d, i ) {
 	return d.z;
 };
 ```
+
 
 #### el.zMin
 

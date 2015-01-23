@@ -2,7 +2,7 @@ TODO
 ====
 
 1. data frame
-2. z-scale --> fill-opacity
+2. zmin/zmax changed clbks
 3. 
 4. 
 5. transition parameters
