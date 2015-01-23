@@ -126,13 +126,50 @@ Chart title. Default is an empty `string`.
 el.chartTitle = 'Awesome chart.';
 ```
 
+#### el.zValue
 
-#### el.zScale
-
-Maps a datum to a color value.
+Defines the z-value accessor.
 
 ``` javascript
-el.zScale = function zScale( d, i ) {
+// Default:
+el.zValue = function zValue( d, i ) {
+	return d;
+};
+
+// Example of object based accessor:
+el.zValue = function zValue( d, i ) {
+	return d.z;
+};
+```
+
+#### el.zMin
+
+Defines the minimum value of the z-domain. Default is `null`.
+
+``` javascript
+el.zMin = -10;
+```
+
+If set to `null`, the `zMin` is dynamically calculated from the data.
+
+
+#### el.zMax
+
+Defines the maximum value of the z-domain. Default is `null`.
+
+``` javascript
+el.zMax = 10;
+```
+
+If set to `null`, the `zMax` is dynamically calculated from the data.
+
+
+#### el.cScale
+
+Maps a cell datum to a color.
+
+``` javascript
+el.cScale = function cScale( d, i ) {
 	return ( d ) ? 'red' : 'blue';
 };
 ```

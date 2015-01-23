@@ -2,7 +2,7 @@ TODO
 ====
 
 1. data frame
-2. 
+2. z-scale --> fill-opacity
 3. 
 4. 
 5. transition parameters

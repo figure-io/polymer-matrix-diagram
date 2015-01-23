@@ -58,7 +58,7 @@
 		// [1] Configure the figure...
 		el = charts[ 0 ];
 
-		el.zScale = zScale;
+		el.cScale = cScale;
 		el.data = new DataFrame( data );
 
 		el.addEventListener( 'clicked.row', function onClick( evt ) {
@@ -83,16 +83,16 @@
 	} // end FUNCTION onData()
 
 	/**
-	* FUNCTION: zScale( d, i )
-	*	Maps a z-value to a color string.
+	* FUNCTION: cScale( d, i )
+	*	Maps a cell datum to a color string.
 	*
 	* @param {Number} d - datum
 	* @param {Number} i - index
 	* @returns {String} color string
 	*/
-	function zScale( d ) {
+	function cScale( d ) {
 		return ( d ) ? '#474747' : '#eee';
-	} // end FUNCTION zScale()
+	} // end FUNCTION cScale()
 
 	/**
 	* FUNCTION: rowOrderings( arr )

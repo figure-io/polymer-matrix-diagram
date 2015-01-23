@@ -18,7 +18,7 @@
 <link rel="import" href="../polymer-d3/polymer-d3.html">
 
 <!-- ELEMENT -->
-</head><body><polymer-element name="polymer-matrix-diagram" attributes="data config width height chartTitle paddingLeft paddingRight paddingBottom paddingTop zScale autoResize autoUpdate" assetpath="build/">
+</head><body><polymer-element name="polymer-matrix-diagram" attributes="data config width height chartTitle paddingLeft paddingRight paddingBottom paddingTop zValue zMin zMax cScale autoResize autoUpdate" assetpath="build/">
 
 	<template>
 
@@ -815,16 +815,45 @@ Chart.prototype.height = null;
 Chart.prototype.chartTitle = '';
 
 /**
-* METHOD: zScale( d, i )
-*	Maps a datum to a color value.
+* METHOD: zValue( d )
+*	z-value accessor.
+*
+* @param {*} d - datum
+* @return {Number} z-value
+*/
+Chart.prototype.zValue = function( d ) {
+	return d;
+}; // end METHOD zValue()
+
+/**
+* ATTRIBUTE: zMin
+*	Minimum z-limit. If `null`, the limit is computed from the data.
+*
+* @type {Null|Number}
+* @default null
+*/
+Chart.prototype.zMin = null;
+
+/**
+* ATTRIBUTE: zMax
+*	Maximum z-limit. If `null`, the limit is computed from the data.
+*
+* @type {Null|Number}
+* @default null
+*/
+Chart.prototype.zMax = null;
+
+/**
+* METHOD: cScale( d, i )
+*	Maps a cell datum to a color.
 *
 * @param {*} d - datum
 * @param {Number} i - index
 * @returns {String} color string
 */
-Chart.prototype.zScale = function(){
+Chart.prototype.cScale = function(){
 	return '#eee';
-}; // end METHOD zScale()
+}; // end METHOD cScale()
 
 /**
 * ATTRIBUTE: autoUpdate
@@ -894,6 +923,10 @@ Chart.prototype.init = function() {
 	this._yScale = d3.scale.ordinal()
 		.rangeBands( [ this.graphHeight(), 0 ] )
 		.domain( [ 0 ] );
+	this._zScale = d3.scale.linear()
+		.domain( [ 0, 1 ] )
+		.range( [ 0, 1 ] )
+		.clamp( true );
 
 	// Labels:
 	this._getRowName = this.getRowName.bind( this );
@@ -902,6 +935,7 @@ Chart.prototype.init = function() {
 	// Marks...
 	this._x = this.x.bind( this );
 	this._y = this.y.bind( this );
+	this._z = this.z.bind( this );
 
 	this._cx = this.cx.bind( this );
 
@@ -1179,7 +1213,8 @@ Chart.prototype.createCells = function( d, i ) {
 			.attr( 'x', this._cx )
 			.attr( 'width', this._xScale.rangeBand() )
 			.attr( 'height', this._yScale.rangeBand() )
-			.attr( 'fill', this.zScale )
+			.attr( 'fill-opacity', this._z )
+			.attr( 'fill', this.cScale )
 			.on( 'mouseover', this._onCellHover )
 			.on( 'mouseout', this._onCellHoverEnd )
 			.on( 'click', this._onCellClick );
@@ -1332,7 +1367,8 @@ Chart.prototype.resetCells = function( d, i ) {
 	cells = row.selectAll( '.cell' )
 		.data( this.data.data()[i] )
 		.attr( 'x', this._cx )
-		.attr( 'fill', this.zScale );
+		.attr( 'fill-opacity', this._z )
+		.attr( 'fill', this.cScale );
 
 	// Remove any old cells:
 	cells.exit().remove();
@@ -1343,7 +1379,8 @@ Chart.prototype.resetCells = function( d, i ) {
 		.attr( 'x', this._cx )
 		.attr( 'width', this._xScale.rangeBand() )
 		.attr( 'height', this._yScale.rangeBand() )
-		.attr( 'fill', this.zScale )
+		.attr( 'fill-opacity', this._z )
+		.attr( 'fill', this.cScale )
 		.on( 'mouseover', this._onCellHover )
 		.on( 'mouseout', this._onCellHoverEnd )
 		.on( 'click', this._onCellClick );
@@ -1467,6 +1504,18 @@ Chart.prototype.x = function( d, i ) {
 Chart.prototype.y = function( d, i ) {
 	return 'translate(0,' + this._yScale( i ) + ')';
 }; // end METHOD y()
+
+/**
+* METHOD: z( d, i )
+*	Maps a cell datum to a fill-opacity value.
+*
+* @param {Array} d - datum
+* @param {Number} i - index
+* @returns {Number} fill opacity
+*/
+Chart.prototype.z = function( d, i ) {
+	return this._zScale( this.zValue( d, i ) );
+}; // end METHOD z()
 
 /**
 * METHOD: cx( d, i )
@@ -1822,18 +1871,40 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 }; // end METHOD paddingTopChanged()
 
 /**
-* METHOD: zScaleChanged( oldVal, newVal )
-*	Event handler invoked when the `zScale` attribute changes.
+* METHOD: zValueChanged( oldVal, newVal )
+*	Event handler invoked when the `zValue` attribute changes.
+*
+* @param {Function} oldVal - old value
+* @param {Function} newVal - new value
+*/
+Chart.prototype.zValueChanged = function( oldVal, newVal ) {
+	var err;
+	if ( typeof newVal !== 'function' ) {
+		err = new TypeError( 'zValue::invalid assignment. Must be a function. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.zValue = oldVal;
+		return;
+	}
+	this.fire( 'changed', {
+		'attr': 'zValue',
+		'prev': oldVal,
+		'curr': newVal
+	});
+}; // end METHOD zValueChanged()
+
+/**
+* METHOD: cScaleChanged( oldVal, newVal )
+*	Event handler invoked when the `cScale` attribute changes.
 *
 * @param {Number} oldVal - old value
 * @param {Number} newVal - new value
 */
-Chart.prototype.zScaleChanged = function( oldVal, newVal ) {
+Chart.prototype.cScaleChanged = function( oldVal, newVal ) {
 	var err;
 	if ( typeof newVal !== 'function' ) {
-		err = new TypeError( 'zScale::invalid assignment. Must be a function.  Value: `' + newVal + '.' );
+		err = new TypeError( 'cScale::invalid assignment. Must be a function.  Value: `' + newVal + '.' );
 		this.fire( 'err', err );
-		this.zScale = oldVal;
+		this.cScale = oldVal;
 		return;
 	}
 	if ( this.autoUpdate ) {
@@ -1841,11 +1912,11 @@ Chart.prototype.zScaleChanged = function( oldVal, newVal ) {
 			.attr( 'fill', newVal );
 	}
 	this.fire( 'changed', {
-		'attr': 'zScale',
+		'attr': 'cScale',
 		'prev': oldVal,
 		'curr': newVal
 	});
-}; // end METHOD zScaleChanged()
+}; // end METHOD cScaleChanged()
 
 /**
 * METHOD: autoUpdateChanged( oldVal, newVal )
