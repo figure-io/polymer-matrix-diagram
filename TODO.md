@@ -31,6 +31,7 @@ TODO
 	- 	maybe copy to immutable arrays?
 		- 	or just do a deep copy and store internally
 	-	event emitter when does mutate (?)
+	-	(1) deep copy input `array`; (2) wrap copied `array` in closure; (3) return a data frame which only references the enclosed `array`; (4) force updates via the API.
 6. `toString()`
 
 

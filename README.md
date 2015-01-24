@@ -136,7 +136,7 @@ el.zValue = function zValue( d, i ) {
 	return 1;
 };
 
-// Example of object based accessor:
+// Example of an object based accessor:
 el.zValue = function zValue( d, i ) {
 	return d.z;
 };
