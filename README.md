@@ -178,7 +178,7 @@ el.cScale = function cScale( d, i ) {
 
 #### el.autoUpdate
 
-Specifies whether the element should auto update whenever an attribute changes. Default is `true`.
+Specifies whether the element should automatically update whenever an attribute changes. Default is `true`.
 
 ``` javascript
 el.autoUpdate = false;
@@ -187,7 +187,7 @@ el.autoUpdate = false;
 
 #### el.autoResize
 
-Specifies whether the element should auto resize when the window resizes. Default is `true`.
+Specifies whether the element should automatically resize when the window resizes. Default is `true`.
 
 ``` javascript
 el.autoResize = false;
