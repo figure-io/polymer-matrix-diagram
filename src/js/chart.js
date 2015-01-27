@@ -147,16 +147,13 @@ Chart.prototype.height = null;
 Chart.prototype.chartTitle = '';
 
 /**
-* METHOD: zValue( d, i )
-*	z-value accessor.
+* ATTRIBUTE: zValue
+*	z-value accessor. If set to a function, the accessor is used to map z-values to a linear scale for fill-opacity.
 *
-* @param {*} d - datum
-* @param {Number} i - index
-* @return {Number} z-value
+* @type {Number|Function}
+* @default 1
 */
-Chart.prototype.zValue = function() {
-	return 1;
-}; // end METHOD zValue()
+Chart.prototype.zValue = 1;
 
 /**
 * ATTRIBUTE: zMin
@@ -546,7 +543,7 @@ Chart.prototype.createCells = function( d, i ) {
 			.attr( 'x', this._cx )
 			.attr( 'width', this._xScale.rangeBand() )
 			.attr( 'height', this._yScale.rangeBand() )
-			.attr( 'fill-opacity', this._z )
+			.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue )
 			.attr( 'fill', this.cScale )
 			.on( 'mouseover', this._onCellHover )
 			.on( 'mouseout', this._onCellHoverEnd )
@@ -700,7 +697,7 @@ Chart.prototype.resetCells = function( d, i ) {
 	cells = row.selectAll( '.cell' )
 		.data( this.data.data()[i] )
 		.attr( 'x', this._cx )
-		.attr( 'fill-opacity', this._z )
+		.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue )
 		.attr( 'fill', this.cScale );
 
 	// Remove any old cells:
@@ -712,7 +709,7 @@ Chart.prototype.resetCells = function( d, i ) {
 		.attr( 'x', this._cx )
 		.attr( 'width', this._xScale.rangeBand() )
 		.attr( 'height', this._yScale.rangeBand() )
-		.attr( 'fill-opacity', this._z )
+		.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue )
 		.attr( 'fill', this.cScale )
 		.on( 'mouseover', this._onCellHover )
 		.on( 'mouseout', this._onCellHoverEnd )
@@ -1207,13 +1204,14 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 * METHOD: zValueChanged( oldVal, newVal )
 *	Event handler invoked when the `zValue` attribute changes.
 *
-* @param {Function} oldVal - old value
-* @param {Function} newVal - new value
+* @param {Function|Number} oldVal - old value
+* @param {Function|Number} newVal - new value
 */
 Chart.prototype.zValueChanged = function( oldVal, newVal ) {
-	var err;
-	if ( typeof newVal !== 'function' ) {
-		err = new TypeError( 'zValue::invalid assignment. Must be a function. Value: `' + newVal + '`.' );
+	var type = typeof newVal,
+		err;
+	if ( type !== 'function' && ( type !== 'number' || newVal !== newVal || newVal < 0 || newVal > 1 ) ) {
+		err = new TypeError( 'zValue::invalid assignment. Must be either a function or a numeric value between 0 and 1. Value: `' + newVal + '`.' );
 		this.fire( 'err', err );
 		this.zValue = oldVal;
 		return;

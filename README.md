@@ -128,13 +128,11 @@ el.chartTitle = 'Awesome chart.';
 
 #### el.zValue
 
-Defines the z-value accessor. Each z-value is mapped to a value on the interval `[0,1]`, which then determines the `fill-opacity` for a cell. The default `fill-opacity` for all cells is `1`.
+Defines the z-value accessor. z-values determine the `fill-opacity` for a cell. If set to a constant on the interval `[0,1]`, the `fill-opacity` is the same for all cells. If set to a `function`, each z-value is mapped to a value on the interval `[0,1]`. The default `fill-opacity` for all cells is `1`.
 
 ``` javascript
 // Default:
-el.zValue = function zValue( d, i ) {
-	return 1;
-};
+el.zValue = 1;
 
 // Example of an object based accessor:
 el.zValue = function zValue( d, i ) {
@@ -151,7 +149,7 @@ Defines the minimum value of the z-domain. Default is `null`.
 el.zMin = -10;
 ```
 
-If set to `null`, the `zMin` is dynamically calculated from the data.
+If set to `null`, the `zMin` is dynamically calculated from the data. This attribute is only relevant when the z-value accessor is a `function`.
 
 
 #### el.zMax
@@ -162,7 +160,7 @@ Defines the maximum value of the z-domain. Default is `null`.
 el.zMax = 10;
 ```
 
-If set to `null`, the `zMax` is dynamically calculated from the data.
+If set to `null`, the `zMax` is dynamically calculated from the data. This attribute is only relevant when the z-value accessor is a `function`.
 
 
 #### el.cScale
