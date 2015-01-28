@@ -1024,7 +1024,17 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 		// [2] Update the background:
 		this.$.bkgd.attr( 'width', width );
 
-		// TODO: update marks
+		// [3] Update the rows:
+		this.$.rows.selectAll( '.grid' )
+			.attr( 'x1', width );
+
+		// [4] Update the columns:
+		this.$.cols.attr( 'transform', this._x );
+
+		// [5] Update the cells:
+		this.$.rows.selectAll( '.cell' )
+			.attr( 'x', this._cx )
+			.attr( 'width', this._xScale.rangeBand() );
 	}
 	this.fire( 'width', {
 		'type': 'changed'
@@ -1064,7 +1074,16 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 		// [2] Update the background:
 		this.$.bkgd.attr( 'height', height );
 
-		// TODO: update marks
+		// [3] Update the rows:
+		this.$.rows.attr( 'transform', this._y );
+
+		// [4] Update the columns:
+		this.$.cols.selectAll( '.grid' )
+			.attr( 'x1', -height );
+
+		// [5] Update the cells:
+		this.$.rows.selectAll( '.cell' )
+			.attr( 'height', this._yScale.rangeBand() );
 	}
 	this.fire( 'height', {
 		'type': 'changed'
@@ -1129,7 +1148,17 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 		// [2] Update the graph:
 		this.$.graph.attr( 'transform', 'translate(' + newVal + ',' + this.paddingTop + ')' );
 
-		// TODO: update marks
+		// [3] Update the rows:
+		this.$.rows.selectAll( '.grid' )
+			.attr( 'x1', width );
+
+		// [4] Update the columns:
+		this.$.cols.attr( 'transform', this._x );
+
+		// [5] Update the cells:
+		this.$.rows.selectAll( '.cell' )
+			.attr( 'x', this._cx )
+			.attr( 'width', this._xScale.rangeBand() );
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingLeft',
@@ -1163,7 +1192,17 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 		// [1] Update the background:
 		this.$.bkgd.attr( 'width', width );
 
-		// TODO: update marks
+		// [2] Update the rows:
+		this.$.rows.selectAll( '.grid' )
+			.attr( 'x1', width );
+
+		// [3] Update the columns:
+		this.$.cols.attr( 'transform', this._x );
+
+		// [4] Update the cells:
+		this.$.rows.selectAll( '.cell' )
+			.attr( 'x', this._cx )
+			.attr( 'width', this._xScale.rangeBand() );
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingRight',
@@ -1197,7 +1236,16 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 		// [1] Update the background:
 		this.$.bkgd.attr( 'height', height );
 
-		// TODO: update marks
+		// [2] Update the rows:
+		this.$.rows.attr( 'transform', this._y );
+
+		// [3] Update the columns:
+		this.$.cols.selectAll( '.grid' )
+			.attr( 'x1', -height );
+
+		// [4] Update the cells:
+		this.$.rows.selectAll( '.cell' )
+			.attr( 'height', this._yScale.rangeBand() );
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingBottom',
@@ -1234,7 +1282,16 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 		// [2] Update the graph:
 		this.$.graph.attr( 'transform', 'translate(' + this.paddingLeft + ',' + newVal + ')' );
 
-		// TODO: update marks
+		// [3] Update the rows:
+		this.$.rows.attr( 'transform', this._y );
+
+		// [4] Update the columns:
+		this.$.cols.selectAll( '.grid' )
+			.attr( 'x1', -height );
+
+		// [5] Update the cells:
+		this.$.rows.selectAll( '.cell' )
+			.attr( 'height', this._yScale.rangeBand() );
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingTop',

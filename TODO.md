@@ -2,9 +2,8 @@ TODO
 ====
 
 1. data frame
-2. padding/height/width changed clbks
-	-	update marks
-3. 
+2. 
+3. title
 4. 
 5. transition parameters
 	- 	transition duration
