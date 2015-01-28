@@ -1552,6 +1552,46 @@ Chart.prototype.getColName = function( d ) {
 }; // end METHOD getColName()
 
 /**
+* METHOD: zDomain( min, max )
+*	Computes the z-domain.
+*
+* @param {Null|Number} min - minimum value
+* @param {Null|Number} max - maximum value
+* @returns {Array} domain
+*/
+Chart.prototype.zDomain = function( min, max ) {
+	var d3 = this._d3,
+		data = this.data,
+		zValue = this.zValue,
+		err;
+
+	if ( typeof zValue !== 'function' ) {
+		return [ this.zMin, this.zMax ];
+	}
+	if ( min !== null && ( typeof min !== 'number' || min !== min ) ) {
+		err = new TypeError( 'zDomain()::invalid input argument. Minimum value must be numeric or `null`. Value: `' + min + '`.' );
+		this.fire( 'err', err );
+		return;
+	}
+	if ( max !== null && ( typeof max !== 'number' || max !== max ) ) {
+		err = new TypeError( 'zDomain()::invalid input argument. Maximum value must be numeric or `null`. Value: `' + max + '`.' );
+		this.fire( 'err', err );
+		return;
+	}
+	if ( min === null ) {
+		min = d3.min( data, function onRow( row ) {
+			return d3.min( row, zValue );
+		});
+	}
+	if ( max === null ) {
+		max = d3.max( data, function onRow( row ) {
+			return d3.max( row, zValue );
+		});
+	}
+	return [ min, max ];
+}; // end METHOD zDomain()
+
+/**
 * METHOD: dataChanged( oldVal newVal )
 *	Event handler invoked when the `data` attribute changes.
 *
@@ -1563,6 +1603,8 @@ Chart.prototype.dataChanged = function( oldVal, newVal ) {
 
 	this._xScale.domain( this.data.colnames() );
 	this._yScale.domain( this.data.rownames() );
+
+	// TODO: recalculate zmin and zmax
 
 	if ( this.autoUpdate ) {
 		this.resetMarks();

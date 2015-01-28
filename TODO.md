@@ -3,8 +3,8 @@ TODO
 
 1. data frame
 2. zmin/zmax changed clbks
-3. 
-4. 
+3. recalculate zmin and zmax when data is set
+4. calculate zmin and zmax whenever zValue is set to a function
 5. transition parameters
 	- 	transition duration
 	- 	only transition if duration is a positive number; otherwise, just update
@@ -13,6 +13,7 @@ TODO
 7. update README regarding df
 8. `on()` as an alias to `addEventListener()`?
 	- could have it only accept the publicized events and do input validation
+9. replace `d3.min` and `d3.max` with compute-io counterparts
 
 
 ## Tests
