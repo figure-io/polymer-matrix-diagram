@@ -60,6 +60,7 @@
 
 		el.cScale = cScale;
 		el.data = new DataFrame( data );
+		el.zValue = Math.random;
 
 		el.addEventListener( 'clicked.row', function onClick( evt ) {
 			var idx = evt.detail.index;
