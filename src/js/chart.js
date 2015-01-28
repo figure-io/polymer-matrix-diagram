@@ -42,6 +42,8 @@ var EVENTS = [
 
 	'width',
 	'height',
+	'zMin',
+	'zMax',
 
 	'changed',
 	'err',
@@ -893,7 +895,7 @@ Chart.prototype.getColName = function( d ) {
 */
 Chart.prototype.zDomain = function( min, max ) {
 	var d3 = this._d3,
-		data = this.data,
+		data = this.data.data(),
 		zValue = this.zValue,
 		err;
 
@@ -935,8 +937,7 @@ Chart.prototype.dataChanged = function( oldVal, newVal ) {
 
 	this._xScale.domain( this.data.colnames() );
 	this._yScale.domain( this.data.rownames() );
-
-	// TODO: recalculate zmin and zmax
+	this._zScale.domain( this.zDomain( this.zMin, this.zMax ) );
 
 	if ( this.autoUpdate ) {
 		this.resetMarks();
@@ -1258,12 +1259,90 @@ Chart.prototype.zValueChanged = function( oldVal, newVal ) {
 		this.zValue = oldVal;
 		return;
 	}
+	if ( type === 'function' ) {
+		this._zScale.domain( this.zDomain( this.zMin, this.zMax ) );
+
+		this.$.marks.selectAll( '.cell' )
+			.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
+	}
 	this.fire( 'changed', {
 		'attr': 'zValue',
 		'prev': oldVal,
 		'curr': newVal
 	});
 }; // end METHOD zValueChanged()
+
+/**
+* METHOD: zMinChanged( oldVal, newVal )
+*	Event handler invoked when the `zMin` attribute changes.
+*
+* @param {Null|Number} oldVal - old value
+* @param {Null|Number} newVal - new value
+*/
+Chart.prototype.zMinChanged = function( oldVal, newVal ) {
+	var zScale = this._zScale,
+		domain = zScale.domain(),
+		err;
+
+	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal) ) {
+		err = new TypeError( 'zMin::invalid assignment. Must be a numeric or `null`. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.zMin = oldVal;
+		return;
+	}
+	domain = this.zDomain( newVal, domain[ 1 ] );
+
+	zScale.domain( domain );
+
+	if ( this.autoUpdate ) {
+		this.$.marks.selectAll( '.cell' )
+			.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
+	}
+	this.fire( 'zMin', {
+		'type': 'changed'
+	});
+	this.fire( 'changed', {
+		'attr': 'zMin',
+		'prev': oldVal,
+		'curr': newVal
+	});
+}; // end METHOD zMinChanged()
+
+/**
+* METHOD: zMaxChanged( oldVal, newVal )
+*	Event handler invoked when the `zMax` attribute changes.
+*
+* @param {Null|Number} oldVal - old value
+* @param {Null|Number} newVal - new value
+*/
+Chart.prototype.zMaxChanged = function( oldVal, newVal ) {
+	var zScale = this._zScale,
+		domain = zScale.domain(),
+		err;
+
+	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal) ) {
+		err = new TypeError( 'zMax::invalid assignment. Must be a numeric or `null`. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.zMax = oldVal;
+		return;
+	}
+	domain = this.zDomain( domain[ 0 ], newVal );
+
+	zScale.domain( domain );
+
+	if ( this.autoUpdate ) {
+		this.$.marks.selectAll( '.cell' )
+			.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
+	}
+	this.fire( 'zMax', {
+		'type': 'changed'
+	});
+	this.fire( 'changed', {
+		'attr': 'zMax',
+		'prev': oldVal,
+		'curr': newVal
+	});
+}; // end METHOD zMaxChanged()
 
 /**
 * METHOD: cScaleChanged( oldVal, newVal )

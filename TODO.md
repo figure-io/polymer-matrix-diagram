@@ -2,9 +2,10 @@ TODO
 ====
 
 1. data frame
-2. zmin/zmax changed clbks
-3. recalculate zmin and zmax when data is set
-4. calculate zmin and zmax whenever zValue is set to a function
+2. padding/height/width changed clbks
+	-	update marks
+3. 
+4. 
 5. transition parameters
 	- 	transition duration
 	- 	only transition if duration is a positive number; otherwise, just update

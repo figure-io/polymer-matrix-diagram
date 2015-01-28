@@ -278,6 +278,26 @@ el.addEventListener( 'height', function onEvent( evt ) {
 });
 ```
 
+#### 'zMin'
+
+The element emits a `zMin` event when the `zMin` attribute changes.
+
+``` javascript
+el.addEventListener( 'zMin', function onEvent( evt ) {
+	console.log( this.zMin );
+});
+```
+
+#### 'zMax'
+
+The element emits a `zMax` event when the `zMax` attribute changes.
+
+``` javascript
+el.addEventListener( 'zMax', function onEvent( evt ) {
+	console.log( this.zMax );
+});
+```
+
 
 #### 'resized'
 
