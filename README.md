@@ -21,7 +21,7 @@ To use the component,
 <html>
 	<head>
 		<script src="path/to/webcomponentsjs/webcomponents.min.js"></script>
-		<link rel="import" href="path/to/polymer-matrix-diagram">
+		<link rel="import" href="path/to/polymer-matrix-diagram.html">
 	</head>
 	<body>
 		<polymer-matrix-diagram id="chart"></polymer-matrix-diagram>
@@ -43,7 +43,11 @@ The component has the following public attributes and methods...
 
 #### el.data
 
-Chart data. The expected format is an `array` of `arrays`.
+Chart data. 
+
+TODO: data frame.
+
+The expected format is an `array` of `arrays`.
 
 ``` javascript
 el.data = [

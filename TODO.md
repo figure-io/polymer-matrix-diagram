@@ -2,9 +2,11 @@ TODO
 ====
 
 1. data frame
-2. 
+2. include screenshot in README.
 3. title
-4. 
+4. xlabel, ylabel (??)
+	-	requires positioning finagling
+	-	could auto position, as long as padding values are `null`. Once set, we abide by set values
 5. transition parameters
 	- 	transition duration
 	- 	only transition if duration is a positive number; otherwise, just update
@@ -13,7 +15,7 @@ TODO
 7. update README regarding df
 8. `on()` as an alias to `addEventListener()`?
 	- could have it only accept the publicized events and do input validation
-9. replace `d3.min` and `d3.max` with compute-io counterparts
+9. favicon
 
 
 ## Tests
