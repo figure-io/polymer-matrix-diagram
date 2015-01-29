@@ -5,7 +5,7 @@ TODO
 	-	separate module
 	-	bundle with component
 	-	when data is set as an array of arrays, convert to DF
-2. include screenshot in README.
+2. 
 3. title
 	-	positioning
 4. xlabel, ylabel (??)
