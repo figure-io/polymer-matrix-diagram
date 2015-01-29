@@ -156,7 +156,7 @@ el.height = 600; // px
 <a name="attr-paddingleft"></a>
 #### el.paddingLeft
 
-Chart canvas left padding; i.e., space between the left canvas edge and the left graph edge. Typically needed to create room for a left oriented y-axis. If set to `null`, the padding is automatically calculated based on the computed text length of rownames. Default is `null`.
+Chart canvas left padding; i.e., space between the left canvas edge and the left graph edge. Typically needed to create room for a left oriented y-axis. If set to `null`, the padding is automatically calculated based on the computed text length of row names. Default is `null`.
 
 ``` javascript
 el.paddingLeft = 120; // px
@@ -174,7 +174,7 @@ el.paddingRight = 90; // px
 <a name="attr-paddingtop"></a>
 #### el.paddingTop
 
-Chart canvas top padding; i.e., space between the top canvas edge and the top graph edge. Typically needed to create room for a chart title or top positioned legend. If set to `null`, the padding is automatically calculated based on the computed text length of column names and chart title height. Default is `null`.
+Chart canvas top padding; i.e., space between the top canvas edge and the top graph edge. Typically needed to create room for a chart title or top positioned legend. If set to `null`, the padding is automatically calculated based on the computed text length of column names and the chart title height. Default is `null`.
 
 ``` javascript
 el.paddingTop = 200; // px
