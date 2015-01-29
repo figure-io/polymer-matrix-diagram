@@ -24,11 +24,6 @@ TODO
 10. Wiki
 
 
-## Bugs
-
-1. Differences in lifecycle behavior between Chrome and Firefox
-2. 
-
 
 ## Tests
 
