@@ -633,7 +633,7 @@ $ make view-cov
 Copyright &copy; 2015. Athan Reines.
 
 
-[screenshot-image]: https://github.com/figure-io/polymer-matrix-diagram/examples/img/matrix-diagram.png
+[screenshot-image]: https://github.com/figure-io/polymer-matrix-diagram/blob/master/examples/img/matrix-diagram.png
 [screenshot-url]: https://github.com/figure-io/polymer-matrix-diagram
 
 [npm-image]: http://img.shields.io/npm/v/.svg
