@@ -16,6 +16,12 @@ TODO
 8. `on()` as an alias to `addEventListener()`?
 	- could have it only accept the publicized events and do input validation
 9. favicon
+10. README toc / Wiki
+
+
+## Bugs
+
+1. Differences in lifecycle behavior between Chrome and Firefox
 
 
 ## Tests
