@@ -8,6 +8,7 @@ TODO
 2. 
 3. title
 	-	positioning
+	-	auto-position similar to xlabel/ylabel below
 4. xlabel, ylabel (??)
 	-	requires positioning finagling
 	-	could auto position, as long as padding values are `null`. Once set, we abide by set values
@@ -19,6 +20,8 @@ TODO
 9. favicon
 	-	needs work
 10. Wiki
+11. update wct plugins
+	-	istanbul
 
 
 

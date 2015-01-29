@@ -156,7 +156,7 @@ el.height = 600; // px
 <a name="attr-paddingleft"></a>
 #### el.paddingLeft
 
-Chart canvas left padding; i.e., space between the left canvas edge and the left graph edge. Typically needed to create room for a left oriented y-axis. Default is 40 pixels.
+Chart canvas left padding; i.e., space between the left canvas edge and the left graph edge. Typically needed to create room for a left oriented y-axis. Default is `40` pixels.
 
 ``` javascript
 el.paddingLeft = 120; // px
@@ -165,7 +165,7 @@ el.paddingLeft = 120; // px
 <a name="attr-paddingright"></a>
 #### el.paddingRight
 
-Chart canvas right padding; i.e., space between the right canvas edge and the right graph edge. Typically needed to create room for a right oriented y-axis. Default is 40 pixels.
+Chart canvas right padding; i.e., space between the right canvas edge and the right graph edge. Typically needed to create room for a right oriented y-axis. Default is `40` pixels.
 
 ``` javascript
 el.paddingRight = 90; // px
@@ -174,7 +174,7 @@ el.paddingRight = 90; // px
 <a name="attr-paddingtop"></a>
 #### el.paddingTop
 
-Chart canvas top padding; i.e., space between the top canvas edge and the top graph edge. Typically needed to create room for a chart title or top positioned legend. Default is 40 pixels.
+Chart canvas top padding; i.e., space between the top canvas edge and the top graph edge. Typically needed to create room for a chart title or top positioned legend. Default is `40` pixels.
 
 ``` javascript
 el.paddingTop = 200; // px
@@ -183,7 +183,7 @@ el.paddingTop = 200; // px
 <a name="attr-paddingbottom"></a>
 #### el.paddingBottom
 
-Chart canvas bottom padding; i.e., space between the bottom canvas edge and the bottom graph edge. Typically needed to create room for a bottom oriented x-axis or bottom positioned legend. Default is 40 pixels.
+Chart canvas bottom padding; i.e., space between the bottom canvas edge and the bottom graph edge. Typically needed to create room for a bottom oriented x-axis or bottom positioned legend. Default is `40` pixels.
 
 ``` javascript
 el.paddingBottom = 100; // px

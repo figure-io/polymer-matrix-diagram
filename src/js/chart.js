@@ -957,7 +957,7 @@ Chart.prototype.delay = function( d, i ) {
 * @param {Array} newVal - new value
 */
 Chart.prototype.dataChanged = function( oldVal, newVal ) {
-	// TODO: validate new value is a data frame
+	// TODO: take an array of arrays; attempt to convert to data frame (separate function; wrap in try/catch); if unable, emit error; else proceed.
 
 	this._xScale.domain( this.data.colnames() );
 	this._yScale.domain( this.data.rownames() );
