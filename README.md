@@ -209,7 +209,7 @@ el.clear();
 
 #### el.rowOrder( arr )
 
-Sets the row order.
+Sets the row order. The input `array` should be a permutation of the row names.
 
 ``` javascript
 el.rowOrder( [ 3, 1, 0, 2 ] );
@@ -217,7 +217,8 @@ el.rowOrder( [ 3, 1, 0, 2 ] );
 
 #### el.colOrder( arr )
 
-Sets the column order.
+Sets the column order. The input `array` should be a permutation of the column names.
+
 
 ``` javascript
 el.colOrder( [ 0, 1, 4, 3, 2,... ] );
