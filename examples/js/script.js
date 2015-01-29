@@ -39,12 +39,20 @@
 	* @param {String} body - HTTP response body
 	*/
 	function onData( body ) {
-		var data = JSON.parse( body ),
+		var data,
+			rownames,
+			colnames,
 			rowOrders,
 			figs,
 			len,
 			charts,
 			el;
+
+		body = JSON.parse( body );
+
+		data = body.data;
+		rownames = body.rownames;
+		colnames = body.colnames;
 
 		// [0] Grab chart elements...
 		figs = document.querySelectorAll( '.figure' );
@@ -59,7 +67,10 @@
 		el = charts[ 0 ];
 
 		el.cScale = cScale;
-		el.data = new DataFrame( data );
+		el.data = new DataFrame( data, {
+			'rownames': rownames,
+			'colnames': colnames
+		});
 		el.zValue = Math.random;
 
 		el.addEventListener( 'clicked.row', function onClick( evt ) {
@@ -68,7 +79,7 @@
 		});
 
 		el.addEventListener( 'clicked.col', function onClick( evt ) {
-			el.colOrder( colOrder( data[ 0 ].length ) );
+			el.colOrder( colOrder( colnames.length ) );
 		});
 
 		el.addEventListener( 'clicked.cell', function onClick( evt ) {
@@ -96,7 +107,7 @@
 	} // end FUNCTION cScale()
 
 	/**
-	* FUNCTION: rowOrderings( arr )
+	* FUNCTION: rowOrderings( arr, names )
 	*	Computes row orderings based on Hamming distance.
 	*
 	* @param {Array} arr - data array
@@ -153,7 +164,7 @@
 		for ( i = 0; i < N; i++ ) {
 			out[ i ] = i;
 		}
-		for ( i = N - 1; i > 0; i-- ) {
+		for ( i = N-1; i > 0; i-- ) {
 			j = Math.floor( Math.random() * (i+1) );
 			tmp = out[ i ];
 			out[ i ] = out[ j ];
@@ -209,7 +220,7 @@
 				throw new Error( 'DataFrame()::invalid input argument. Data array must contain equal length arrays.' );
 			}
 		}
-		if ( !opts.rownames ) {
+		if ( !opts.hasOwnProperty( 'rownames' ) ) {
 			this._rownames = new Array( len );
 			for ( i = 0; i < len; i++ ) {
 				this._rownames[ i ] = i;
@@ -223,7 +234,7 @@
 			}
 			this._rownames = opts.rownames;
 		}
-		if ( !opts.colnames ) {
+		if ( !opts.hasOwnProperty( 'colnames' ) ) {
 			this._colnames = new Array( N );
 			for ( i = 0; i < N; i++ ) {
 				this._colnames[ i ] = i;
@@ -262,7 +273,7 @@
 	*/
 	DataFrame.prototype.rownames = function( names ) {
 		if ( !arguments.length ) {
-			return this._rownames.slice( 0 );
+			return this._rownames.slice();
 		}
 		if ( !Array.isArray( names ) ) {
 			throw new TypeError( 'rownames()::invalid input argument. Must provide an array.' );
@@ -283,7 +294,7 @@
 	*/
 	DataFrame.prototype.colnames = function( names ) {
 		if ( !arguments.length ) {
-			return this._colnames.slice( 0 );
+			return this._colnames.slice();
 		}
 		if ( !Array.isArray( names ) ) {
 			throw new TypeError( 'colnames()::invalid input argument. Must provide an array.' );

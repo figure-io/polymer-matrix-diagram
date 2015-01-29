@@ -299,7 +299,7 @@ el.clear();
 <a name="method-roworder"></a>
 #### el.rowOrder( arr )
 
-Sets the row order. The input `array` should be a permutation of the row names.
+Sets the row order. The input `array` should be a permutation of the row name indices.
 
 ``` javascript
 el.rowOrder( [ 3, 1, 0, 2 ] );
@@ -311,7 +311,7 @@ Once the rows are reordered, the element emits a `transitionEnd` event.
 <a name="method-colorder"></a>
 #### el.colOrder( arr )
 
-Sets the column order. The input `array` should be a permutation of the column names.
+Sets the column order. The input `array` should be a permutation of the column name indices.
 
 
 ``` javascript

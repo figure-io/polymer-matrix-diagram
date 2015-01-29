@@ -273,7 +273,7 @@ Chart.prototype.init = function() {
 		.rangeBands( [ 0, this.graphWidth() ] )
 		.domain( [ 0 ] );
 	this._yScale = d3.scale.ordinal()
-		.rangeBands( [ this.graphHeight(), 0 ] )
+		.rangeBands( [ 0, this.graphHeight() ] )
 		.domain( [ 0 ] );
 	this._zScale = d3.scale.linear()
 		.domain( [ 0, 1 ] )
@@ -320,6 +320,7 @@ Chart.prototype.init = function() {
 	$.canvas = null;
 	$.graph = null;
 	$.bkgd = null;
+	$.text = null;
 
 	// Meta elements...
 	$.meta = null;
@@ -413,9 +414,7 @@ Chart.prototype.create = function() {
 * @returns {DOMElement} element instance
 */
 Chart.prototype.createBase = function() {
-	var width = this.width,
-		height = this.height,
-		pLeft,
+	var pLeft,
 		pTop,
 		canvas;
 
@@ -435,8 +434,8 @@ Chart.prototype.createBase = function() {
 	canvas = this.$.root.append( 'svg:svg' )
 		.attr( 'property', 'canvas' )
 		.attr( 'class', 'canvas' )
-		.attr( 'width', width )
-		.attr( 'height', height );
+		.attr( 'width', this.width )
+		.attr( 'height', this.height );
 	this.$.canvas = canvas;
 
 	// Create the graph element:
@@ -452,6 +451,18 @@ Chart.prototype.createBase = function() {
 		.attr( 'class', 'meta' )
 		.attr( 'data-graph-type', 'matrix-diagram' )
 		.attr( 'transform', 'translate(0,0)' );
+
+	// Create a text element for auto-computing padding based on row and column names:
+	this.$.text = canvas.append( 'svg:text' )
+		.attr( 'class', 'noselect' )
+		.attr( 'font-size', this._maxFontSize )
+		.attr( 'x', 6 )
+		.attr( 'y', 0 )
+		.attr( 'dy', '.32em' )
+		.attr( 'text-anchor', 'start' )
+		.attr( 'opacity', 0 );
+
+	this.$.text = this.$.text.node();
 
 	return this;
 }; // end METHOD createBase()
@@ -639,6 +650,27 @@ Chart.prototype.clear = function() {
 }; // end METHOD clear()
 
 /**
+* METHOD: resetBase()
+*	Resets base elements.
+*
+* @returns {DOMElement} element instance
+*/
+Chart.prototype.resetBase = function() {
+	var pLeft, pTop;
+
+	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
+	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
+
+	this.$.graph
+		.attr( 'transform', 'translate(' + pLeft + ',' + pTop + ')' );
+
+	this.$.bkgd
+		.attr( 'width', this.graphWidth() )
+		.attr( 'height', this.graphHeight() );
+	return this;
+}; // end METHOD resetBase()
+
+/**
 * METHOD: resetMarks()
 *	Resets graph mark elements.
 *
@@ -782,7 +814,7 @@ Chart.prototype.resetCells = function( d, i ) {
 * METHOD: rowOrder( arr )
 *	Set the row order.
 *
-* @param {Array} arr - order
+* @param {Array} arr - array of indices defining the row order
 */
 Chart.prototype.rowOrder = function( arr ) {
 	var len = this.data.rownames().length,
@@ -815,7 +847,7 @@ Chart.prototype.rowOrder = function( arr ) {
 * METHOD: colOrder( arr )
 *	Set the column order.
 *
-* @param {Array} arr - order
+* @param {Array} arr - array of indices defining the column order
 */
 Chart.prototype.colOrder = function( arr ) {
 	var len = this.data.colnames().length,
@@ -1009,7 +1041,7 @@ Chart.prototype.delay = function( d, i ) {
 
 /**
 * METHOD: fontSize()
-*	Computes the row and column label text size based on cell dimensions.
+*	Computes the row and column label font size based on cell dimensions.
 *
 * @returns {Number} font size in pixels
 */
@@ -1028,6 +1060,57 @@ Chart.prototype.fontSize = function() {
 }; // end METHOD fontSize()
 
 /**
+* METHOD: calculatePadding()
+*	Computes padding values based on row and column name computed text length.
+*
+* @returns {DOMElement} element instance
+*/
+Chart.prototype.calculatePadding = function() {
+	var text = this.$.text,
+		scalar = 16,
+		rownames,
+		colnames,
+		max,
+		len,
+		i;
+
+	// NOTE: the `scalar` is something of a magic number to avoid pushing up against the canvas edge.
+
+	rownames = this.data.rownames();
+	colnames = this.data.colnames();
+
+	max = 0;
+	for ( i = 0; i < rownames.length; i++ ) {
+		text.textContent = rownames[ i ];
+		len = text.getComputedTextLength();
+		if ( len > max ) {
+			max = len;
+		}
+	}
+	max = Math.ceil( max + scalar );
+
+	// TODO: factor in yLabel height
+
+	this.paddingLeft = max;
+
+	max = 0;
+	for ( i = 0; i < colnames.length; i++ ) {
+		text.textContent = colnames[ i ];
+		len = text.getComputedTextLength();
+		if ( len > max ) {
+			max = len;
+		}
+	}
+	max = Math.ceil( max + scalar );
+
+	// TODO: factor in chart title and xLabel height
+
+	this._paddingTop = max;
+
+	return this;
+}; // end METHOD calculatePadding()
+
+/**
 * METHOD: dataChanged( oldVal newVal )
 *	Event handler invoked when the `data` attribute changes.
 *
@@ -1035,14 +1118,31 @@ Chart.prototype.fontSize = function() {
 * @param {Array} newVal - new value
 */
 Chart.prototype.dataChanged = function( oldVal, newVal ) {
-	// TODO: take an array of arrays; attempt to convert to data frame (separate function; wrap in try/catch); if unable, emit error; else proceed.
+	var range = this._d3.range,
+		len;
 
-	this._xScale.domain( this.data.colnames() );
-	this._yScale.domain( this.data.rownames() );
+	// TODO: check if data frame.
+
+	// [0] Set the domains:
+	len = this.data.colnames().length;
+	this._xScale.domain( range( len ) );
+
+	len = this.data.rownames().length;
+	this._yScale.domain( range( len ) );
+
 	this._zScale.domain( this.zDomain( this.zMin, this.zMax ) );
 
+	// [1] Compute padding values based on the row and column names:
+	this.calculatePadding();
+
+	// [2] Update the scales:
+	this._xScale.rangeBands( [ 0, this.graphWidth() ] );
+	this._yScale.rangeBands( [ 0, this.graphHeight() ] );
+
 	if ( this.autoUpdate ) {
-		this.resetMarks();
+		// [3] Reset elements:
+		this.resetBase()
+			.resetMarks();
 	}
 	this.fire( 'data', {
 		'type': 'changed'
@@ -1107,8 +1207,6 @@ Chart.prototype.configChanged = function( oldConfig, newConfig ) {
 */
 Chart.prototype.widthChanged = function( oldVal, newVal ) {
 	var width,
-		pLeft,
-		pRight,
 		dx,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal <= 0 ) {
@@ -1117,10 +1215,7 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 		this.width = oldVal;
 		return;
 	}
-	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
-	pRight = ( this.paddingRight === null ) ? this._paddingRight : this.paddingRight;
-
-	width = newVal - pLeft - pRight;
+	width = this.graphWidth();
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
@@ -1176,8 +1271,6 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.heightChanged = function( oldVal, newVal ) {
 	var height,
-		pTop,
-		pBottom,
 		dy,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal <= 0 ) {
@@ -1186,10 +1279,7 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 		this.height = oldVal;
 		return;
 	}
-	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
-	pBottom = ( this.paddingBottom === null ) ? this._paddingBottom : this.paddingBottom;
-
-	height = newVal - pTop - pBottom;
+	height = this.graphHeight();
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
@@ -1337,8 +1427,6 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 	var width,
-		pLeft,
-		pRight,
 		dx,
 		err;
 	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
@@ -1347,10 +1435,7 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 		this.paddingRight = oldVal;
 		return;
 	}
-	pRight = ( newVal === null ) ? this._paddingRight : newVal;
-	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
-
-	width = this.width - pLeft - pRight;
+	width = this.graphWidth();
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
@@ -1399,8 +1484,6 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 	var height,
-		pTop,
-		pBottom,
 		dy,
 		err;
 	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
@@ -1409,10 +1492,7 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 		this.paddingBottom = oldVal;
 		return;
 	}
-	pBottom = ( newVal === null ) ? this._paddingBottom : newVal;
-	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
-
-	height = this.height - pTop - pBottom;
+	height = this.graphHeight();
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );

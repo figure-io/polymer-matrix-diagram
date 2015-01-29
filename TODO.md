@@ -8,13 +8,19 @@ TODO
 		- 	cannot do, as need colnames and rownames; users will need to use DFs
 2. 
 3. title
-	-	positioning
+	-	positioning (left, center, right ??)
 	-	auto-position similar to xlabel/ylabel below
 4. xlabel, ylabel (??)
 	-	requires positioning finagling
-	-	could auto position, as long as padding values are `null`. Once set, we abide by set values
-5. 
-6. 
+5. Axis orientation support?
+	-	ability to choose left or right axis?
+	-	ability to choose top or bottom axis?
+	-	in my opinion, left and top are most appropriate given how the user will read the diagram. Further, left and top match notion of a table. No well designed table has the row names on the right and the headers on the bottom. (Left-to-right orientation.)
+6. support for dual row/column labels (???)
+	-	not sure how useful this is; why not just create two separate matrix diagrams (small multiples)? Better able to compare variable relationships.
+	-	x1, x2
+	-	y1, y2
+	-	Not going to support due to reason above.
 7. update README regarding df
 8. `on()` as an alias to `addEventListener()`?
 	- could have it only accept the publicized events and do input validation
