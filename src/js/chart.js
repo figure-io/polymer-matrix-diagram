@@ -495,6 +495,7 @@ Chart.prototype.createRows = function() {
 		.attr( 'y', this._yScale.rangeBand() / 2 )
 		.attr( 'dy', '.32em' )
 		.attr( 'text-anchor', 'end' )
+		.attr( 'font-size', this.fontSize() )
 		.text( this._getRowName )
 		.on( 'click', this._onRowClick );
 
@@ -529,6 +530,7 @@ Chart.prototype.createCols = function() {
 		.attr( 'y', this._xScale.rangeBand() / 2 )
 		.attr( 'dy', '.32em' )
 		.attr( 'text-anchor', 'start' )
+		.attr( 'font-size', this.fontSize() )
 		.text( this._getColName )
 		.on( 'click', this._onColClick );
 
@@ -577,7 +579,7 @@ Chart.prototype.createTitle = function() {
 		.attr( 'property', 'chart.title' )
 		.attr( 'class', 'title noselect' )
 		.attr( 'x', 0 )
-		.attr( 'y', 0 )
+		.attr( 'y', 40 )
 		.text( this.chartTitle );
 
 	return this;
@@ -641,6 +643,7 @@ Chart.prototype.resetRows = function() {
 		.attr( 'y', this._yScale.rangeBand() / 2 )
 		.attr( 'dy', '.32em' )
 		.attr( 'text-anchor', 'end' )
+		.attr( 'font-size', this.fontSize() )
 		.text( this._getRowName )
 		.on( 'click', this._onRowClick );
 
@@ -683,6 +686,7 @@ Chart.prototype.resetCols = function() {
 		.attr( 'y', this._xScale.rangeBand() / 2 )
 		.attr( 'dy', '.32em' )
 		.attr( 'text-anchor', 'start' )
+		.attr( 'font-size', this.fontSize() )
 		.text( this._getColName )
 		.on( 'click', this._onColClick );
 
@@ -950,6 +954,25 @@ Chart.prototype.delay = function( d, i ) {
 }; // end METHOD delay()
 
 /**
+* METHOD: fontSize()
+*	Computes the row and column label text size based on cell dimensions.
+*
+* @returns {Number} font size in pixels
+*/
+Chart.prototype.fontSize = function() {
+	var dx, dy;
+	dx = this._xScale.rangeBand();
+	dy = this._yScale.rangeBand();
+	if ( dx > dy ) {
+		dx = dy;
+	}
+	if ( dx > 18 ) {
+		return 16;
+	}
+	return dx - 2;
+}; // end METHOD fontSize()
+
+/**
 * METHOD: dataChanged( oldVal newVal )
 *	Event handler invoked when the `data` attribute changes.
 *
@@ -1059,6 +1082,15 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 		this.$.rows.selectAll( '.cell' )
 			.attr( 'x', this._cx )
 			.attr( 'width', this._xScale.rangeBand() );
+
+		// [6] Update the row and column labels:
+		this.$.rows.selectAll( 'text' )
+			.attr( 'y', this._yScale.rangeBand() / 2 )
+			.attr( 'font-size', this.fontSize() );
+
+		this.$.cols.selectAll( 'text' )
+			.attr( 'y', this._xScale.rangeBand() / 2 )
+			.attr( 'font-size', this.fontSize() );
 	}
 	this.fire( 'width', {
 		'type': 'changed'
@@ -1108,6 +1140,15 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 		// [5] Update the cells:
 		this.$.rows.selectAll( '.cell' )
 			.attr( 'height', this._yScale.rangeBand() );
+
+		// [6] Update the row and column labels:
+		this.$.rows.selectAll( 'text' )
+			.attr( 'y', this._yScale.rangeBand() / 2 )
+			.attr( 'font-size', this.fontSize() );
+
+		this.$.cols.selectAll( 'text' )
+			.attr( 'y', this._xScale.rangeBand() / 2 )
+			.attr( 'font-size', this.fontSize() );
 	}
 	this.fire( 'height', {
 		'type': 'changed'
@@ -1183,6 +1224,15 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 		this.$.rows.selectAll( '.cell' )
 			.attr( 'x', this._cx )
 			.attr( 'width', this._xScale.rangeBand() );
+
+		// [6] Update the row and column labels:
+		this.$.rows.selectAll( 'text' )
+			.attr( 'y', this._yScale.rangeBand() / 2 )
+			.attr( 'font-size', this.fontSize() );
+
+		this.$.cols.selectAll( 'text' )
+			.attr( 'y', this._xScale.rangeBand() / 2 )
+			.attr( 'font-size', this.fontSize() );
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingLeft',
@@ -1227,6 +1277,15 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 		this.$.rows.selectAll( '.cell' )
 			.attr( 'x', this._cx )
 			.attr( 'width', this._xScale.rangeBand() );
+
+		// [5] Update the row and column labels:
+		this.$.rows.selectAll( 'text' )
+			.attr( 'y', this._yScale.rangeBand() / 2 )
+			.attr( 'font-size', this.fontSize() );
+
+		this.$.cols.selectAll( 'text' )
+			.attr( 'y', this._xScale.rangeBand() / 2 )
+			.attr( 'font-size', this.fontSize() );
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingRight',
@@ -1270,6 +1329,15 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 		// [4] Update the cells:
 		this.$.rows.selectAll( '.cell' )
 			.attr( 'height', this._yScale.rangeBand() );
+
+		// [5] Update the row and column labels:
+		this.$.rows.selectAll( 'text' )
+			.attr( 'y', this._yScale.rangeBand() / 2 )
+			.attr( 'font-size', this.fontSize() );
+
+		this.$.cols.selectAll( 'text' )
+			.attr( 'y', this._xScale.rangeBand() / 2 )
+			.attr( 'font-size', this.fontSize() );
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingBottom',
@@ -1316,6 +1384,15 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 		// [5] Update the cells:
 		this.$.rows.selectAll( '.cell' )
 			.attr( 'height', this._yScale.rangeBand() );
+
+		// [6] Update the row and column labels:
+		this.$.rows.selectAll( 'text' )
+			.attr( 'y', this._yScale.rangeBand() / 2 )
+			.attr( 'font-size', this.fontSize() );
+
+		this.$.cols.selectAll( 'text' )
+			.attr( 'y', this._xScale.rangeBand() / 2 )
+			.attr( 'font-size', this.fontSize() );
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingTop',
