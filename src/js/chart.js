@@ -318,6 +318,15 @@ Chart.prototype.init = function() {
 	$.marks = null;
 	$.rows = null;
 	$.cols = null;
+	$.cells = null;
+
+	// Grid lines...
+	$.rowGridlines = null;
+	$.colGridlines = null;
+
+	// Names...
+	$.rownames = null;
+	$.colnames = null;
 
 	return this;
 }; // end METHOD init()
@@ -476,7 +485,7 @@ Chart.prototype.createMarks = function() {
 * @returns {DOMElement} element instance
 */
 Chart.prototype.createRows = function() {
-	this.$.rows = this.$.marks.selectAll( '.row' )
+	var rows = this.$.marks.selectAll( '.row' )
 		.data( (this.data) ? this.data.rownames() : [] )
 		.enter()
 		.append( 'svg:g' )
@@ -485,11 +494,11 @@ Chart.prototype.createRows = function() {
 			.on( 'mouseover', this._onRowHover )
 			.on( 'mouseout', this._onRowHoverEnd );
 
-	this.$.rows.append( 'svg:line' )
+	rows.append( 'svg:line' )
 		.attr( 'class', 'grid x' )
 		.attr( 'x1', this.graphWidth() );
 
-	this.$.rows.append( 'svg:text' )
+	rows.append( 'svg:text' )
 		.attr( 'class', 'noselect name' )
 		.attr( 'x', -6 )
 		.attr( 'y', this._yScale.rangeBand() / 2 )
@@ -499,7 +508,15 @@ Chart.prototype.createRows = function() {
 		.text( this._getRowName )
 		.on( 'click', this._onRowClick );
 
-	this.$.rows.each( this._createCells );
+	// Cache references to created elements:
+	this.$.rows = rows;
+	this.$.rowGridlines = rows.selectAll( '.grid.x' );
+	this.$.rownames = rows.selectAll( '.name' );
+
+	// Create the row cells:
+	rows.each( this._createCells );
+
+	this.$.cells = rows.selectAll( '.cell' );
 
 	return this;
 }; // end METHOD createRows()
@@ -511,7 +528,7 @@ Chart.prototype.createRows = function() {
 * @returns {DOMElement} element instance
 */
 Chart.prototype.createCols = function() {
-	this.$.cols = this.$.marks.selectAll( '.col' )
+	var cols = this.$.marks.selectAll( '.col' )
 		.data( (this.data) ? this.data.colnames() :  [] )
 		.enter()
 		.append( 'svg:g' )
@@ -520,11 +537,11 @@ Chart.prototype.createCols = function() {
 			.on( 'mouseover', this._onColHover )
 			.on( 'mouseout', this._onColHoverEnd );
 
-	this.$.cols.append( 'svg:line' )
-		.attr( 'class', 'grid' )
+	cols.append( 'svg:line' )
+		.attr( 'class', 'grid y' )
 		.attr( 'x1', -this.graphHeight() );
 
-	this.$.cols.append( 'svg:text' )
+	cols.append( 'svg:text' )
 		.attr( 'class', 'noselect name' )
 		.attr( 'x', 6 )
 		.attr( 'y', this._xScale.rangeBand() / 2 )
@@ -533,6 +550,11 @@ Chart.prototype.createCols = function() {
 		.attr( 'font-size', this.fontSize() )
 		.text( this._getColName )
 		.on( 'click', this._onColClick );
+
+	// Cache references to created elements:
+	this.$.cols = cols;
+	this.$.colGridlines = cols.selectAll( '.grid.y' );
+	this.$.colnames = cols.selectAll( '.name' );
 
 	return this;
 }; // end METHOD createCols()
@@ -647,9 +669,15 @@ Chart.prototype.resetRows = function() {
 		.text( this._getRowName )
 		.on( 'click', this._onRowClick );
 
+	// Update the cache references to row elements:
 	this.$.rows = rows;
+	this.$.rowGridlines = rows.selectAll( '.grid.x' );
+	this.$.rownames = rows.selectAll( '.name' );
 
+	// Create the row cells:
 	rows.each( this._resetCells );
+
+	this.$.cells = rows.selectAll( '.cell' );
 
 	return this;
 }; // end METHOD resetRows()
@@ -692,6 +720,8 @@ Chart.prototype.resetCols = function() {
 
 	// Cache a reference to the columns:
 	this.$.cols = cols;
+	this.$.colGridlines = cols.selectAll( '.grid.y' );
+	this.$.colnames = cols.selectAll( '.name' );
 
 	return this;
 }; // end METHOD resetCols()
@@ -800,8 +830,7 @@ Chart.prototype.colOrder = function( arr ) {
 	} else {
 		this.$.cols.attr( 'transform', this._x );
 
-		this.$.rows.selectAll( '.cell' )
-			.attr( 'x', this._cx );
+		this.$.cells.attr( 'x', this._cx );
 
 		this.fire( 'transitionEnd', null );
 	}
@@ -967,7 +996,7 @@ Chart.prototype.fontSize = function() {
 		dx = dy;
 	}
 	if ( dx > 18 ) {
-		return 16;
+		return 16; // font-size upper bound
 	}
 	return dx - 2;
 }; // end METHOD fontSize()
@@ -1074,23 +1103,23 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 		this.$.bkgd.attr( 'width', width );
 
 		// [3] Update the rows:
-		this.$.rows.selectAll( '.grid' )
+		this.$.rowGridlines
 			.attr( 'x1', width );
 
 		// [4] Update the columns:
 		this.$.cols.attr( 'transform', this._x );
 
 		// [5] Update the cells:
-		this.$.rows.selectAll( '.cell' )
+		this.$.cells
 			.attr( 'x', this._cx )
 			.attr( 'width', dx );
 
-		// [6] Update the row and column labels:
-		this.$.rows.selectAll( 'text' )
+		// [6] Update the row and column names:
+		this.$.rownames
 			.attr( 'y', this._yScale.rangeBand() / 2 )
 			.attr( 'font-size', this.fontSize() );
 
-		this.$.cols.selectAll( 'text' )
+		this.$.colnames
 			.attr( 'y', dx / 2 )
 			.attr( 'font-size', this.fontSize() );
 	}
@@ -1138,19 +1167,17 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 		this.$.rows.attr( 'transform', this._y );
 
 		// [4] Update the columns:
-		this.$.cols.selectAll( '.grid' )
-			.attr( 'x1', -height );
+		this.$.colGridlines.attr( 'x1', -height );
 
 		// [5] Update the cells:
-		this.$.rows.selectAll( '.cell' )
-			.attr( 'height', dy );
+		this.$.cells.attr( 'height', dy );
 
-		// [6] Update the row and column labels:
-		this.$.rows.selectAll( 'text' )
+		// [6] Update the row and column names:
+		this.$.rownames
 			.attr( 'y', dy / 2 )
 			.attr( 'font-size', this.fontSize() );
 
-		this.$.cols.selectAll( 'text' )
+		this.$.colnames
 			.attr( 'y', this._xScale.rangeBand() / 2 )
 			.attr( 'font-size', this.fontSize() );
 	}
@@ -1220,23 +1247,22 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 		this.$.graph.attr( 'transform', 'translate(' + newVal + ',' + this.paddingTop + ')' );
 
 		// [3] Update the rows:
-		this.$.rows.selectAll( '.grid' )
-			.attr( 'x1', width );
+		this.$.rowGridlines.attr( 'x1', width );
 
 		// [4] Update the columns:
 		this.$.cols.attr( 'transform', this._x );
 
 		// [5] Update the cells:
-		this.$.rows.selectAll( '.cell' )
+		this.$.cells
 			.attr( 'x', this._cx )
 			.attr( 'width', dx );
 
-		// [6] Update the row and column labels:
-		this.$.rows.selectAll( 'text' )
+		// [6] Update the row and column names:
+		this.$.rownames
 			.attr( 'y', this._yScale.rangeBand() / 2 )
 			.attr( 'font-size', this.fontSize() );
 
-		this.$.cols.selectAll( 'text' )
+		this.$.colnames
 			.attr( 'y', dx / 2 )
 			.attr( 'font-size', this.fontSize() );
 	}
@@ -1275,23 +1301,23 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 		this.$.bkgd.attr( 'width', width );
 
 		// [2] Update the rows:
-		this.$.rows.selectAll( '.grid' )
+		this.$.rowGridlines
 			.attr( 'x1', width );
 
 		// [3] Update the columns:
 		this.$.cols.attr( 'transform', this._x );
 
 		// [4] Update the cells:
-		this.$.rows.selectAll( '.cell' )
+		this.$.cells
 			.attr( 'x', this._cx )
 			.attr( 'width', dx );
 
-		// [5] Update the row and column labels:
-		this.$.rows.selectAll( 'text' )
+		// [5] Update the row and column names:
+		this.$.rownames
 			.attr( 'y', this._yScale.rangeBand() / 2 )
 			.attr( 'font-size', this.fontSize() );
 
-		this.$.cols.selectAll( 'text' )
+		this.$.colnames
 			.attr( 'y', dx / 2 )
 			.attr( 'font-size', this.fontSize() );
 	}
@@ -1333,19 +1359,18 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 		this.$.rows.attr( 'transform', this._y );
 
 		// [3] Update the columns:
-		this.$.cols.selectAll( '.grid' )
+		this.$.colGridlines
 			.attr( 'x1', -height );
 
 		// [4] Update the cells:
-		this.$.rows.selectAll( '.cell' )
-			.attr( 'height', dy );
+		this.$.cells.attr( 'height', dy );
 
-		// [5] Update the row and column labels:
-		this.$.rows.selectAll( 'text' )
+		// [5] Update the row and column names:
+		this.$.rownames
 			.attr( 'y', dy / 2 )
 			.attr( 'font-size', this.fontSize() );
 
-		this.$.cols.selectAll( 'text' )
+		this.$.colnames
 			.attr( 'y', this._xScale.rangeBand() / 2 )
 			.attr( 'font-size', this.fontSize() );
 	}
@@ -1390,19 +1415,17 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 		this.$.rows.attr( 'transform', this._y );
 
 		// [4] Update the columns:
-		this.$.cols.selectAll( '.grid' )
-			.attr( 'x1', -height );
+		this.$.colGridlines.attr( 'x1', -height );
 
 		// [5] Update the cells:
-		this.$.rows.selectAll( '.cell' )
-			.attr( 'height', dy );
+		this.$.cells.attr( 'height', dy );
 
 		// [6] Update the row and column labels:
-		this.$.rows.selectAll( 'text' )
+		this.$.rownames
 			.attr( 'y', dy / 2 )
 			.attr( 'font-size', this.fontSize() );
 
-		this.$.cols.selectAll( 'text' )
+		this.$.colnames
 			.attr( 'y', this._xScale.rangeBand() / 2 )
 			.attr( 'font-size', this.fontSize() );
 	}
@@ -1431,10 +1454,9 @@ Chart.prototype.zValueChanged = function( oldVal, newVal ) {
 	}
 	if ( type === 'function' ) {
 		this._zScale.domain( this.zDomain( this.zMin, this.zMax ) );
-
-		this.$.marks.selectAll( '.cell' )
-			.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
 	}
+	this.$.cells.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
+
 	this.fire( 'changed', {
 		'attr': 'zValue',
 		'prev': oldVal,
@@ -1465,8 +1487,7 @@ Chart.prototype.zMinChanged = function( oldVal, newVal ) {
 	zScale.domain( domain );
 
 	if ( this.autoUpdate ) {
-		this.$.marks.selectAll( '.cell' )
-			.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
+		this.$.cells.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
 	}
 	this.fire( 'zMin', {
 		'type': 'changed'
@@ -1501,8 +1522,7 @@ Chart.prototype.zMaxChanged = function( oldVal, newVal ) {
 	zScale.domain( domain );
 
 	if ( this.autoUpdate ) {
-		this.$.marks.selectAll( '.cell' )
-			.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
+		this.$.cells.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
 	}
 	this.fire( 'zMax', {
 		'type': 'changed'
@@ -1530,8 +1550,7 @@ Chart.prototype.cScaleChanged = function( oldVal, newVal ) {
 		return;
 	}
 	if ( this.autoUpdate ) {
-		this.$.rows.selectAll( '.cell' )
-			.attr( 'fill', newVal );
+		this.$.cells.attr( 'fill', newVal );
 	}
 	this.fire( 'changed', {
 		'attr': 'cScale',
