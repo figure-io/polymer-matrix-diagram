@@ -728,7 +728,6 @@ Chart.prototype.resetCells = function( d, i ) {
 */
 Chart.prototype.rowOrder = function( arr ) {
 	var len = this.data.rownames().length,
-		yScale = this._yScale,
 		selection;
 
 	if ( !Array.isArray( arr ) ) {
@@ -737,16 +736,14 @@ Chart.prototype.rowOrder = function( arr ) {
 	if ( arr.length !== len ) {
 		throw new Error( 'rowOrder()::invalid input argument. Array length must equal the number of rows. Number of rows: ' + len + '.' );
 	}
-	yScale.domain( arr );
+	this._yScale.domain( arr );
 
 	selection = this.$.marks.transition()
 		.duration( 2500 )
 		.each( 'end', this._onTransitionEnd );
 
     selection.selectAll( '.row' )
-		.delay( function ( d, i ) {
-			return yScale( i ) * 4;
-		})
+		.delay( this.delay )
 		.attr( 'transform', this._y );
 
 	return this;
@@ -760,7 +757,6 @@ Chart.prototype.rowOrder = function( arr ) {
 */
 Chart.prototype.colOrder = function( arr ) {
 	var len = this.data.colnames().length,
-		xScale = this._xScale,
 		selection;
 
 	if ( !Array.isArray( arr ) ) {
@@ -769,7 +765,7 @@ Chart.prototype.colOrder = function( arr ) {
 	if ( arr.length !== len ) {
 		throw new Error( 'colOrder()::invalid input argument. Array length must equal the number of columns. Number of columns: ' + len + '.' );
 	}
-	xScale.domain( arr );
+	this._xScale.domain( arr );
 
 	// TODO: only transition if duration is a positive number (?)
 
@@ -778,16 +774,12 @@ Chart.prototype.colOrder = function( arr ) {
 		.each( 'end', this._onTransitionEnd );
 
     selection.selectAll( '.col' )
-		.delay( function ( d, i ) {
-			return xScale( i ) * 4;
-		})
+		.delay( this.delay )
 		.attr( 'transform', this._x );
 
 	selection.selectAll( '.row' )
 		.selectAll( '.cell' )
-		.delay( function ( d, i ) {
-			return xScale( i ) * 4;
-		})
+		.delay( this.delay )
 		.attr( 'x', this._cx );
 
 	return this;
@@ -924,6 +916,19 @@ Chart.prototype.zDomain = function( min, max ) {
 	}
 	return [ min, max ];
 }; // end METHOD zDomain()
+
+/**
+* METHOD: delay( d, i )
+*	Computes the transition delay based on the element index.
+*
+* @param {*} d - datum
+* @param {Number} i - index
+* @returns {Number} transition delay in milliseconds
+*/
+Chart.prototype.delay = function( d, i ) {
+	// NOTE: the scalar offset (e.g., 20) is something of a magic number, based more on feel than science.
+	return i * 20;
+}; // end METHOD delay()
 
 /**
 * METHOD: dataChanged( oldVal newVal )

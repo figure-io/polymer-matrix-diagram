@@ -15,18 +15,19 @@ TODO
 	- 	transition duration
 	- 	only transition if duration is a positive number; otherwise, just update
 	- 	if duration is allowed, need to update 'transitionEnd' documentation
-6. formalize hover interaction
+6. 
 7. update README regarding df
 8. `on()` as an alias to `addEventListener()`?
 	- could have it only accept the publicized events and do input validation
 9. favicon
-	-	still needs work
+	-	needs work
 10. Wiki
 
 
 ## Bugs
 
 1. Differences in lifecycle behavior between Chrome and Firefox
+2. 
 
 
 ## Tests
