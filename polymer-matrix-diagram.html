@@ -746,37 +746,37 @@ function Chart() {
 * ATTRIBUTE: paddingLeft
 *	Chart canvas left padding.
 *
-* @type {Number}
-* @default 40px
+* @type {Null|Number}
+* @default null
 */
-Chart.prototype.paddingLeft = 40;
+Chart.prototype.paddingLeft = null;
 
 /**
 * ATTRIBUTE: paddingRight
 *	Chart canvas right padding.
 *
-* @type {Number}
-* @default 40px
+* @type {Null|Number}
+* @default null
 */
-Chart.prototype.paddingRight = 40;
+Chart.prototype.paddingRight = null;
 
 /**
 * ATTRIBUTE: paddingBottom
 *	Chart canvas bottom padding.
 *
-* @type {Number}
-* @default 40px
+* @type {Null|Number}
+* @default null
 */
-Chart.prototype.paddingBottom = 40;
+Chart.prototype.paddingBottom = null;
 
 /**
 * ATTRIBUTE: paddingTop
 *	Chart canvas top padding.
 *
-* @type {Number}
-* @default 40px
+* @type {Null|Number}
+* @default null
 */
-Chart.prototype.paddingTop = 40;
+Chart.prototype.paddingTop = null;
 
 /**
 * ATTRIBUTE: width
@@ -911,6 +911,17 @@ Chart.prototype.init = function() {
 
 	// Data:
 	this.data = null;
+
+	// Private attributes...
+
+	// Row and column name font size:
+	this._maxFontSize = 16; // px
+
+	// Padding...
+	this._paddingLeft = 40; // px
+	this._paddingRight = 40; // px
+	this._paddingTop = 40; // px
+	this._paddingBottom = 40; // px
 
 	// Private methods...
 
@@ -1061,8 +1072,8 @@ Chart.prototype.create = function() {
 Chart.prototype.createBase = function() {
 	var width = this.width,
 		height = this.height,
-		pLeft = this.paddingLeft,
-		pTop = this.paddingTop,
+		pLeft,
+		pTop,
 		canvas;
 
 	// Only cache the root element once (should not change)...
@@ -1073,6 +1084,10 @@ Chart.prototype.createBase = function() {
 	if ( this.$.canvas ) {
 		this.$.canvas.remove();
 	}
+	// Get the padding values:
+	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
+	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
+
 	// Create the SVG element:
 	canvas = this.$.root.append( 'svg:svg' )
 		.attr( 'property', 'canvas' )
@@ -1501,7 +1516,12 @@ Chart.prototype.colOrder = function( arr ) {
 * @returns {Number} graph width
 */
 Chart.prototype.graphWidth = function() {
-	return this.width - this.paddingLeft - this.paddingRight;
+	var pLeft, pRight;
+
+	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
+	pRight = ( this.paddingRight === null ) ? this._paddingRight : this.paddingRight;
+
+	return this.width - pLeft - pRight;
 }; // end METHOD graphWidth()
 
 /**
@@ -1511,7 +1531,12 @@ Chart.prototype.graphWidth = function() {
 * @returns {Number} graph height
 */
 Chart.prototype.graphHeight = function() {
-	return this.height - this.paddingTop - this.paddingBottom;
+	var pTop, pBottom;
+
+	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
+	pBottom = ( this.paddingBottom === null ) ? this._paddingBottom : this.paddingBottom;
+
+	return this.height - pTop - pBottom;
 }; // end METHOD graphHeight()
 
 /**
@@ -1653,7 +1678,8 @@ Chart.prototype.fontSize = function() {
 		dx = dy;
 	}
 	if ( dx > 18 ) {
-		return 16; // font-size upper bound
+		// Return the font-size upper bound:
+		return this._maxFontSize;
 	}
 	return dx - 2;
 }; // end METHOD fontSize()
@@ -1738,6 +1764,8 @@ Chart.prototype.configChanged = function( oldConfig, newConfig ) {
 */
 Chart.prototype.widthChanged = function( oldVal, newVal ) {
 	var width,
+		pLeft,
+		pRight,
 		dx,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal <= 0 ) {
@@ -1746,7 +1774,10 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 		this.width = oldVal;
 		return;
 	}
-	width = newVal - this.paddingLeft - this.paddingRight;
+	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
+	pRight = ( this.paddingRight === null ) ? this._paddingRight : this.paddingRight;
+
+	width = newVal - pLeft - pRight;
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
@@ -1802,6 +1833,8 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.heightChanged = function( oldVal, newVal ) {
 	var height,
+		pTop,
+		pBottom,
 		dy,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal <= 0 ) {
@@ -1810,7 +1843,10 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 		this.height = oldVal;
 		return;
 	}
-	height = newVal - this.paddingTop - this.paddingBottom;
+	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
+	pBottom = ( this.paddingBottom === null ) ? this._paddingBottom : this.paddingBottom;
+
+	height = newVal - pTop - pBottom;
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
@@ -1885,20 +1921,27 @@ Chart.prototype.chartTitleChanged = function( oldVal, newVal ) {
 * METHOD: paddingLeftChanged( oldVal, newVal )
 *	Event handler invoked when the `paddingLeft` attribute changes.
 *
-* @param {Number} oldVal - old value
-* @param {Number} newVal - new value
+* @param {Null|Number} oldVal - old value
+* @param {Null|Number} newVal - new value
 */
 Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 	var width,
+		pLeft,
+		pRight,
+		pTop,
 		dx,
 		err;
-	if ( typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0 ) {
-		err = new TypeError( 'paddingLeft::invalid assignment. Must be an integer greater than or equal to 0. Value: `' + newVal + '`.' );
+	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
+		err = new TypeError( 'paddingLeft::invalid assignment. Must be null or an integer greater than or equal to 0. Value: `' + newVal + '`.' );
 		this.fire( 'err', err );
 		this.paddingLeft = oldVal;
 		return;
 	}
-	width = this.width - newVal - this.paddingRight;
+	pLeft = ( newVal === null ) ? this._paddingLeft : newVal;
+	pRight = ( this.paddingRight === null ) ? this._paddingRight : this.paddingRight;
+	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
+
+	width = this.width - pLeft - pRight;
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
@@ -1911,7 +1954,7 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 
 		// [2] Update the graph:
 		this.$.graph
-			.attr( 'transform', 'translate(' + newVal + ',' + this.paddingTop + ')' );
+			.attr( 'transform', 'translate(' + pLeft + ',' + pTop + ')' );
 
 		// [3] Update the rows:
 		this.$.rowGridlines
@@ -1946,20 +1989,25 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 * METHOD: paddingRightChanged( oldVal, newVal )
 *	Event handler invoked when the `padding` attribute changes.
 *
-* @param {Number} oldVal - old value
-* @param {Number} newVal - new value
+* @param {Null|Number} oldVal - old value
+* @param {Null|Number} newVal - new value
 */
 Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 	var width,
+		pLeft,
+		pRight,
 		dx,
 		err;
-	if ( typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0 ) {
-		err = new TypeError( 'paddingRight::invalid assignment. Must be an integer greater than or equal to 0. Value: `' + newVal + '`.' );
+	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
+		err = new TypeError( 'paddingRight::invalid assignment. Must be null or an integer greater than or equal to 0. Value: `' + newVal + '`.' );
 		this.fire( 'err', err );
 		this.paddingRight = oldVal;
 		return;
 	}
-	width = this.width - this.paddingLeft - newVal;
+	pRight = ( newVal === null ) ? this._paddingRight : newVal;
+	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
+
+	width = this.width - pLeft - pRight;
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
@@ -2003,20 +2051,25 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 * METHOD: paddingBottomChanged( oldVal, newVal )
 *	Event handler invoked when the `paddingBottom` attribute changes.
 *
-* @param {Number} oldVal - old value
-* @param {Number} newVal - new value
+* @param {Null|Number} oldVal - old value
+* @param {Null|Number} newVal - new value
 */
 Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 	var height,
+		pTop,
+		pBottom,
 		dy,
 		err;
-	if ( typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0 ) {
-		err = new TypeError( 'paddingBottom::invalid assignment. Must be an integer greater than or equal to 0. Value: `' + newVal + '`.' );
+	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
+		err = new TypeError( 'paddingBottom::invalid assignment. Must be null or an integer greater than or equal to 0. Value: `' + newVal + '`.' );
 		this.fire( 'err', err );
 		this.paddingBottom = oldVal;
 		return;
 	}
-	height = this.height - this.paddingTop - newVal;
+	pBottom = ( newVal === null ) ? this._paddingBottom : newVal;
+	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
+
+	height = this.height - pTop - pBottom;
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
@@ -2059,20 +2112,27 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 * METHOD: paddingTopChanged( oldVal, newVal )
 *	Event handler invoked when the `paddingTop` attribute changes.
 *
-* @param {Number} oldVal - old value
-* @param {Number} newVal - new value
+* @param {Null|Number} oldVal - old value
+* @param {Null|Number} newVal - new value
 */
 Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 	var height,
+		pLeft,
+		pTop,
+		pBottom,
 		dy,
 		err;
-	if ( typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0 ) {
-		err = new TypeError( 'paddingTop::invalid assignment. Must be an integer greater than or equal to 0.  Value: `' + newVal + '.' );
+	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
+		err = new TypeError( 'paddingTop::invalid assignment. Must be null or an integer greater than or equal to 0.  Value: `' + newVal + '.' );
 		this.fire( 'err', err );
 		this.paddingTop = oldVal;
 		return;
 	}
-	height = this.height - newVal - this.paddingBottom;
+	pTop = ( newVal === null ) ? this._paddingTop : newVal;
+	pBottom = ( this.paddingBottom === null ) ? this._paddingBottom : this.paddingBottom;
+	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
+
+	height = this.height - pTop - pBottom;
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
@@ -2085,7 +2145,7 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 
 		// [2] Update the graph:
 		this.$.graph
-			.attr( 'transform', 'translate(' + this.paddingLeft + ',' + newVal + ')' );
+			.attr( 'transform', 'translate(' + pLeft + ',' + pTop + ')' );
 
 		// [3] Update the rows:
 		this.$.rows

@@ -5,6 +5,7 @@ TODO
 	-	separate module
 	-	bundle with component
 	-	when data is set as an array of arrays, convert to DF
+		- 	cannot do, as need colnames and rownames; users will need to use DFs
 2. 
 3. title
 	-	positioning
