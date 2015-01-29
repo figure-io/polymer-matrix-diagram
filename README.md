@@ -23,6 +23,7 @@ Matrix Diagram
 		*	[zMin](#attr-zmin)
 		*	[zMax](#attr-zmax)
 		*	[cScale](#attr-cscale)
+		*	[duration](#attr-duration)
 		*	[autoUpdate](#attr-autoupdate)
 		*	[autoResize](#attr-autoresize)
 	-	[Methods](#methods)
