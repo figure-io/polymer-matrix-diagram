@@ -5,6 +5,64 @@ Matrix Diagram
 > A [Polymer](https://www.polymer-project.org/) web component for displaying matrix diagrams.
 
 
+## Table of Contents
+
+1. 	[Installation](#install)
+1. 	[Usage](#usage)
+	-	[Attributes](#attributes)
+		* 	[data](#attr-data)
+		*	[config](#attr-config)
+		*	[width](#attr-width)
+		*	[height](#attr-height)
+		*	[paddingLeft](#attr-paddingleft)
+		*	[paddingRight](#attr-paddingright)
+		*	[paddingTop](#attr-paddingtop)
+		*	[paddingBottom](#attr-paddingbottom)
+		*	[chartTitle](#attr-charttitle)
+		*	[zValue](#attr-zvalue)
+		*	[zMin](#attr-zmin)
+		*	[zMax](#attr-zmax)
+		*	[cScale](#attr-cscale)
+		*	[autoUpdate](#attr-autoupdate)
+		*	[autoResize](#attr-autoresize)
+	-	[Methods](#methods)
+		*	[clear](#method-clear)
+		*	[rowOrder](#method-roworder)
+		*	[colOrder](#method-colorder)
+	-	[Events](#events)
+		*	[err](#evt-err)
+		*	[changed](#evt-changed)
+		*	[data](#evt-data)
+		*	[width](#evt-width)
+		*	[height](#evt-height)
+		*	[zMin](#evt-zmin)
+		* 	[zMax](#evt-zmax)
+		*	[resize](#evt-resized)
+		*	[clicked](#evt-clicked)
+		*	[clicked.row](#evt-clicked-row)
+		*	[clicked.col](#evt-clicked-col)
+		*	[clicked.cell](#evt-clicked-cell)
+		*	[hovered](#evt-hovered)
+		*	[hovered.row](#evt-hovered-row)
+		*	[hovered.col](#evt-hovered-col)
+		*	[hovered.cell](#evt-hovered-cell)
+		*	[hoverended](#evt-hoverended)
+		*	[hoverended.row](#evt-hoverended-row)
+		*	[hoverended.col](#evt-hoverended-col)
+		*	[hoverended.cell](#evt-hoverended-cell)
+		*	[transitionEnd](#evt-transition-end)
+1. 	[Examples](#examples)
+1. 	[Development](#development)
+1. 	[Build](#build)
+1. 	[Tests](#tests)
+	-	[Unit](#unit)
+	-	[Coverage](#test-coverage)
+1. 	[License](#license)
+
+
+---
+
+
 ## Install
 
 ``` bash
@@ -41,6 +99,7 @@ The component has the following public attributes and methods...
 
 ### Attributes
 
+<a name="attr-data"></a>
 #### el.data
 
 Chart data. 
@@ -61,6 +120,7 @@ el.data = [
 Each nested `array` is visually encoded as a row, and each nested `array` element is visually encoded as a row cell. The nested `array` elements may be of any type.
 
 
+<a name="attr-config"></a>
 #### el.config
 
 Configuration `object` containing parameters corresponding to known attributes, as defined below.
@@ -72,6 +132,7 @@ el.config = {};
 TODO: implement and define. Vega reference. Specification.
 
 
+<a name="attr-width"></a>
 #### el.width
 
 Chart canvas width. If not explicitly set, defaults to the width of the parent node.
@@ -81,6 +142,7 @@ el.width = 600; // px
 ```
 
 
+<a name="attr-height"></a>
 #### el.height
 
 Chart canvas height. If not explicitly set, default to the height of the parent node.
@@ -90,6 +152,7 @@ el.height = 600; // px
 ```
 
 
+<a name="attr-paddingleft"></a>
 #### el.paddingLeft
 
 Chart canvas left padding; i.e., space between the left canvas edge and the left graph edge. Typically needed to create room for a left oriented y-axis. Default is 40 pixels.
@@ -98,6 +161,7 @@ Chart canvas left padding; i.e., space between the left canvas edge and the left
 el.paddingLeft = 120; // px
 ```
 
+<a name="attr-paddingright"></a>
 #### el.paddingRight
 
 Chart canvas right padding; i.e., space between the right canvas edge and the right graph edge. Typically needed to create room for a right oriented y-axis. Default is 40 pixels.
@@ -106,6 +170,7 @@ Chart canvas right padding; i.e., space between the right canvas edge and the ri
 el.paddingRight = 90; // px
 ```
 
+<a name="attr-paddingtop"></a>
 #### el.paddingTop
 
 Chart canvas top padding; i.e., space between the top canvas edge and the top graph edge. Typically needed to create room for a chart title or top positioned legend. Default is 40 pixels.
@@ -114,6 +179,7 @@ Chart canvas top padding; i.e., space between the top canvas edge and the top gr
 el.paddingTop = 200; // px
 ```
 
+<a name="attr-paddingbottom"></a>
 #### el.paddingBottom
 
 Chart canvas bottom padding; i.e., space between the bottom canvas edge and the bottom graph edge. Typically needed to create room for a bottom oriented x-axis or bottom positioned legend. Default is 40 pixels.
@@ -122,6 +188,7 @@ Chart canvas bottom padding; i.e., space between the bottom canvas edge and the 
 el.paddingBottom = 100; // px
 ```
 
+<a name="attr-charttitle"></a>
 #### el.chartTitle
 
 Chart title. Default is an empty `string`.
@@ -130,6 +197,7 @@ Chart title. Default is an empty `string`.
 el.chartTitle = 'Awesome chart.';
 ```
 
+<a name="attr-zvalue"></a>
 #### el.zValue
 
 Defines the z-value accessor. z-values determine the `fill-opacity` for a cell. If set to a constant on the interval `[0,1]`, the `fill-opacity` is the same for all cells. If set to a `function`, each z-value is mapped to a value on the interval `[0,1]`. The default `fill-opacity` for all cells is `1`.
@@ -145,6 +213,7 @@ el.zValue = function zValue( d, i ) {
 ```
 
 
+<a name="attr-zmin"></a>
 #### el.zMin
 
 Defines the minimum value of the z-domain. Default is `null`.
@@ -156,6 +225,7 @@ el.zMin = -10;
 If set to `null`, the `zMin` is dynamically calculated from the data. This attribute is only relevant when the z-value accessor is a `function`.
 
 
+<a name="attr-zmax"></a>
 #### el.zMax
 
 Defines the maximum value of the z-domain. Default is `null`.
@@ -167,6 +237,7 @@ el.zMax = 10;
 If set to `null`, the `zMax` is dynamically calculated from the data. This attribute is only relevant when the z-value accessor is a `function`.
 
 
+<a name="attr-cscale"></a>
 #### el.cScale
 
 Maps a cell datum to a color.
@@ -178,6 +249,7 @@ el.cScale = function cScale( d, i ) {
 ```
 
 
+<a name="attr-autoupdate"></a>
 #### el.autoUpdate
 
 Specifies whether the element should automatically update whenever an attribute changes. Default is `true`.
@@ -187,6 +259,7 @@ el.autoUpdate = false;
 ```
 
 
+<a name="attr-autoresize"></a>
 #### el.autoResize
 
 Specifies whether the element should automatically resize when the window resizes. Default is `true`.
@@ -198,6 +271,7 @@ el.autoResize = false;
 
 ### Methods
 
+<a name="method-clear"></a>
 #### el.clear()
 
 Clears the chart.
@@ -207,6 +281,7 @@ el.clear();
 ```
 
 
+<a name="method-roworder"></a>
 #### el.rowOrder( arr )
 
 Sets the row order. The input `array` should be a permutation of the row names.
@@ -215,6 +290,7 @@ Sets the row order. The input `array` should be a permutation of the row names.
 el.rowOrder( [ 3, 1, 0, 2 ] );
 ```
 
+<a name="method-colorder"></a>
 #### el.colOrder( arr )
 
 Sets the column order. The input `array` should be a permutation of the column names.
@@ -230,6 +306,7 @@ el.colOrder( [ 0, 1, 4, 3, 2,... ] );
 The component emits events during both chart configuration and interaction. The following events are emitted... 
 
 
+<a name="evt-err"></a>
 #### 'err'
 
 The element emits an `err` event whenever an error occurs; e.g., improper setting of attributes.
@@ -243,6 +320,7 @@ el.addEventListener( 'err', function onError( err ) {
 __NOTE__: the event name will change to `error` once issue [#138](https://github.com/webcomponents/webcomponentsjs/issues/138) is resolved. The preferred name is `error`.
 
 
+<a name="evt-changed"></a>
 #### 'changed'
 
 The element emits a `changed` event whenever an attribute changes.
@@ -253,6 +331,7 @@ el.addEventListener( 'changed', function onChange( evt ) {
 });
 ```
 
+<a name="evt-data"></a>
 #### 'data'
 
 The element emits a `data` event when the `data` attribute changes.
@@ -263,6 +342,7 @@ el.addEventListener( 'data', function onEvent( evt ) {
 });
 ```
 
+<a name="evt-width"></a>
 #### 'width'
 
 The element emits a `width` event when the `width` attribute changes.
@@ -273,6 +353,7 @@ el.addEventListener( 'width', function onEvent( evt ) {
 });
 ```
 
+<a name="evt-height"></a>
 #### 'height'
 
 The element emits a `height` event when the `height` attribute changes.
@@ -283,6 +364,7 @@ el.addEventListener( 'height', function onEvent( evt ) {
 });
 ```
 
+<a name="evt-zmin"></a>
 #### 'zMin'
 
 The element emits a `zMin` event when the `zMin` attribute changes.
@@ -293,6 +375,7 @@ el.addEventListener( 'zMin', function onEvent( evt ) {
 });
 ```
 
+<a name="evt-zmax"></a>
 #### 'zMax'
 
 The element emits a `zMax` event when the `zMax` attribute changes.
@@ -304,6 +387,7 @@ el.addEventListener( 'zMax', function onEvent( evt ) {
 ```
 
 
+<a name="evt-resized"></a>
 #### 'resized'
 
 The element emits a `resized` event when the element's resize listener is triggered.
@@ -314,6 +398,7 @@ el.addEventListener( 'resized', function onResize( evt ) {
 });
 ```
 
+<a name="evt-clicked"></a>
 #### 'clicked'
 
 The element emits a `clicked` event when a chart element having a click handler is clicked.
@@ -325,6 +410,7 @@ el.addEventListener( 'clicked', function onClick( evt ) {
 ```
 
 
+<a name="evt-clicked-row"></a>
 #### 'clicked.row'
 
 The element emits a `clicked.row` event when a row is clicked.
@@ -335,6 +421,7 @@ el.addEventListener( 'clicked.row', function onClick( evt ) {
 });
 ```
 
+<a name="evt-clicked-col"></a>
 #### 'clicked.col'
 
 The element emits a `clicked.col` event when a column is clicked.
@@ -345,6 +432,7 @@ el.addEventListener( 'clicked.col', function onClick( evt ) {
 });
 ```
 
+<a name="evt-clicked-cell"></a>
 #### 'clicked.cell'
 
 The element emits a `clicked.cell` event when a cell is clicked.
@@ -356,6 +444,7 @@ el.addEventListener( 'clicked.cell', function onClick( evt ) {
 ```
 
 
+<a name="evt-hovered"></a>
 #### 'hovered'
 
 The element emits a `hovered` event when an element having a `mouseover` handler has a `mouseover` event.
@@ -367,6 +456,7 @@ el.addEventListener( 'hovered', function onClick( evt ) {
 ```
 
 
+<a name="evt-hovered-row"></a>
 #### 'hovered.row'
 
 The element emits a `hovered.row` event when a row has a `mouseover` event.
@@ -378,6 +468,7 @@ el.addEventListener( 'hovered.row', function onClick( evt ) {
 ```
 
 
+<a name="evt-hovered-col"></a>
 #### 'hovered.col'
 
 The element emits a `hovered.col` event when a column has a `mouseover` event.
@@ -389,6 +480,7 @@ el.addEventListener( 'hovered.col', function onClick( evt ) {
 ```
 
 
+<a name="evt-hovered-cell"></a>
 #### 'hovered.cell'
 
 The element emits a `hovered.cell` event when a cell has a `mouseover` event.
@@ -400,6 +492,7 @@ el.addEventListener( 'hovered.cell', function onClick( evt ) {
 ```
 
 
+<a name="evt-hoverended"></a>
 #### 'hoverended'
 
 The element emits a `hoverended` event when an element having a `mouseout` handler has a `mouseout` event.
@@ -411,6 +504,7 @@ el.addEventListener( 'hoverended', function onClick( evt ) {
 ```
 
 
+<a name="evt-hoverended-row"></a>
 #### 'hoverended.row'
 
 The element emits a `hoverended.row` event when a row has a `mouseout` event.
@@ -422,6 +516,7 @@ el.addEventListener( 'hoverended.row', function onClick( evt ) {
 ```
 
 
+<a name="evt-hoverended-col"></a>
 #### 'hoverended.col'
 
 The element emits a `hoverended.col` event when a column has a `mouseout` event.
@@ -432,6 +527,7 @@ el.addEventListener( 'hoverended.col', function onClick( evt ) {
 });
 ```
 
+<a name="evt-hoverended-cell"></a>
 #### 'hoverended.cell'
 
 The element emits a `hoverended.cell` event when a cell has a `mouseout` event.
@@ -442,6 +538,7 @@ el.addEventListener( 'hoverended.cell', function onClick( evt ) {
 });
 ```
 
+<a name="evt-transition-end"></a>
 #### 'transitionEnd'
 
 The element emits a `transitionEnd` event when a transition ends; e.g., as occurs after setting the row or column order.
