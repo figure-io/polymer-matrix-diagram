@@ -249,6 +249,18 @@ el.cScale = function cScale( d, i ) {
 ```
 
 
+<a name="attr-duration"></a>
+#### el.duration
+
+Transition duration when reordering rows or columns. Default is `2500` milliseconds.
+
+``` javascript
+el.duration = 1000; // ms
+```
+
+__NOTE__: only set this attribute should your situation absolutely warrant it. Setting the transition duration to a value less than or equal to `0` inhibits the user from understanding how a reordering has affected the diagram. And too long a duration will test a user's patience. `2500` milliseconds should be a decent setting for __most__ use cases. The only reason the attribute is exposed is for purposes of fine tuning, but only should the need arise. Otherwise, leave the value as is.
+
+
 <a name="attr-autoupdate"></a>
 #### el.autoUpdate
 
@@ -267,6 +279,8 @@ Specifies whether the element should automatically resize when the window resize
 ``` javascript
 el.autoResize = false;
 ```
+
+
 
 
 ### Methods
@@ -290,6 +304,9 @@ Sets the row order. The input `array` should be a permutation of the row names.
 el.rowOrder( [ 3, 1, 0, 2 ] );
 ```
 
+Once the rows are reordered, the element emits a `transitionEnd` event.
+
+
 <a name="method-colorder"></a>
 #### el.colOrder( arr )
 
@@ -299,6 +316,10 @@ Sets the column order. The input `array` should be a permutation of the column n
 ``` javascript
 el.colOrder( [ 0, 1, 4, 3, 2,... ] );
 ```
+
+Once the columns are reordered, the element emits a `transitionEnd` event.
+
+
 
 
 ### Events

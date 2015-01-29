@@ -11,10 +11,7 @@ TODO
 4. xlabel, ylabel (??)
 	-	requires positioning finagling
 	-	could auto position, as long as padding values are `null`. Once set, we abide by set values
-5. transition parameters
-	- 	transition duration
-	- 	only transition if duration is a positive number; otherwise, just update
-	- 	if duration is allowed, need to update 'transitionEnd' documentation
+5. 
 6. 
 7. update README regarding df
 8. `on()` as an alias to `addEventListener()`?

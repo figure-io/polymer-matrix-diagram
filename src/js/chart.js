@@ -188,6 +188,15 @@ Chart.prototype.cScale = function(){
 }; // end METHOD cScale()
 
 /**
+* ATTRIBUTE: duration
+*	Transition duration.
+*
+* @type {Number}
+* @default 2500 milliseconds
+*/
+Chart.prototype.duration = 2500; // ms
+
+/**
 * ATTRIBUTE: autoUpdate
 *	Boolean flag indicating whether a chart should auto update DOM elements whenever an attribute changes.
 *
@@ -738,14 +747,18 @@ Chart.prototype.rowOrder = function( arr ) {
 	}
 	this._yScale.domain( arr );
 
-	selection = this.$.marks.transition()
-		.duration( 2500 )
-		.each( 'end', this._onTransitionEnd );
+	if ( this.duration > 0 ) {
+		selection = this.$.marks.transition()
+			.duration( this.duration )
+			.each( 'end', this._onTransitionEnd );
 
-    selection.selectAll( '.row' )
-		.delay( this.delay )
-		.attr( 'transform', this._y );
-
+		selection.selectAll( '.row' )
+			.delay( this.delay )
+			.attr( 'transform', this._y );
+	} else {
+		this.$.rows.attr( 'transform', this._y );
+		this.fire( 'transitionEnd', null );
+	}
 	return this;
 }; // end METHOD rowOrder()
 
@@ -767,21 +780,27 @@ Chart.prototype.colOrder = function( arr ) {
 	}
 	this._xScale.domain( arr );
 
-	// TODO: only transition if duration is a positive number (?)
+	if ( this.duration > 0 ) {
+		selection = this.$.marks.transition()
+			.duration( this.duration )
+			.each( 'end', this._onTransitionEnd );
 
-	selection = this.$.marks.transition()
-		.duration( 2500 )
-		.each( 'end', this._onTransitionEnd );
+		selection.selectAll( '.col' )
+			.delay( this.delay )
+			.attr( 'transform', this._x );
 
-    selection.selectAll( '.col' )
-		.delay( this.delay )
-		.attr( 'transform', this._x );
+		selection.selectAll( '.row' )
+			.selectAll( '.cell' )
+			.delay( this.delay )
+			.attr( 'x', this._cx );
+	} else {
+		this.$.cols.attr( 'transform', this._x );
 
-	selection.selectAll( '.row' )
-		.selectAll( '.cell' )
-		.delay( this.delay )
-		.attr( 'x', this._cx );
+		this.$.rows.selectAll( '.cell' )
+			.attr( 'x', this._cx );
 
+		this.fire( 'transitionEnd', null );
+	}
 	return this;
 }; // end METHOD colOrder()
 
@@ -1431,6 +1450,28 @@ Chart.prototype.cScaleChanged = function( oldVal, newVal ) {
 		'curr': newVal
 	});
 }; // end METHOD cScaleChanged()
+
+/**
+* METHOD: durationChanged( oldVal, newVal )
+*	Event handler invoked when the `duration` attribute changes.
+*
+* @param {Null|Number} oldVal - old value
+* @param {Null|Number} newVal - new value
+*/
+Chart.prototype.durationChanged = function( oldVal, newVal ) {
+	var err;
+	if ( typeof newVal !== 'number' || newVal !== newVal ) {
+		err = new TypeError( 'duration::invalid assignment. Must be a numeric. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.duration = oldVal;
+		return;
+	}
+	this.fire( 'changed', {
+		'attr': 'duration',
+		'prev': oldVal,
+		'curr': newVal
+	});
+}; // end METHOD durationChanged()
 
 /**
 * METHOD: autoUpdateChanged( oldVal, newVal )
