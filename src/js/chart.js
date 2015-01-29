@@ -1052,6 +1052,7 @@ Chart.prototype.configChanged = function( oldConfig, newConfig ) {
 */
 Chart.prototype.widthChanged = function( oldVal, newVal ) {
 	var width,
+		dx,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal <= 0 ) {
 		err = new TypeError( 'width::invalid assignment. Must be a number greater than 0. Value: `' + newVal + '`.' );
@@ -1063,6 +1064,7 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
+	dx = this._xScale.rangeBand();
 
 	if ( this.$.canvas && this.autoUpdate ) {
 		// [1] Update the SVG canvas:
@@ -1081,7 +1083,7 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 		// [5] Update the cells:
 		this.$.rows.selectAll( '.cell' )
 			.attr( 'x', this._cx )
-			.attr( 'width', this._xScale.rangeBand() );
+			.attr( 'width', dx );
 
 		// [6] Update the row and column labels:
 		this.$.rows.selectAll( 'text' )
@@ -1089,7 +1091,7 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 			.attr( 'font-size', this.fontSize() );
 
 		this.$.cols.selectAll( 'text' )
-			.attr( 'y', this._xScale.rangeBand() / 2 )
+			.attr( 'y', dx / 2 )
 			.attr( 'font-size', this.fontSize() );
 	}
 	this.fire( 'width', {
@@ -1111,6 +1113,7 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.heightChanged = function( oldVal, newVal ) {
 	var height,
+		dy,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal <= 0 ) {
 		err = new TypeError( 'height::invalid assignment. Must be a number greater than 0. Value: `' + newVal + '`.' );
@@ -1122,6 +1125,7 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
+	dy = this._yScale.rangeBand();
 
 	if ( this.$.canvas && this.autoUpdate ) {
 		// [1] Update the SVG canvas:
@@ -1139,11 +1143,11 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 
 		// [5] Update the cells:
 		this.$.rows.selectAll( '.cell' )
-			.attr( 'height', this._yScale.rangeBand() );
+			.attr( 'height', dy );
 
 		// [6] Update the row and column labels:
 		this.$.rows.selectAll( 'text' )
-			.attr( 'y', this._yScale.rangeBand() / 2 )
+			.attr( 'y', dy / 2 )
 			.attr( 'font-size', this.fontSize() );
 
 		this.$.cols.selectAll( 'text' )
@@ -1194,6 +1198,7 @@ Chart.prototype.chartTitleChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 	var width,
+		dx,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0 ) {
 		err = new TypeError( 'paddingLeft::invalid assignment. Must be an integer greater than or equal to 0. Value: `' + newVal + '`.' );
@@ -1205,6 +1210,7 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
+	dx = this._xScale.rangeBand();
 
 	if ( this.autoUpdate ) {
 		// [1] Update the background:
@@ -1223,7 +1229,7 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 		// [5] Update the cells:
 		this.$.rows.selectAll( '.cell' )
 			.attr( 'x', this._cx )
-			.attr( 'width', this._xScale.rangeBand() );
+			.attr( 'width', dx );
 
 		// [6] Update the row and column labels:
 		this.$.rows.selectAll( 'text' )
@@ -1231,7 +1237,7 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 			.attr( 'font-size', this.fontSize() );
 
 		this.$.cols.selectAll( 'text' )
-			.attr( 'y', this._xScale.rangeBand() / 2 )
+			.attr( 'y', dx / 2 )
 			.attr( 'font-size', this.fontSize() );
 	}
 	this.fire( 'changed', {
@@ -1250,6 +1256,7 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 	var width,
+		dx,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0 ) {
 		err = new TypeError( 'paddingRight::invalid assignment. Must be an integer greater than or equal to 0. Value: `' + newVal + '`.' );
@@ -1261,6 +1268,7 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
+	dx = this._xScale.rangeBand();
 
 	if ( this.autoUpdate ) {
 		// [1] Update the background:
@@ -1276,7 +1284,7 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 		// [4] Update the cells:
 		this.$.rows.selectAll( '.cell' )
 			.attr( 'x', this._cx )
-			.attr( 'width', this._xScale.rangeBand() );
+			.attr( 'width', dx );
 
 		// [5] Update the row and column labels:
 		this.$.rows.selectAll( 'text' )
@@ -1284,7 +1292,7 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 			.attr( 'font-size', this.fontSize() );
 
 		this.$.cols.selectAll( 'text' )
-			.attr( 'y', this._xScale.rangeBand() / 2 )
+			.attr( 'y', dx / 2 )
 			.attr( 'font-size', this.fontSize() );
 	}
 	this.fire( 'changed', {
@@ -1303,6 +1311,7 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 	var height,
+		dy,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0 ) {
 		err = new TypeError( 'paddingBottom::invalid assignment. Must be an integer greater than or equal to 0. Value: `' + newVal + '`.' );
@@ -1314,6 +1323,7 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
+	dy = this._yScale.rangeBand();
 
 	if ( this.autoUpdate ) {
 		// [1] Update the background:
@@ -1328,11 +1338,11 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 
 		// [4] Update the cells:
 		this.$.rows.selectAll( '.cell' )
-			.attr( 'height', this._yScale.rangeBand() );
+			.attr( 'height', dy );
 
 		// [5] Update the row and column labels:
 		this.$.rows.selectAll( 'text' )
-			.attr( 'y', this._yScale.rangeBand() / 2 )
+			.attr( 'y', dy / 2 )
 			.attr( 'font-size', this.fontSize() );
 
 		this.$.cols.selectAll( 'text' )
@@ -1355,6 +1365,7 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 	var height,
+		dy,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0 ) {
 		err = new TypeError( 'paddingTop::invalid assignment. Must be an integer greater than or equal to 0.  Value: `' + newVal + '.' );
@@ -1366,6 +1377,7 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
+	dy = this._yScale.rangeBand();
 
 	if ( this.autoUpdate ) {
 		// [1] Update the background:
@@ -1383,11 +1395,11 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 
 		// [5] Update the cells:
 		this.$.rows.selectAll( '.cell' )
-			.attr( 'height', this._yScale.rangeBand() );
+			.attr( 'height', dy );
 
 		// [6] Update the row and column labels:
 		this.$.rows.selectAll( 'text' )
-			.attr( 'y', this._yScale.rangeBand() / 2 )
+			.attr( 'y', dy / 2 )
 			.attr( 'font-size', this.fontSize() );
 
 		this.$.cols.selectAll( 'text' )
