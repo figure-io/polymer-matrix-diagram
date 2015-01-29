@@ -2,8 +2,12 @@ TODO
 ====
 
 1. data frame
+	-	separate module
+	-	bundle with component
+	-	when data is set as an array of arrays, convert to DF
 2. include screenshot in README.
 3. title
+	-	positioning
 4. xlabel, ylabel (??)
 	-	requires positioning finagling
 	-	could auto position, as long as padding values are `null`. Once set, we abide by set values
@@ -16,6 +20,7 @@ TODO
 8. `on()` as an alias to `addEventListener()`?
 	- could have it only accept the publicized events and do input validation
 9. favicon
+	-	still needs work
 10. Wiki
 
 
