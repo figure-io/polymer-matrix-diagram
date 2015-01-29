@@ -1097,17 +1097,20 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 
 	if ( this.$.canvas && this.autoUpdate ) {
 		// [1] Update the SVG canvas:
-		this.$.canvas.attr( 'width', newVal );
+		this.$.canvas
+			.attr( 'width', newVal );
 
 		// [2] Update the background:
-		this.$.bkgd.attr( 'width', width );
+		this.$.bkgd
+			.attr( 'width', width );
 
 		// [3] Update the rows:
 		this.$.rowGridlines
 			.attr( 'x1', width );
 
 		// [4] Update the columns:
-		this.$.cols.attr( 'transform', this._x );
+		this.$.cols
+			.attr( 'transform', this._x );
 
 		// [5] Update the cells:
 		this.$.cells
@@ -1158,19 +1161,24 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 
 	if ( this.$.canvas && this.autoUpdate ) {
 		// [1] Update the SVG canvas:
-		this.$.canvas.attr( 'height', newVal );
+		this.$.canvas
+			.attr( 'height', newVal );
 
 		// [2] Update the background:
-		this.$.bkgd.attr( 'height', height );
+		this.$.bkgd
+			.attr( 'height', height );
 
 		// [3] Update the rows:
-		this.$.rows.attr( 'transform', this._y );
+		this.$.rows
+			.attr( 'transform', this._y );
 
 		// [4] Update the columns:
-		this.$.colGridlines.attr( 'x1', -height );
+		this.$.colGridlines
+			.attr( 'x1', -height );
 
 		// [5] Update the cells:
-		this.$.cells.attr( 'height', dy );
+		this.$.cells
+			.attr( 'height', dy );
 
 		// [6] Update the row and column names:
 		this.$.rownames
@@ -1241,16 +1249,20 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 
 	if ( this.autoUpdate ) {
 		// [1] Update the background:
-		this.$.bkgd.attr( 'width', width );
+		this.$.bkgd
+			.attr( 'width', width );
 
 		// [2] Update the graph:
-		this.$.graph.attr( 'transform', 'translate(' + newVal + ',' + this.paddingTop + ')' );
+		this.$.graph
+			.attr( 'transform', 'translate(' + newVal + ',' + this.paddingTop + ')' );
 
 		// [3] Update the rows:
-		this.$.rowGridlines.attr( 'x1', width );
+		this.$.rowGridlines
+			.attr( 'x1', width );
 
 		// [4] Update the columns:
-		this.$.cols.attr( 'transform', this._x );
+		this.$.cols
+			.attr( 'transform', this._x );
 
 		// [5] Update the cells:
 		this.$.cells
@@ -1298,14 +1310,16 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 
 	if ( this.autoUpdate ) {
 		// [1] Update the background:
-		this.$.bkgd.attr( 'width', width );
+		this.$.bkgd
+			.attr( 'width', width );
 
 		// [2] Update the rows:
 		this.$.rowGridlines
 			.attr( 'x1', width );
 
 		// [3] Update the columns:
-		this.$.cols.attr( 'transform', this._x );
+		this.$.cols
+			.attr( 'transform', this._x );
 
 		// [4] Update the cells:
 		this.$.cells
@@ -1353,17 +1367,20 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 
 	if ( this.autoUpdate ) {
 		// [1] Update the background:
-		this.$.bkgd.attr( 'height', height );
+		this.$.bkgd
+			.attr( 'height', height );
 
 		// [2] Update the rows:
-		this.$.rows.attr( 'transform', this._y );
+		this.$.rows
+			.attr( 'transform', this._y );
 
 		// [3] Update the columns:
 		this.$.colGridlines
 			.attr( 'x1', -height );
 
 		// [4] Update the cells:
-		this.$.cells.attr( 'height', dy );
+		this.$.cells
+			.attr( 'height', dy );
 
 		// [5] Update the row and column names:
 		this.$.rownames
@@ -1406,19 +1423,24 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 
 	if ( this.autoUpdate ) {
 		// [1] Update the background:
-		this.$.bkgd.attr( 'height', height );
+		this.$.bkgd
+			.attr( 'height', height );
 
 		// [2] Update the graph:
-		this.$.graph.attr( 'transform', 'translate(' + this.paddingLeft + ',' + newVal + ')' );
+		this.$.graph
+			.attr( 'transform', 'translate(' + this.paddingLeft + ',' + newVal + ')' );
 
 		// [3] Update the rows:
-		this.$.rows.attr( 'transform', this._y );
+		this.$.rows
+			.attr( 'transform', this._y );
 
 		// [4] Update the columns:
-		this.$.colGridlines.attr( 'x1', -height );
+		this.$.colGridlines
+			.attr( 'x1', -height );
 
 		// [5] Update the cells:
-		this.$.cells.attr( 'height', dy );
+		this.$.cells
+			.attr( 'height', dy );
 
 		// [6] Update the row and column labels:
 		this.$.rownames
@@ -1455,8 +1477,9 @@ Chart.prototype.zValueChanged = function( oldVal, newVal ) {
 	if ( type === 'function' ) {
 		this._zScale.domain( this.zDomain( this.zMin, this.zMax ) );
 	}
-	this.$.cells.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
-
+	if ( this.autoUpdate ) {
+		this.$.cells.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
+	}
 	this.fire( 'changed', {
 		'attr': 'zValue',
 		'prev': oldVal,
