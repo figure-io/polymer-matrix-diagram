@@ -37,7 +37,7 @@ Matrix Diagram
 		*	[height](#evt-height)
 		*	[zMin](#evt-zmin)
 		* 	[zMax](#evt-zmax)
-		*	[resize](#evt-resized)
+		*	[resized](#evt-resized)
 		*	[clicked](#evt-clicked)
 		*	[clicked.row](#evt-clicked-row)
 		*	[clicked.col](#evt-clicked-col)

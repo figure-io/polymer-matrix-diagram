@@ -16,7 +16,7 @@ TODO
 8. `on()` as an alias to `addEventListener()`?
 	- could have it only accept the publicized events and do input validation
 9. favicon
-10. README toc / Wiki
+10. Wiki
 
 
 ## Bugs
