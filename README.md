@@ -5,8 +5,6 @@ Matrix Diagram
 > A [Polymer](https://www.polymer-project.org/) web component for displaying matrix diagrams.
 
 
-## Table of Contents
-
 1. 	[Installation](#install)
 1. 	[Usage](#usage)
 	-	[Attributes](#attributes)
