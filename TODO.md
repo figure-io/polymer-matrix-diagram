@@ -42,9 +42,16 @@ TODO
 12. lasso support
 	-	ability to brush over the cells
 	-	emit an array of [i,j] values
-13. manual sorting
+13. manual sorting (via names)
 	- 	drag
-	-	mousedown; translate column/row
+	-	mousedown
+	-	translate column/row
+	-	will need to disambiguate listeners; e.g., from normal click listeners
+	-	translate in direction of mouse movement, constrained either vertically or laterally, depending on if column or row name being dragged, respectively
+	-	find nearest column or row
+	-	get col/row index
+	-	insert new index into domain array and shift all other indices down the array by 1
+	-	reset cols/rows (animation)
 14. should the brushable version be its own separate (super) element, which extends the base ("simple") element?
 	-	`polymer-matrix-diagram-brushable`
 	- 	minimal matrix diagram
