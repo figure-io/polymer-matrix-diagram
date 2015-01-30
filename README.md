@@ -18,7 +18,6 @@ Matrix Diagram
 		*	[paddingRight](#attr-paddingright)
 		*	[paddingTop](#attr-paddingtop)
 		*	[paddingBottom](#attr-paddingbottom)
-		*	[chartTitle](#attr-charttitle)
 		*	[xLabel](#attr-xlabel)
 		*	[yLabel](#attr-ylabel)
 		*	[zValue](#attr-zvalue)
