@@ -14,6 +14,9 @@ TODO
 	-	Symbols should be like colorbars
 		-	one showing opacity with label
 		-	another showing colors with label
+	-	should be brushable elements
+		-	snap to values (?)
+		-	use delayed callbacks to only update after brush
 3. title
 	-	positioning (left, center, right ??)
 	-	auto-position similar to xlabel/ylabel below
@@ -36,6 +39,14 @@ TODO
 10. Wiki
 11. update wct plugins
 	-	istanbul
+12. lasso support
+	-	ability to brush over the cells
+	-	emit an array of [i,j] values
+13. manual sorting
+	- 	drag
+	-	mousedown; translate column/row
+14. should the brushable version be its own separate (super) element, which extends the base ("simple") element?
+	-	`polymer-matrix-diagram-brushable`
 
 
 
