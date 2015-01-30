@@ -92,6 +92,10 @@
 			// console.log( '...transition ended...' );
 		});
 
+		el.addEventListener( 'err', function onError( err ) {
+			console.error( err );
+		});
+
 		rowOrders = rowOrderings( data );
 
 	} // end FUNCTION onData()

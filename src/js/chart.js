@@ -1094,6 +1094,40 @@ Chart.prototype.calculatePadding = function() {
 }; // end METHOD calculatePadding()
 
 /**
+* METHOD: validateOrder( arr )
+*	Validates that an array of indices is a permutation.
+*
+* @param {Array} arr - array of indices
+* @returns {Boolean} boolean indicating if valid
+*/
+Chart.prototype.validateOrder = function( arr ) {
+	var len = arr.length,
+		hash = {},
+		range,
+		key,
+		i;
+
+	// Build a hash of all indices, ensuring uniqueness...
+	for ( i = 0; i < len; i++ ) {
+		key = arr[ i ];
+		if ( hash[ key ] ) {
+			return false;
+		}
+		hash[ key ] = true;
+	}
+	// Create a unique ordered array of all possible indices:
+	range = this._d3.range( len );
+
+	// Confirm that the hash has every possible index...
+	for ( i = 0; i < len; i++ ) {
+		if ( !hash[ range[i] ] ) {
+			return false;
+		}
+	}
+	return true;
+}; // end METHOD validateOrder()
+
+/**
 * METHOD: dataChanged( oldVal newVal )
 *	Event handler invoked when the `data` attribute changes.
 *
@@ -1162,8 +1196,12 @@ Chart.prototype.rowOrderChanged = function( val, newVal ) {
 		this.rowOrder = this._rowOrder.slice();
 		return;
 	}
-	// TODO: check that order is unique permutation
-
+	if ( !this.validateOrder( rowOrder ) ) {
+		err = new Error( 'rowOrder::invalid assignment. Assigned array must be a permutation of row indices.' );
+		this.fire( 'err', err );
+		this.rowOrder = this._rowOrder.slice();
+		return;
+	}
 	this._rowOrder = rowOrder.slice();
 	this._yScale.domain( rowOrder );
 
@@ -1222,8 +1260,12 @@ Chart.prototype.colOrderChanged = function( val, newVal ) {
 		this.colOrder = this._colOrder.slice();
 		return;
 	}
-	// TODO: check that order is unique permutation
-
+	if ( !this.validateOrder( colOrder ) ) {
+		err = new Error( 'colOrder::invalid assignment. Assigned array must be a permutation of column indices.' );
+		this.fire( 'err', err );
+		this.colOrder = this._colOrder.slice();
+		return;
+	}
 	this._colOrder = colOrder.slice();
 	this._xScale.domain( colOrder );
 
