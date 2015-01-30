@@ -14,8 +14,11 @@
 }
 
 .grid {
+	fill: none;
 	stroke: #fff;
 	stroke-width: 1;
+	shape-rendering: crispEdges;
+	vector-effect: non-scaling-stroke;
 }
 
 .name {

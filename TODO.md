@@ -47,6 +47,14 @@ TODO
 	-	mousedown; translate column/row
 14. should the brushable version be its own separate (super) element, which extends the base ("simple") element?
 	-	`polymer-matrix-diagram-brushable`
+	- 	minimal matrix diagram
+		-	no sorting
+		-	no automatic padding calculation
+		-	no brush
+		-	no click/hover/drag listeners
+		-	no attribute changed listeners
+			-	assume everything configured from start and on the element
+		- 	no validation
 
 
 
