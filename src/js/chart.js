@@ -332,8 +332,9 @@ Chart.prototype.init = function() {
 	$.bkgd = null;
 	$.text = null;
 
-	// Meta elements...
-	$.meta = null;
+	// Axis elements...
+	$.xAxis = null;
+	$.yAxis = null;
 	$.xLabel = null;
 	$.yLabel = null;
 
@@ -413,7 +414,7 @@ Chart.prototype.create = function() {
 		.createMarks()
 		.createRows()
 		.createCols()
-		.createMeta();
+		.createAxes();
 
 	return this;
 }; // end METHOD create()
@@ -618,49 +619,64 @@ Chart.prototype.createCells = function( d, i ) {
 }; // end METHOD createCells()
 
 /**
-* METHOD: createMeta()
-*	Creates the chart meta elements.
+* METHOD: createAxes()
+*	Creates the chart axis elements.
 *
 * @returns {DOMElement} element instance
 */
-Chart.prototype.createMeta = function() {
-	var meta = this.$.meta,
-		pLeft,
-		pTop;
+Chart.prototype.createAxes = function() {
+	var graph = this.$.graph,
+		axis;
 
-	if ( meta ) {
-		meta.remove();
+	// Remove any existing axes...
+	if ( this.$.xAxis ) {
+		this.$.xAxis.remove();
 	}
-	meta = this.$.canvas.append( 'svg:g' )
-		.attr( 'property', 'meta' )
-		.attr( 'class', 'meta' )
-		.attr( 'data-graph-type', 'matrix-diagram' )
-		.attr( 'transform', 'translate(0,0)' );
+	if ( this.$.yAxis ) {
+		this.$.yAxis.remove();
+	}
+	axis = graph.append( 'svg:g' )
+		.attr( 'property', 'axis' )
+		.attr( 'class', 'x axis' );
+	this.$.xAxis = axis;
 
-	this.$.meta = meta;
-
-	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
-	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
-
-	this.$.xLabel = meta.append( 'svg:text' )
+	this.$.xLabel = axis.append( 'svg:text' )
 		.attr( 'property', 'axis.label' )
-		.attr( 'class', 'x label noselect' )
+		.attr( 'class', 'label noselect' )
 		.attr( 'text-anchor', 'middle' )
-		.attr( 'x', (this.graphWidth()/2) + pLeft )
-		.attr( 'y', pTop + 10 )
+		.attr( 'x', this.graphWidth() / 2 )
+		.attr( 'y', -90 )
 		.text( this.xLabel );
 
-	this.$.yLabel = meta.append( 'svg:text' )
+	axis = graph.append( 'svg:g' )
+		.attr( 'property', 'axis' )
+		.attr( 'class', 'y axis' );
+
+	this.$.yLabel = axis.append( 'svg:text' )
 		.attr( 'property', 'axis.label' )
-		.attr( 'class', 'y label noselect' )
+		.attr( 'class', 'label noselect' )
 		.attr( 'text-anchor', 'middle' )
 		.attr( 'transform', 'rotate(-90)' )
-		.attr( 'x', -(this.graphHeight()/2) - pTop )
-		.attr( 'y', 10 )
+		.attr( 'x', -this.graphHeight() / 2 )
+		.attr( 'y', -50 )
 		.text( this.xLabel );
 
 	return this;
-}; // end METHOD createMeta()
+}; // end METHOD createAxes()
+
+/**
+* METHOD: reset()
+*	Resets chart elements.
+*
+* @returns {DOMElement} element instance
+*/
+Chart.prototype.reset = function() {
+	this.resetBase()
+		.resetAxes()
+		.resetCols()
+		.resetRows();
+	return this;
+}; // end METHOD reset()
 
 /**
 * METHOD: resetBase()
@@ -684,14 +700,18 @@ Chart.prototype.resetBase = function() {
 }; // end METHOD resetBase()
 
 /**
-* METHOD: resetMarks()
-*	Resets graph mark elements.
+* METHOD: resetAxes()
+*	Resets axis elements.
 *
 * @returns {DOMElement} element instance
 */
-Chart.prototype.resetMarks = function() {
-	return this.resetRows().resetCols();
-}; // end METHOD resetMarks()
+Chart.prototype.resetAxes = function() {
+	this.$.xLabel
+		.attr( 'x', this.graphWidth() / 2 );
+	this.$.yLabel
+		.attr( 'x', -this.graphHeight() / 2 );
+	return this;
+}; // end METHOD resetAxes()
 
 /**
 * METHOD: resetRows()
@@ -1172,8 +1192,7 @@ Chart.prototype.dataChanged = function( oldVal, newVal ) {
 
 	if ( this.autoUpdate ) {
 		// [3] Reset elements:
-		this.resetBase()
-			.resetMarks();
+		this.reset();
 	}
 	this.fire( 'data', {
 		'type': 'changed'
@@ -1237,7 +1256,6 @@ Chart.prototype.configChanged = function( oldConfig, newConfig ) {
 */
 Chart.prototype.widthChanged = function( oldVal, newVal ) {
 	var width,
-		pLeft,
 		dx,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal <= 0 ) {
@@ -1247,8 +1265,6 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 		return;
 	}
 	width = this.graphWidth();
-
-	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
@@ -1265,7 +1281,7 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 
 		// [3] Update the x-label:
 		this.$.xLabel
-			.attr( 'x', width/2 + pLeft );
+			.attr( 'x', width / 2 );
 
 		// [4] Update the rows:
 		this.$.rowGridlines
@@ -1308,7 +1324,6 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.heightChanged = function( oldVal, newVal ) {
 	var height,
-		pTop,
 		dy,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal <= 0 ) {
@@ -1318,8 +1333,6 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 		return;
 	}
 	height = this.graphHeight();
-
-	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
@@ -1336,7 +1349,7 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 
 		// [3] Update the y-label:
 		this.$.yLabel
-			.attr( 'x', -height/2 + pTop );
+			.attr( 'x', -height / 2 );
 
 		// [4] Update the rows:
 		this.$.rows
@@ -1410,7 +1423,7 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 
 		// [3] Update the x-label:
 		this.$.xLabel
-			.attr( 'x', width/2 + pLeft );
+			.attr( 'x', width / 2 );
 
 		// [4] Update the rows:
 		this.$.rowGridlines
@@ -1450,7 +1463,6 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 	var width,
-		pLeft,
 		dx,
 		err;
 	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
@@ -1460,8 +1472,6 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 		return;
 	}
 	width = this.graphWidth();
-
-	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
@@ -1478,7 +1488,7 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 
 		// [3] Update the x-label:
 		this.$.xLabel
-			.attr( 'x', width/2 + pLeft );
+			.attr( 'x', width / 2 );
 
 		// [4] Update the columns:
 		this.$.cols
@@ -1514,7 +1524,6 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 	var height,
-		pTop,
 		dy,
 		err;
 	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
@@ -1524,8 +1533,6 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 		return;
 	}
 	height = this.graphHeight();
-
-	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
@@ -1542,7 +1549,7 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 
 		// [3] Update the y-label:
 		this.$.yLabel
-			.attr( 'y', -height/2 + pTop );
+			.attr( 'x', -height / 2 );
 
 		// [4] Update the columns:
 		this.$.colGridlines
@@ -1609,7 +1616,7 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 
 		// [3] Update the y-label:
 		this.$.yLabel
-			.attr( 'y', -height/2 + pTop );
+			.attr( 'x', -height / 2 );
 
 		// [4] Update the rows:
 		this.$.rows

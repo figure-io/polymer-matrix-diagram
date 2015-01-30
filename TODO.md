@@ -61,6 +61,9 @@ TODO
 		-	no attribute changed listeners
 			-	assume everything configured from start and on the element
 		- 	no validation
+15. media queries
+	-	at small size, remove row/column labels? ala details on demand.
+		-	would require keeping tabs on element size in JS --> if <, remove and reset the width; once > ensure present and reset the width. Would make the `getPadding` method more complex, as now needs to know container dimensions
 
 
 

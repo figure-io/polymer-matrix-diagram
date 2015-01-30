@@ -196,7 +196,7 @@ el.paddingBottom = 100; // px
 Column label. Default is an empty `string`.
 
 ``` javascript
-el.xLabel = 'Categories';
+el.xLabel = 'beep';
 ```
 
 
@@ -206,7 +206,7 @@ el.xLabel = 'Categories';
 Row label. Default is an empty `string`.
 
 ``` javascript
-el.yLabel = 'Individuals';
+el.yLabel = 'boop';
 ```
 
 

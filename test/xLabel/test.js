@@ -66,7 +66,7 @@ describe( 'xLabel', function tests() {
 
 		el.addEventListener( 'changed', onChange );
 
-		label = el.$.chart.querySelector( '.x.label' );
+		label = el.$.chart.querySelector( '.x.axis .label' );
 
 		content = label.textContent;
 
