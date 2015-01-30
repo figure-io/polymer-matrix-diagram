@@ -39,6 +39,8 @@ var // Utility to create delayed event listeners:
 
 var EVENTS = [
 	'data',
+	'rowOrder',
+	'colOrder',
 
 	'width',
 	'height',
@@ -263,6 +265,10 @@ Chart.prototype.init = function() {
 
 	// Data:
 	this.data = null;
+	this.rowOrder = [];
+	this.colOrder = [];
+	this._rowOrder = null;
+	this._colOrder = null;
 
 	// Private attributes...
 
@@ -856,80 +862,6 @@ Chart.prototype.clear = function() {
 }; // end METHOD clear()
 
 /**
-* METHOD: rowOrder( arr )
-*	Set the row order.
-*
-* @param {Array} arr - array of indices defining the row order
-*/
-Chart.prototype.rowOrder = function( arr ) {
-	var len = this.data.rownames().length,
-		selection;
-
-	if ( !Array.isArray( arr ) ) {
-		throw new TypeError( 'rowOrder()::invalid input argument. Must provide an array. Value' );
-	}
-	if ( arr.length !== len ) {
-		throw new Error( 'rowOrder()::invalid input argument. Array length must equal the number of rows. Number of rows: ' + len + '.' );
-	}
-	this._yScale.domain( arr );
-
-	if ( this.duration > 0 ) {
-		selection = this.$.marks.transition()
-			.duration( this.duration )
-			.each( 'end', this._onTransitionEnd );
-
-		selection.selectAll( '.row' )
-			.delay( this.delay )
-			.attr( 'transform', this._y );
-	} else {
-		this.$.rows.attr( 'transform', this._y );
-		this.fire( 'transitionEnd', null );
-	}
-	return this;
-}; // end METHOD rowOrder()
-
-/**
-* METHOD: colOrder( arr )
-*	Set the column order.
-*
-* @param {Array} arr - array of indices defining the column order
-*/
-Chart.prototype.colOrder = function( arr ) {
-	var len = this.data.colnames().length,
-		selection;
-
-	if ( !Array.isArray( arr ) ) {
-		throw new TypeError( 'colOrder()::invalid input argument. Must provide an array. Value: `' + arr + '`.' );
-	}
-	if ( arr.length !== len ) {
-		throw new Error( 'colOrder()::invalid input argument. Array length must equal the number of columns. Number of columns: ' + len + '.' );
-	}
-	this._xScale.domain( arr );
-
-	if ( this.duration > 0 ) {
-		selection = this.$.marks.transition()
-			.duration( this.duration )
-			.each( 'end', this._onTransitionEnd );
-
-		selection.selectAll( '.col' )
-			.delay( this.delay )
-			.attr( 'transform', this._x );
-
-		selection.selectAll( '.row' )
-			.selectAll( '.cell' )
-			.delay( this.delay )
-			.attr( 'x', this._cx );
-	} else {
-		this.$.cols.attr( 'transform', this._x );
-
-		this.$.cells.attr( 'x', this._cx );
-
-		this.fire( 'transitionEnd', null );
-	}
-	return this;
-}; // end METHOD colOrder()
-
-/**
 * METHOD: graphWidth()
 *	Returns the graph width.
 *
@@ -1138,7 +1070,7 @@ Chart.prototype.calculatePadding = function() {
 
 	// TODO: factor in yLabel height
 
-	this.paddingLeft = max;
+	this._paddingLeft = max;
 
 	max = this._minPadding;
 	for ( i = 0; i < colnames.length; i++ ) {
@@ -1203,6 +1135,134 @@ Chart.prototype.dataChanged = function( oldVal, newVal ) {
 		'curr': newVal
 	});
 }; // end METHOD dataChanged()
+
+/**
+* METHOD: rowOrderChanged( val[, newVal] )
+*	Event handler invoked when the `rowOrder` attribute changes.
+*
+* @param {Array} val - change event value
+* @param {Array} [newVal] - new array of indices defining the row order
+*/
+Chart.prototype.rowOrderChanged = function( val, newVal ) {
+	var len = this.data.rownames().length,
+		rowOrder = this.rowOrder,
+		selection,
+		err;
+
+	// Determine if we have a new row order array...
+	if ( arguments.length > 1 && !Array.isArray( newVal ) ) {
+		err = new TypeError( 'rowOrder::invalid assignment. Row order must be an array. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.rowOrder = val;
+		return;
+	}
+	if ( rowOrder.length !== len ) {
+		err = new Error( 'rowOrder::invalid assignment. Array length must equal the number of rows. Number of rows: ' + len + '.' );
+		this.fire( 'err', err );
+		this.rowOrder = this._rowOrder.slice();
+		return;
+	}
+	// TODO: check that order is unique permutation
+
+	this._rowOrder = rowOrder.slice();
+	this._yScale.domain( rowOrder );
+
+	if ( this.duration > 0 ) {
+		selection = this.$.marks.transition()
+			.duration( this.duration )
+			.each( 'end', this._onTransitionEnd );
+
+		selection.selectAll( '.row' )
+			.delay( this.delay )
+			.attr( 'transform', this._y );
+	} else {
+		this.$.rows.attr( 'transform', this._y );
+		this.fire( 'transitionEnd', null );
+	}
+	this.fire( 'rowOrder', {
+		'type': 'changed'
+	});
+	if ( newVal === void 0 ) {
+		this.fire( 'changed', {
+			'attr': 'rowOrder',
+			'data': val[ 0 ]
+		});
+	} else {
+		this.fire( 'changed', {
+			'attr': 'rowOrder',
+			'prev': val,
+			'curr': newVal
+		});
+	}
+}; // end METHOD rowOrderChanged()
+
+/**
+* METHOD: colOrderChanged( val[, newVal] )
+*	Event handler invoked when the `colOrder` attribute changes.
+*
+* @param {Array} val - change event value
+* @param {Array} [newVal] - new array of indices defining the column order
+*/
+Chart.prototype.colOrderChanged = function( val, newVal ) {
+	var len = this.data.colnames().length,
+		colOrder = this.colOrder,
+		selection,
+		err;
+
+	// Determine if we have a new row order array...
+	if ( arguments.length > 1 && !Array.isArray( newVal ) ) {
+		err = new TypeError( 'colOrder::invalid assignment. Row order must be an array. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.colOrder = val;
+		return;
+	}
+	if ( colOrder.length !== len ) {
+		err = new Error( 'colOrder::invalid assignment. Array length must equal the number of columns. Number of columns: ' + len + '.' );
+		this.fire( 'err', err );
+		this.colOrder = this._colOrder.slice();
+		return;
+	}
+	// TODO: check that order is unique permutation
+
+	this._colOrder = colOrder.slice();
+	this._xScale.domain( colOrder );
+
+	if ( this.duration > 0 ) {
+		selection = this.$.marks.transition()
+			.duration( this.duration )
+			.each( 'end', this._onTransitionEnd );
+
+		selection.selectAll( '.col' )
+			.delay( this.delay )
+			.attr( 'transform', this._x );
+
+		selection.selectAll( '.row' )
+			.selectAll( '.cell' )
+			.delay( this.delay )
+			.attr( 'x', this._cx );
+	} else {
+		this.$.cols.attr( 'transform', this._x );
+
+		this.$.cells.attr( 'x', this._cx );
+
+		this.fire( 'transitionEnd', null );
+	}
+	this.fire( 'colOrder', {
+		'type': 'changed'
+	});
+	if ( newVal === void 0 ) {
+		this.fire( 'changed', {
+			'attr': 'colOrder',
+			'data': val[ 0 ]
+		});
+	} else {
+		this.fire( 'changed', {
+			'attr': 'colOrder',
+			'prev': val,
+			'curr': newVal
+		});
+	}
+}; // end METHOD colOrderChanged()
 
 /**
 * METHOD: configChanged( oldConfig, newConfig )

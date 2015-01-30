@@ -11,6 +11,8 @@ Matrix Diagram
 1. 	[Usage](#usage)
 	-	[Attributes](#attributes)
 		* 	[data](#attr-data)
+		*	[rowOrder](#attr-roworder)
+		*	[colOrder](#attr-colorder)
 		*	[config](#attr-config)
 		*	[width](#attr-width)
 		*	[height](#attr-height)
@@ -29,12 +31,12 @@ Matrix Diagram
 		*	[autoResize](#attr-autoresize)
 	-	[Methods](#methods)
 		*	[clear](#method-clear)
-		*	[rowOrder](#method-roworder)
-		*	[colOrder](#method-colorder)
 	-	[Events](#events)
 		*	[err](#evt-err)
 		*	[changed](#evt-changed)
 		*	[data](#evt-data)
+		*	[rowOrder](#evt-roworder)
+		*	[colOrder](#evt-colorder)
 		*	[width](#evt-width)
 		*	[height](#evt-height)
 		*	[zMin](#evt-zmin)
@@ -120,6 +122,35 @@ el.data = [
 ```
 
 Each nested `array` is visually encoded as a row, and each nested `array` element is visually encoded as a row cell. The nested `array` elements may be of any type.
+
+
+
+
+
+<a name="attr-roworder"></a>
+#### el.rowOrder
+
+Defines the row order. The row order `array` should be a permutation of the row name __indices__.
+
+``` javascript
+el.rowOrder = [ 3, 1, 0, 2 ];
+```
+
+Once the rows are reordered, the element emits a `transitionEnd` event.
+
+
+<a name="attr-colorder"></a>
+#### el.colOrder
+
+Defines the column order. The column order `array` should be a permutation of the column name __indices__.
+
+
+``` javascript
+el.colOrder = [ 0, 1, 4, 3, 2,...];
+```
+
+Once the columns are reordered, the element emits a `transitionEnd` event.
+
 
 
 <a name="attr-config"></a>
@@ -308,32 +339,6 @@ el.clear();
 ```
 
 
-<a name="method-roworder"></a>
-#### el.rowOrder( arr )
-
-Sets the row order. The input `array` should be a permutation of the row name __indices__.
-
-``` javascript
-el.rowOrder( [ 3, 1, 0, 2 ] );
-```
-
-Once the rows are reordered, the element emits a `transitionEnd` event.
-
-
-<a name="method-colorder"></a>
-#### el.colOrder( arr )
-
-Sets the column order. The input `array` should be a permutation of the column name __indices__.
-
-
-``` javascript
-el.colOrder( [ 0, 1, 4, 3, 2,... ] );
-```
-
-Once the columns are reordered, the element emits a `transitionEnd` event.
-
-
-
 
 ### Events
 
@@ -373,6 +378,28 @@ The element emits a `data` event when the `data` attribute changes.
 ``` javascript
 el.addEventListener( 'data', function onEvent( evt ) {
 	console.log( this.data );
+});
+```
+
+<a name="evt-roworder"></a>
+#### 'rowOrder'
+
+The element emits a `rowOrder` event when the `rowOrder` attribute changes.
+
+``` javascript
+el.addEventListener( 'rowOrder', function onEvent( evt ) {
+	console.log( this.rowOrder );
+});
+```
+
+<a name="evt-colorder"></a>
+#### 'colOrder'
+
+The element emits a `colOrder` event when the `colOrder` attribute changes.
+
+``` javascript
+el.addEventListener( 'colOrder', function onEvent( evt ) {
+	console.log( this.colOrder );
 });
 ```
 

@@ -77,11 +77,11 @@
 
 		el.addEventListener( 'clicked.row', function onClick( evt ) {
 			var idx = evt.detail.index;
-			el.rowOrder( rowOrders[ idx ] );
+			el.rowOrder = rowOrders[ idx ];
 		});
 
 		el.addEventListener( 'clicked.col', function onClick( evt ) {
-			el.colOrder( colOrder( colnames.length ) );
+			el.colOrder = colOrder( colnames.length );
 		});
 
 		el.addEventListener( 'clicked.cell', function onClick( evt ) {

@@ -17,7 +17,8 @@ TODO
 	-	should be brushable elements
 		-	snap to values (?)
 		-	use delayed callbacks to only update after brush
-3. 
+3. validate that row/col order is a unique permutation!
+	-	currently, if an `array` element is set to a non-existent value in the domain, the method throws, as unable to render
 4. xlabel, ylabel (??)
 	-	requires positioning finagling
 5. Axis orientation support?
