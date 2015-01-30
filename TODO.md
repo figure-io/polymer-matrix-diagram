@@ -17,9 +17,7 @@ TODO
 	-	should be brushable elements
 		-	snap to values (?)
 		-	use delayed callbacks to only update after brush
-3. title
-	-	positioning (left, center, right ??)
-	-	auto-position similar to xlabel/ylabel below
+3. 
 4. xlabel, ylabel (??)
 	-	requires positioning finagling
 5. Axis orientation support?
@@ -54,6 +52,7 @@ TODO
 	-	reset cols/rows (animation)
 14. should the brushable version be its own separate (super) element, which extends the base ("simple") element?
 	-	`polymer-matrix-diagram-brushable`
+		- 	would probably prefer `polymer-matrix-diagram-static`; by default, the primary component is a swiss army knife; static conveys this is a one and done component
 	- 	minimal matrix diagram
 		-	no sorting
 		-	no automatic padding calculation

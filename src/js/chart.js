@@ -140,13 +140,22 @@ Chart.prototype.width = null;
 Chart.prototype.height = null;
 
 /**
-* ATTRIBUTE: chartTitle
-*	Chart title.
+* ATTRIBUTE: xLabel
+*	Column label.
 *
 * @type {String}
 * @default ''
 */
-Chart.prototype.chartTitle = '';
+Chart.prototype.xLabel = '';
+
+/**
+* ATTRIBUTE: yLabel
+*	Row label.
+*
+* @type {String}
+* @default ''
+*/
+Chart.prototype.yLabel = '';
 
 /**
 * ATTRIBUTE: zValue
@@ -325,7 +334,8 @@ Chart.prototype.init = function() {
 
 	// Meta elements...
 	$.meta = null;
-	$.title = null;
+	$.xLabel = null;
+	$.yLabel = null;
 
 	// Data elements...
 	$.marks = null;
@@ -403,7 +413,7 @@ Chart.prototype.create = function() {
 		.createMarks()
 		.createRows()
 		.createCols()
-		.createTitle();
+		.createMeta();
 
 	return this;
 }; // end METHOD create()
@@ -445,13 +455,6 @@ Chart.prototype.createBase = function() {
 		.attr( 'class', 'graph' )
 		.attr( 'data-graph-type', 'matrix-diagram' )
 		.attr( 'transform', 'translate(' + pLeft + ',' + pTop + ')' );
-
-	// Create the meta element:
-	this.$.meta = canvas.append( 'svg:g' )
-		.attr( 'property', 'meta' )
-		.attr( 'class', 'meta' )
-		.attr( 'data-graph-type', 'matrix-diagram' )
-		.attr( 'transform', 'translate(0,0)' );
 
 	// Create a text element for auto-computing padding based on row and column names:
 	this.$.text = canvas.append( 'svg:text' )
@@ -615,40 +618,49 @@ Chart.prototype.createCells = function( d, i ) {
 }; // end METHOD createCells()
 
 /**
-* METHOD: createTitle()
-*	Creates the chart title.
+* METHOD: createMeta()
+*	Creates the chart meta elements.
 *
 * @returns {DOMElement} element instance
 */
-Chart.prototype.createTitle = function() {
-	if ( this.$.title ) {
-		this.$.title.remove();
+Chart.prototype.createMeta = function() {
+	var meta = this.$.meta,
+		pLeft,
+		pTop;
+
+	if ( meta ) {
+		meta.remove();
 	}
-	this.$.title = this.$.meta.append( 'svg:text' )
-		.attr( 'property', 'chart.title' )
-		.attr( 'class', 'title noselect' )
-		.attr( 'x', 6 )
-		.attr( 'y', 38 )
-		.text( this.chartTitle );
+	meta = this.$.canvas.append( 'svg:g' )
+		.attr( 'property', 'meta' )
+		.attr( 'class', 'meta' )
+		.attr( 'data-graph-type', 'matrix-diagram' )
+		.attr( 'transform', 'translate(0,0)' );
+
+	this.$.meta = meta;
+
+	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
+	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
+
+	this.$.xLabel = meta.append( 'svg:text' )
+		.attr( 'property', 'axis.label' )
+		.attr( 'class', 'x label noselect' )
+		.attr( 'text-anchor', 'middle' )
+		.attr( 'x', (this.graphWidth()/2) + pLeft )
+		.attr( 'y', pTop + 10 )
+		.text( this.xLabel );
+
+	this.$.yLabel = meta.append( 'svg:text' )
+		.attr( 'property', 'axis.label' )
+		.attr( 'class', 'y label noselect' )
+		.attr( 'text-anchor', 'middle' )
+		.attr( 'transform', 'rotate(-90)' )
+		.attr( 'x', -(this.graphHeight()/2) - pTop )
+		.attr( 'y', 10 )
+		.text( this.xLabel );
 
 	return this;
-}; // end METHOD createTitle()
-
-/**
-* METHOD: clear()
-*	Clears the chart.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.clear = function() {
-	// TODO: should meta data (e.g., title) be cleared as well?
-
-	// Remove the graph:
-	this.$.rows.remove();
-	this.$.cols.remove();
-
-	return this;
-}; // end METHOD clear()
+}; // end METHOD createMeta()
 
 /**
 * METHOD: resetBase()
@@ -810,6 +822,18 @@ Chart.prototype.resetCells = function( d, i ) {
 
 	return this;
 }; // end METHOD resetCells()
+
+/**
+* METHOD: clear()
+*	Clears the chart.
+*
+* @returns {DOMElement} element instance
+*/
+Chart.prototype.clear = function() {
+	this.$.rows.remove();
+	this.$.cols.remove();
+	return this;
+}; // end METHOD clear()
 
 /**
 * METHOD: rowOrder( arr )
@@ -1107,7 +1131,7 @@ Chart.prototype.calculatePadding = function() {
 	max = Math.ceil( max + scalar );
 	max = ( max > min ) ? max : min;
 
-	// TODO: factor in chart title and xLabel height
+	// TODO: factor in xLabel height
 
 	this._paddingTop = max;
 
@@ -1187,8 +1211,7 @@ Chart.prototype.configChanged = function( oldConfig, newConfig ) {
 	// this.width = newConfig.canvas.width;
 	// this.height = newConfig.canvas.height;
 
-	// FIXME: title should not be part of annotations, but meta. The config should be standardized. Put in repo. Version it. Create an associated validator. NPM.
-	// this.chartTitle = newConfig.annotations.title;
+	// FIXME: The config should be standardized. Put in repo. Version it. Create an associated validator. NPM.
 
 	this.fire( 'changed', {
 		'attr': 'config',
@@ -1214,6 +1237,7 @@ Chart.prototype.configChanged = function( oldConfig, newConfig ) {
 */
 Chart.prototype.widthChanged = function( oldVal, newVal ) {
 	var width,
+		pLeft,
 		dx,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal <= 0 ) {
@@ -1223,6 +1247,8 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 		return;
 	}
 	width = this.graphWidth();
+
+	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
@@ -1237,20 +1263,24 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 		this.$.bkgd
 			.attr( 'width', width );
 
-		// [3] Update the rows:
+		// [3] Update the x-label:
+		this.$.xLabel
+			.attr( 'x', width/2 + pLeft );
+
+		// [4] Update the rows:
 		this.$.rowGridlines
 			.attr( 'x1', width );
 
-		// [4] Update the columns:
+		// [5] Update the columns:
 		this.$.cols
 			.attr( 'transform', this._x );
 
-		// [5] Update the cells:
+		// [6] Update the cells:
 		this.$.cells
 			.attr( 'x', this._cx )
 			.attr( 'width', dx );
 
-		// [6] Update the row and column names:
+		// [7] Update the row and column names:
 		this.$.rownames
 			.attr( 'y', this._yScale.rangeBand() / 2 )
 			.attr( 'font-size', this.fontSize() );
@@ -1278,6 +1308,7 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.heightChanged = function( oldVal, newVal ) {
 	var height,
+		pTop,
 		dy,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal <= 0 ) {
@@ -1287,6 +1318,8 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 		return;
 	}
 	height = this.graphHeight();
+
+	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
@@ -1301,19 +1334,23 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 		this.$.bkgd
 			.attr( 'height', height );
 
-		// [3] Update the rows:
+		// [3] Update the y-label:
+		this.$.yLabel
+			.attr( 'x', -height/2 + pTop );
+
+		// [4] Update the rows:
 		this.$.rows
 			.attr( 'transform', this._y );
 
-		// [4] Update the columns:
+		// [5] Update the columns:
 		this.$.colGridlines
 			.attr( 'x1', -height );
 
-		// [5] Update the cells:
+		// [6] Update the cells:
 		this.$.cells
 			.attr( 'height', dy );
 
-		// [6] Update the row and column names:
+		// [7] Update the row and column names:
 		this.$.rownames
 			.attr( 'y', dy / 2 )
 			.attr( 'font-size', this.fontSize() );
@@ -1331,31 +1368,6 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 		'curr': newVal
 	});
 }; // end METHOD heightChanged()
-
-/**
-* METHOD: chartTitleChanged( oldVal, newVal )
-*	Event handler invoked when the `chartTitle` attribute changes.
-*
-* @param {String} oldVal - old value
-* @param {String} newVal - new value
-*/
-Chart.prototype.chartTitleChanged = function( oldVal, newVal ) {
-	var err;
-	if ( typeof newVal !== 'string' ) {
-		err = new TypeError( 'charTitle::invalid assignment. Must be a string. Value: `' + newVal + '`.' );
-		this.fire( 'err', err );
-		this.chartTitle = oldVal;
-		return;
-	}
-	if ( this.autoUpdate ) {
-		this.$.title.text( newVal );
-	}
-	this.fire( 'changed', {
-		'attr': 'chartTitle',
-		'prev': oldVal,
-		'curr': newVal
-	});
-}; // end METHOD chartTitleChanged()
 
 /**
 * METHOD: paddingLeftChanged( oldVal, newVal )
@@ -1396,20 +1408,24 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 		this.$.graph
 			.attr( 'transform', 'translate(' + pLeft + ',' + pTop + ')' );
 
-		// [3] Update the rows:
+		// [3] Update the x-label:
+		this.$.xLabel
+			.attr( 'x', width/2 + pLeft );
+
+		// [4] Update the rows:
 		this.$.rowGridlines
 			.attr( 'x1', width );
 
-		// [4] Update the columns:
+		// [5] Update the columns:
 		this.$.cols
 			.attr( 'transform', this._x );
 
-		// [5] Update the cells:
+		// [6] Update the cells:
 		this.$.cells
 			.attr( 'x', this._cx )
 			.attr( 'width', dx );
 
-		// [6] Update the row and column names:
+		// [7] Update the row and column names:
 		this.$.rownames
 			.attr( 'y', this._yScale.rangeBand() / 2 )
 			.attr( 'font-size', this.fontSize() );
@@ -1434,6 +1450,7 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 	var width,
+		pLeft,
 		dx,
 		err;
 	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
@@ -1443,6 +1460,8 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 		return;
 	}
 	width = this.graphWidth();
+
+	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
@@ -1457,16 +1476,20 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 		this.$.rowGridlines
 			.attr( 'x1', width );
 
-		// [3] Update the columns:
+		// [3] Update the x-label:
+		this.$.xLabel
+			.attr( 'x', width/2 + pLeft );
+
+		// [4] Update the columns:
 		this.$.cols
 			.attr( 'transform', this._x );
 
-		// [4] Update the cells:
+		// [5] Update the cells:
 		this.$.cells
 			.attr( 'x', this._cx )
 			.attr( 'width', dx );
 
-		// [5] Update the row and column names:
+		// [6] Update the row and column names:
 		this.$.rownames
 			.attr( 'y', this._yScale.rangeBand() / 2 )
 			.attr( 'font-size', this.fontSize() );
@@ -1491,6 +1514,7 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 	var height,
+		pTop,
 		dy,
 		err;
 	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
@@ -1500,6 +1524,8 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 		return;
 	}
 	height = this.graphHeight();
+
+	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
@@ -1514,15 +1540,19 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 		this.$.rows
 			.attr( 'transform', this._y );
 
-		// [3] Update the columns:
+		// [3] Update the y-label:
+		this.$.yLabel
+			.attr( 'y', -height/2 + pTop );
+
+		// [4] Update the columns:
 		this.$.colGridlines
 			.attr( 'x1', -height );
 
-		// [4] Update the cells:
+		// [5] Update the cells:
 		this.$.cells
 			.attr( 'height', dy );
 
-		// [5] Update the row and column names:
+		// [6] Update the row and column names:
 		this.$.rownames
 			.attr( 'y', dy / 2 )
 			.attr( 'font-size', this.fontSize() );
@@ -1577,19 +1607,23 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 		this.$.graph
 			.attr( 'transform', 'translate(' + pLeft + ',' + pTop + ')' );
 
-		// [3] Update the rows:
+		// [3] Update the y-label:
+		this.$.yLabel
+			.attr( 'y', -height/2 + pTop );
+
+		// [4] Update the rows:
 		this.$.rows
 			.attr( 'transform', this._y );
 
-		// [4] Update the columns:
+		// [5] Update the columns:
 		this.$.colGridlines
 			.attr( 'x1', -height );
 
-		// [5] Update the cells:
+		// [6] Update the cells:
 		this.$.cells
 			.attr( 'height', dy );
 
-		// [6] Update the row and column labels:
+		// [7] Update the row and column labels:
 		this.$.rownames
 			.attr( 'y', dy / 2 )
 			.attr( 'font-size', this.fontSize() );
@@ -1728,6 +1762,56 @@ Chart.prototype.cScaleChanged = function( oldVal, newVal ) {
 		'curr': newVal
 	});
 }; // end METHOD cScaleChanged()
+
+/**
+* METHOD: xLabelChanged( oldVal, newVal )
+*	Event handler invoked when the `xLabel` attribute changes.
+*
+* @param {String} oldVal - old value
+* @param {String} newVal - new value
+*/
+Chart.prototype.xLabelChanged = function( oldVal, newVal ) {
+	var err;
+	if ( typeof newVal !== 'string' ) {
+		err = new TypeError( 'xlabel::invalid assignment. Must be a string. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.xLabel = oldVal;
+		return;
+	}
+	if ( this.autoUpdate ) {
+		this.$.xLabel.text( newVal );
+	}
+	this.fire( 'changed', {
+		'attr': 'xLabel',
+		'prev': oldVal,
+		'curr': newVal
+	});
+}; // end METHOD xLabelChanged()
+
+/**
+* METHOD: yLabelChanged( oldVal, newVal )
+*	Event handler invoked when the `yLabel` attribute changes.
+*
+* @param {String} oldVal - old value
+* @param {String} newVal - new value
+*/
+Chart.prototype.yLabelChanged = function( oldVal, newVal ) {
+	var err;
+	if ( typeof newVal !== 'string' ) {
+		err = new TypeError( 'yLabel::invalid assignment. Must be a string. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.yLabel = oldVal;
+		return;
+	}
+	if ( this.autoUpdate ) {
+		this.$.yLabel.text( newVal );
+	}
+	this.fire( 'changed', {
+		'attr': 'yLabel',
+		'prev': oldVal,
+		'curr': newVal
+	});
+}; // end METHOD yLabelChanged()
 
 /**
 * METHOD: durationChanged( oldVal, newVal )

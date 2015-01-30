@@ -72,6 +72,8 @@
 			'colnames': colnames
 		});
 		el.zValue = Math.random;
+		el.xLabel = 'categories';
+		el.yLabel = 'individuals';
 
 		el.addEventListener( 'clicked.row', function onClick( evt ) {
 			var idx = evt.detail.index;

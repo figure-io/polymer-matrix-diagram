@@ -19,6 +19,8 @@ Matrix Diagram
 		*	[paddingTop](#attr-paddingtop)
 		*	[paddingBottom](#attr-paddingbottom)
 		*	[chartTitle](#attr-charttitle)
+		*	[xLabel](#attr-xlabel)
+		*	[yLabel](#attr-ylabel)
 		*	[zValue](#attr-zvalue)
 		*	[zMin](#attr-zmin)
 		*	[zMax](#attr-zmax)
@@ -189,14 +191,25 @@ Chart canvas bottom padding; i.e., space between the bottom canvas edge and the 
 el.paddingBottom = 100; // px
 ```
 
-<a name="attr-charttitle"></a>
-#### el.chartTitle
+<a name="attr-xlabel"></a>
+#### el.xLabel
 
-Chart title. Default is an empty `string`.
+Column label. Default is an empty `string`.
 
 ``` javascript
-el.chartTitle = 'Awesome chart.';
+el.xLabel = 'Categories';
 ```
+
+
+<a name="attr-ylabel"></a>
+#### el.yLabel
+
+Row label. Default is an empty `string`.
+
+``` javascript
+el.yLabel = 'Individuals';
+```
+
 
 <a name="attr-zvalue"></a>
 #### el.zValue
