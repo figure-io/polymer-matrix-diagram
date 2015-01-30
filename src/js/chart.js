@@ -261,10 +261,11 @@ Chart.prototype.init = function() {
 	this._maxFontSize = 16; // px
 
 	// Padding...
-	this._paddingLeft = 40; // px
-	this._paddingRight = 40; // px
-	this._paddingTop = 40; // px
-	this._paddingBottom = 40; // px
+	this._minPadding = 40; // px
+	this._paddingLeft = this._minPadding;
+	this._paddingRight = this._minPadding;
+	this._paddingTop = this._minPadding;
+	this._paddingBottom = this._minPadding;
 
 	// Private methods...
 
@@ -626,8 +627,8 @@ Chart.prototype.createTitle = function() {
 	this.$.title = this.$.meta.append( 'svg:text' )
 		.attr( 'property', 'chart.title' )
 		.attr( 'class', 'title noselect' )
-		.attr( 'x', 0 )
-		.attr( 'y', 40 )
+		.attr( 'x', 6 )
+		.attr( 'y', 38 )
 		.text( this.chartTitle );
 
 	return this;
@@ -1067,6 +1068,7 @@ Chart.prototype.fontSize = function() {
 */
 Chart.prototype.calculatePadding = function() {
 	var text = this.$.text,
+		min = this._minPadding,
 		scalar = 16,
 		rownames,
 		colnames,
@@ -1088,12 +1090,13 @@ Chart.prototype.calculatePadding = function() {
 		}
 	}
 	max = Math.ceil( max + scalar );
+	max = ( max > min ) ? max : min;
 
 	// TODO: factor in yLabel height
 
 	this.paddingLeft = max;
 
-	max = 0;
+	max = this._minPadding;
 	for ( i = 0; i < colnames.length; i++ ) {
 		text.textContent = colnames[ i ];
 		len = text.getComputedTextLength();
@@ -1102,10 +1105,14 @@ Chart.prototype.calculatePadding = function() {
 		}
 	}
 	max = Math.ceil( max + scalar );
+	max = ( max > min ) ? max : min;
 
 	// TODO: factor in chart title and xLabel height
 
 	this._paddingTop = max;
+
+	// Reset the text content:
+	text.textContent = '';
 
 	return this;
 }; // end METHOD calculatePadding()

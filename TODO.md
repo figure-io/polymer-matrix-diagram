@@ -6,7 +6,14 @@ TODO
 	-	bundle with component
 	-	when data is set as an array of arrays, convert to DF
 		- 	cannot do, as need colnames and rownames; users will need to use DFs
-2. 
+2. legend support
+	-	place on bottom
+	-	two items possible
+		-	opacity
+		-	color
+	-	Symbols should be like colorbars
+		-	one showing opacity with label
+		-	another showing colors with label
 3. title
 	-	positioning (left, center, right ??)
 	-	auto-position similar to xlabel/ylabel below
