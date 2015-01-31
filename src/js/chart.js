@@ -275,6 +275,10 @@ Chart.prototype.init = function() {
 	// Row and column name font size:
 	this._maxFontSize = 16; // px
 
+	// Max row and column name lengths...
+	this._maxRowTextLength = 0;
+	this._maxColTextLength = 0;
+
 	// Padding...
 	this._minPadding = 40; // px
 	this._paddingLeft = this._minPadding;
@@ -651,7 +655,7 @@ Chart.prototype.createAxes = function() {
 		.attr( 'class', 'label noselect' )
 		.attr( 'text-anchor', 'middle' )
 		.attr( 'x', this.graphWidth() / 2 )
-		.attr( 'y', -90 )
+		.attr( 'y', -(this._maxColTextLength+16) )
 		.text( this.xLabel );
 
 	axis = graph.append( 'svg:g' )
@@ -664,7 +668,7 @@ Chart.prototype.createAxes = function() {
 		.attr( 'text-anchor', 'middle' )
 		.attr( 'transform', 'rotate(-90)' )
 		.attr( 'x', -this.graphHeight() / 2 )
-		.attr( 'y', -50 )
+		.attr( 'y', -(this._maxRowTextLength+16) )
 		.text( this.xLabel );
 
 	return this;
@@ -713,9 +717,13 @@ Chart.prototype.resetBase = function() {
 */
 Chart.prototype.resetAxes = function() {
 	this.$.xLabel
-		.attr( 'x', this.graphWidth() / 2 );
+		.attr( 'x', this.graphWidth() / 2 )
+		.attr( 'y', -(this._maxColTextLength+16) );
+
 	this.$.yLabel
-		.attr( 'x', -this.graphHeight() / 2 );
+		.attr( 'x', -this.graphHeight() / 2 )
+		.attr( 'y', -(this._maxRowTextLength+16) );
+
 	return this;
 }; // end METHOD resetAxes()
 
@@ -727,7 +735,9 @@ Chart.prototype.resetAxes = function() {
 */
 Chart.prototype.resetRows = function() {
 	// Bind the data and update existing rows:
-	var rows = this.$.marks.selectAll( '.row' )
+	var rows, gEnter;
+
+	rows = this.$.marks.selectAll( '.row' )
 		.data( this.data.rownames() )
 		.attr( 'transform', this._y );
 
@@ -735,17 +745,17 @@ Chart.prototype.resetRows = function() {
 	rows.exit().remove();
 
 	// Add any new rows:
-	rows.enter().append( 'svg:g' )
+	gEnter = rows.enter().append( 'svg:g' )
 		.attr( 'class', 'row' )
 		.attr( 'transform', this._y )
 		.on( 'mouseover', this._onRowHover )
 		.on( 'mouseout', this._onRowHoverEnd );
 
-	rows.append( 'svg:line' )
+	gEnter.append( 'svg:line' )
 		.attr( 'class', 'grid x' )
 		.attr( 'x1', this.graphWidth() );
 
-	rows.append( 'svg:text' )
+	gEnter.append( 'svg:text' )
 		.attr( 'class', 'noselect name' )
 		.attr( 'x', -6 )
 		.attr( 'y', this._yScale.rangeBand() / 2 )
@@ -776,7 +786,9 @@ Chart.prototype.resetRows = function() {
 */
 Chart.prototype.resetCols = function() {
 	// Bind the data and update existing columns:
-	var cols = this.$.marks.selectAll( '.col' )
+	var cols, gEnter;
+
+	cols = this.$.marks.selectAll( '.col' )
 		.data( this.data.colnames() )
 		.attr( 'transform', this._x );
 
@@ -784,17 +796,17 @@ Chart.prototype.resetCols = function() {
 	cols.exit().remove();
 
 	// Add any new columns:
-	cols.enter().append( 'svg:g' )
+	gEnter = cols.enter().append( 'svg:g' )
 		.attr( 'class', 'col' )
 		.attr( 'transform', this._x )
 		.on( 'mouseover', this._onColHover )
 		.on( 'mouseout', this._onColHoverEnd );
 
-	cols.append( 'svg:line' )
+	gEnter.append( 'svg:line' )
 		.attr( 'class', 'grid y' )
 		.attr( 'x1', -this.graphHeight() );
 
-	cols.append( 'svg:text' )
+	gEnter.append( 'svg:text' )
 		.attr( 'class', 'noselect name' )
 		.attr( 'x', 6 )
 		.attr( 'y', this._xScale.rangeBand() / 2 )
@@ -1046,52 +1058,110 @@ Chart.prototype.calculatePadding = function() {
 	var text = this.$.text,
 		min = this._minPadding,
 		scalar = 16,
-		rownames,
-		colnames,
+		names,
 		max,
 		len,
+		h,
 		i;
 
-	// NOTE: the `scalar` is something of a magic number to avoid pushing up against the canvas edge.
+	// NOTE: the `scalar` is something of a magic number to avoid pushing up against the canvas edge and crowding axis labels.
 
-	rownames = this.data.rownames();
-	colnames = this.data.colnames();
+	// Rows...
+	names = this.data.rownames();
 
-	max = 0;
-	for ( i = 0; i < rownames.length; i++ ) {
-		text.textContent = rownames[ i ];
+	max = min;
+	for ( i = 0; i < names.length; i++ ) {
+		text.textContent = names[ i ];
 		len = text.getComputedTextLength();
 		if ( len > max ) {
 			max = len;
 		}
 	}
-	max = Math.ceil( max + scalar );
-	max = ( max > min ) ? max : min;
+	h = this.$.yLabel.node().getBBox().height;
+	if ( h ) {
+		h += 10;
+	}
+	this._paddingLeft = Math.ceil( max+scalar+h );
 
-	// TODO: factor in yLabel height
+	// Columns...
+	names = this.data.colnames();
 
-	this._paddingLeft = max;
-
-	max = this._minPadding;
-	for ( i = 0; i < colnames.length; i++ ) {
-		text.textContent = colnames[ i ];
+	max = min;
+	for ( i = 0; i < names.length; i++ ) {
+		text.textContent = names[ i ];
 		len = text.getComputedTextLength();
 		if ( len > max ) {
 			max = len;
 		}
 	}
-	max = Math.ceil( max + scalar );
-	max = ( max > min ) ? max : min;
-
-	// TODO: factor in xLabel height
-
-	this._paddingTop = max;
+	h = this.$.xLabel.node().getBBox().height;
+	if ( h ) {
+		h += 10;
+	}
+	this._paddingTop = Math.ceil( max+scalar+h );
 
 	// Reset the text content:
 	text.textContent = '';
 
 	return this;
 }; // end METHOD calculatePadding()
+
+/**
+* METHOD: maxTextLengths()
+*	Calculates the maximum row and column name lengths.
+*
+* @returns {DOMElement} element instance
+*/
+Chart.prototype.maxTextLengths = function() {
+	var text = this.$.text,
+		selection,
+		names,
+		max,
+		len,
+		i;
+
+	if ( !this.data ) {
+		return this;
+	}
+	selection = this._d3.select( text );
+
+	// Base calculations on the actual name font-size:
+	selection.attr( 'font-size', this.fontSize() );
+
+	// Rows...
+	names = this.data.rownames();
+
+	max = 0;
+	for ( i = 0; i < names.length; i++ ) {
+		text.textContent = names[ i ];
+		len = text.getComputedTextLength();
+		if ( len > max ) {
+			max = len;
+		}
+	}
+	this._maxRowTextLength = Math.ceil( max );
+
+	// Columns...
+	names = this.data.colnames();
+
+	max = 0;
+	for ( i = 0; i < names.length; i++ ) {
+		text.textContent = names[ i ];
+		len = text.getComputedTextLength();
+		if ( len > max ) {
+			max = len;
+		}
+	}
+	this._maxColTextLength = Math.ceil( max );
+
+	// Restore the text font-size:
+	selection.attr( 'font-size', this._maxFontSize );
+
+	// Reset the text content:
+	text.textContent = '';
+
+	return this;
+}; // end METHOD maxTextLengths()
 
 /**
 * METHOD: validateOrder( arr )
@@ -1156,8 +1226,11 @@ Chart.prototype.dataChanged = function( oldVal, newVal ) {
 	this._xScale.rangeBands( [ 0, this.graphWidth() ] );
 	this._yScale.rangeBands( [ 0, this.graphHeight() ] );
 
+	// [3] Compute max text lengths based on the row and column names:
+	this.maxTextLengths();
+
 	if ( this.autoUpdate ) {
-		// [3] Reset elements:
+		// [4] Reset elements:
 		this.reset();
 	}
 	this.fire( 'data', {
@@ -1358,6 +1431,7 @@ Chart.prototype.configChanged = function( oldConfig, newConfig ) {
 */
 Chart.prototype.widthChanged = function( oldVal, newVal ) {
 	var width,
+		fontSize,
 		dx,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal <= 0 ) {
@@ -1370,20 +1444,21 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
-	dx = this._xScale.rangeBand();
+
+	// [1] Recompute the row and column name text lengths:
+	this.maxTextLengths();
 
 	if ( this.$.canvas && this.autoUpdate ) {
-		// [1] Update the SVG canvas:
+		dx = this._xScale.rangeBand();
+		fontSize = this.fontSize();
+
+		// [2] Update the SVG canvas:
 		this.$.canvas
 			.attr( 'width', newVal );
 
-		// [2] Update the background:
+		// [3] Update the background:
 		this.$.bkgd
 			.attr( 'width', width );
-
-		// [3] Update the x-label:
-		this.$.xLabel
-			.attr( 'x', width / 2 );
 
 		// [4] Update the rows:
 		this.$.rowGridlines
@@ -1401,11 +1476,19 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 		// [7] Update the row and column names:
 		this.$.rownames
 			.attr( 'y', this._yScale.rangeBand() / 2 )
-			.attr( 'font-size', this.fontSize() );
+			.attr( 'font-size', fontSize );
 
 		this.$.colnames
 			.attr( 'y', dx / 2 )
-			.attr( 'font-size', this.fontSize() );
+			.attr( 'font-size', fontSize );
+
+		// [8] Update the x- and y-labels:
+		this.$.xLabel
+			.attr( 'x', width / 2 )
+			.attr( 'y', -(this._maxColTextLength+16) );
+
+		this.$.yLabel
+			.attr( 'y', -(this._maxRowTextLength+16) );
 	}
 	this.fire( 'width', {
 		'type': 'changed'
@@ -1426,6 +1509,7 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.heightChanged = function( oldVal, newVal ) {
 	var height,
+		fontSize,
 		dy,
 		err;
 	if ( typeof newVal !== 'number' || newVal !== newVal || newVal <= 0 ) {
@@ -1438,20 +1522,21 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
-	dy = this._yScale.rangeBand();
+
+	// [1] Recompute the row and column name text lengths:
+	this.maxTextLengths();
 
 	if ( this.$.canvas && this.autoUpdate ) {
-		// [1] Update the SVG canvas:
+		dy = this._yScale.rangeBand();
+		fontSize = this.fontSize();
+
+		// [2] Update the SVG canvas:
 		this.$.canvas
 			.attr( 'height', newVal );
 
-		// [2] Update the background:
+		// [3] Update the background:
 		this.$.bkgd
 			.attr( 'height', height );
-
-		// [3] Update the y-label:
-		this.$.yLabel
-			.attr( 'x', -height / 2 );
 
 		// [4] Update the rows:
 		this.$.rows
@@ -1468,11 +1553,19 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 		// [7] Update the row and column names:
 		this.$.rownames
 			.attr( 'y', dy / 2 )
-			.attr( 'font-size', this.fontSize() );
+			.attr( 'font-size', fontSize );
 
 		this.$.colnames
 			.attr( 'y', this._xScale.rangeBand() / 2 )
-			.attr( 'font-size', this.fontSize() );
+			.attr( 'font-size', fontSize );
+
+		// [8] Update the x- and y-labels:
+		this.$.xLabel
+			.attr( 'y', -(this._maxColTextLength+16) );
+
+		this.$.yLabel
+			.attr( 'x', -height / 2 )
+			.attr( 'y', -(this._maxRowTextLength+16) );
 	}
 	this.fire( 'height', {
 		'type': 'changed'
@@ -1496,6 +1589,7 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 		pLeft,
 		pRight,
 		pTop,
+		fontSize,
 		dx,
 		err;
 	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
@@ -1512,20 +1606,21 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
-	dx = this._xScale.rangeBand();
+
+	// [1] Recompute the row and column name text lengths:
+	this.maxTextLengths();
 
 	if ( this.autoUpdate ) {
-		// [1] Update the background:
+		dx = this._xScale.rangeBand();
+		fontSize = this.fontSize();
+
+		// [2] Update the background:
 		this.$.bkgd
 			.attr( 'width', width );
 
-		// [2] Update the graph:
+		// [3] Update the graph:
 		this.$.graph
 			.attr( 'transform', 'translate(' + pLeft + ',' + pTop + ')' );
-
-		// [3] Update the x-label:
-		this.$.xLabel
-			.attr( 'x', width / 2 );
 
 		// [4] Update the rows:
 		this.$.rowGridlines
@@ -1543,11 +1638,19 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 		// [7] Update the row and column names:
 		this.$.rownames
 			.attr( 'y', this._yScale.rangeBand() / 2 )
-			.attr( 'font-size', this.fontSize() );
+			.attr( 'font-size', fontSize );
 
 		this.$.colnames
 			.attr( 'y', dx / 2 )
-			.attr( 'font-size', this.fontSize() );
+			.attr( 'font-size', fontSize );
+
+		// [8] Update the x- and y-labels:
+		this.$.xLabel
+			.attr( 'x', width / 2 )
+			.attr( 'y', -(this._maxColTextLength+16) );
+
+		this.$.yLabel
+			.attr( 'y', -(this._maxRowTextLength+16) );
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingLeft',
@@ -1565,6 +1668,7 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 	var width,
+		fontSize,
 		dx,
 		err;
 	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
@@ -1577,20 +1681,21 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 
 	// [0] Update the x-scale:
 	this._xScale.rangeBands( [ 0, width ] );
-	dx = this._xScale.rangeBand();
+
+	// [1] Recompute the row and column name text lengths:
+	this.maxTextLengths();
 
 	if ( this.autoUpdate ) {
-		// [1] Update the background:
+		dx = this._xScale.rangeBand();
+		fontSize = this.fontSize();
+
+		// [2] Update the background:
 		this.$.bkgd
 			.attr( 'width', width );
 
-		// [2] Update the rows:
+		// [3] Update the rows:
 		this.$.rowGridlines
 			.attr( 'x1', width );
-
-		// [3] Update the x-label:
-		this.$.xLabel
-			.attr( 'x', width / 2 );
 
 		// [4] Update the columns:
 		this.$.cols
@@ -1604,11 +1709,19 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 		// [6] Update the row and column names:
 		this.$.rownames
 			.attr( 'y', this._yScale.rangeBand() / 2 )
-			.attr( 'font-size', this.fontSize() );
+			.attr( 'font-size', fontSize );
 
 		this.$.colnames
 			.attr( 'y', dx / 2 )
-			.attr( 'font-size', this.fontSize() );
+			.attr( 'font-size', fontSize );
+
+		// [7] Update the x- and y-labels:
+		this.$.xLabel
+			.attr( 'x', width / 2 )
+			.attr( 'y', -(this._maxColTextLength+16) );
+
+		this.$.yLabel
+			.attr( 'y', -(this._maxRowTextLength+16) );
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingRight',
@@ -1626,6 +1739,7 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 */
 Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 	var height,
+		fontSize,
 		dy,
 		err;
 	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
@@ -1638,20 +1752,21 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
-	dy = this._yScale.rangeBand();
+
+	// [1] Recompute the row and column name text lengths:
+	this.maxTextLengths();
 
 	if ( this.autoUpdate ) {
-		// [1] Update the background:
+		dy = this._yScale.rangeBand();
+		fontSize = this.fontSize();
+
+		// [2] Update the background:
 		this.$.bkgd
 			.attr( 'height', height );
 
-		// [2] Update the rows:
+		// [3] Update the rows:
 		this.$.rows
 			.attr( 'transform', this._y );
-
-		// [3] Update the y-label:
-		this.$.yLabel
-			.attr( 'x', -height / 2 );
 
 		// [4] Update the columns:
 		this.$.colGridlines
@@ -1664,11 +1779,19 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 		// [6] Update the row and column names:
 		this.$.rownames
 			.attr( 'y', dy / 2 )
-			.attr( 'font-size', this.fontSize() );
+			.attr( 'font-size', fontSize );
 
 		this.$.colnames
 			.attr( 'y', this._xScale.rangeBand() / 2 )
-			.attr( 'font-size', this.fontSize() );
+			.attr( 'font-size', fontSize );
+
+		// [7] Update the x- and y-labels:
+		this.$.xLabel
+			.attr( 'y', -(this._maxColTextLength+16) );
+
+		this.$.yLabel
+			.attr( 'x', -height / 2 )
+			.attr( 'y', -(this._maxRowTextLength+16) );
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingBottom',
@@ -1689,6 +1812,7 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 		pLeft,
 		pTop,
 		pBottom,
+		fontSize,
 		dy,
 		err;
 	if ( newVal !== null && (typeof newVal !== 'number' || newVal !== newVal || newVal%1 !== 0 || newVal < 0) ) {
@@ -1705,20 +1829,21 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 
 	// [0] Update the y-scale:
 	this._yScale.rangeBands( [ 0, height ] );
-	dy = this._yScale.rangeBand();
+
+	// [1] Recompute the row and column name text lengths:
+	this.maxTextLengths();
 
 	if ( this.autoUpdate ) {
-		// [1] Update the background:
+		dy = this._yScale.rangeBand();
+		fontSize = this.fontSize();
+
+		// [2] Update the background:
 		this.$.bkgd
 			.attr( 'height', height );
 
-		// [2] Update the graph:
+		// [3] Update the graph:
 		this.$.graph
 			.attr( 'transform', 'translate(' + pLeft + ',' + pTop + ')' );
-
-		// [3] Update the y-label:
-		this.$.yLabel
-			.attr( 'x', -height / 2 );
 
 		// [4] Update the rows:
 		this.$.rows
@@ -1735,11 +1860,19 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 		// [7] Update the row and column labels:
 		this.$.rownames
 			.attr( 'y', dy / 2 )
-			.attr( 'font-size', this.fontSize() );
+			.attr( 'font-size', fontSize );
 
 		this.$.colnames
 			.attr( 'y', this._xScale.rangeBand() / 2 )
-			.attr( 'font-size', this.fontSize() );
+			.attr( 'font-size', fontSize );
+
+		// [8] Update the x- and y-labels:
+		this.$.xLabel
+			.attr( 'y', -(this._maxColTextLength+16) );
+
+		this.$.yLabel
+			.attr( 'x', -height / 2 )
+			.attr( 'y', -(this._maxRowTextLength+16) );
 	}
 	this.fire( 'changed', {
 		'attr': 'paddingTop',
@@ -1880,7 +2013,10 @@ Chart.prototype.cScaleChanged = function( oldVal, newVal ) {
 * @param {String} newVal - new value
 */
 Chart.prototype.xLabelChanged = function( oldVal, newVal ) {
-	var err;
+	var height,
+		fontSize,
+		dy,
+		err;
 	if ( typeof newVal !== 'string' ) {
 		err = new TypeError( 'xlabel::invalid assignment. Must be a string. Value: `' + newVal + '`.' );
 		this.fire( 'err', err );
@@ -1888,7 +2024,61 @@ Chart.prototype.xLabelChanged = function( oldVal, newVal ) {
 		return;
 	}
 	if ( this.autoUpdate ) {
+		// [0] Set the label text:
 		this.$.xLabel.text( newVal );
+
+		// Only recompute the layout if label changed to or from an empty string...
+		if ( !oldVal || !newVal ) {
+			// [1] Compute the padding based on the row and column text lengths:
+			this.calculatePadding();
+			height = this.graphHeight();
+
+			// [2] Update the y-scale:
+			this._yScale.rangeBands( [ 0, height ] );
+
+			dy = this._yScale.rangeBand();
+			fontSize = this.fontSize();
+
+			// [3] Compute the max row and column text lengths:
+			this.maxTextLengths();
+
+			// [4] Update the background:
+			this.$.bkgd
+				.attr( 'height', height );
+
+			// [5] Update the graph:
+			this.$.graph
+				.attr( 'transform', 'translate(' + this._paddingLeft + ',' + this._paddingTop + ')' );
+
+			// [6] Update the rows:
+			this.$.rows
+				.attr( 'transform', this._y );
+
+			// [7] Update the columns:
+			this.$.colGridlines
+				.attr( 'x1', -height );
+
+			// [8] Update the cells:
+			this.$.cells
+				.attr( 'height', dy );
+
+			// [9] Update the row and column labels:
+			this.$.rownames
+				.attr( 'y', dy / 2 )
+				.attr( 'font-size', fontSize );
+
+			this.$.colnames
+				.attr( 'y', this._xScale.rangeBand() / 2 )
+				.attr( 'font-size', fontSize );
+
+			// [10] Update the x- and y-labels:
+			this.$.xLabel
+				.attr( 'y', -(this._maxColTextLength+16) );
+
+			this.$.yLabel
+				.attr( 'x', -height / 2 )
+				.attr( 'y', -(this._maxRowTextLength+16) );
+		}
 	}
 	this.fire( 'changed', {
 		'attr': 'xLabel',
@@ -1905,7 +2095,10 @@ Chart.prototype.xLabelChanged = function( oldVal, newVal ) {
 * @param {String} newVal - new value
 */
 Chart.prototype.yLabelChanged = function( oldVal, newVal ) {
-	var err;
+	var width,
+		fontSize,
+		dx,
+		err;
 	if ( typeof newVal !== 'string' ) {
 		err = new TypeError( 'yLabel::invalid assignment. Must be a string. Value: `' + newVal + '`.' );
 		this.fire( 'err', err );
@@ -1913,7 +2106,62 @@ Chart.prototype.yLabelChanged = function( oldVal, newVal ) {
 		return;
 	}
 	if ( this.autoUpdate ) {
+		// [0] Set the label text:
 		this.$.yLabel.text( newVal );
+
+		// Only recompute the layout if label changed to or from an empty string...
+		if ( !oldVal || !newVal ) {
+			// [1] Compute the padding based on the row and column text lengths:
+			this.calculatePadding();
+			width = this.graphWidth();
+
+			// [2] Update the x-scale:
+			this._xScale.rangeBands( [ 0, width ] );
+
+			dx = this._xScale.rangeBand();
+			fontSize = this.fontSize();
+
+			// [3] Compute the max row and column text lengths:
+			this.maxTextLengths();
+
+			// [4] Update the background:
+			this.$.bkgd
+				.attr( 'width', width );
+
+			// [5] Update the graph:
+			this.$.graph
+				.attr( 'transform', 'translate(' + this._paddingLeft + ',' + this._paddingTop + ')' );
+
+			// [6] Update the rows:
+			this.$.rowGridlines
+				.attr( 'x1', width );
+
+			// [7] Update the columns:
+			this.$.cols
+				.attr( 'transform', this._x );
+
+			// [8] Update the cells:
+			this.$.cells
+				.attr( 'x', this._cx )
+				.attr( 'width', dx );
+
+			// [9] Update the row and column names:
+			this.$.rownames
+				.attr( 'y', this._yScale.rangeBand() / 2 )
+				.attr( 'font-size', fontSize );
+
+			this.$.colnames
+				.attr( 'y', dx / 2 )
+				.attr( 'font-size', fontSize );
+
+			// [10] Update the x- and y-labels:
+			this.$.xLabel
+				.attr( 'x', width / 2 )
+				.attr( 'y', -(this._maxColTextLength+16) );
+
+			this.$.yLabel
+				.attr( 'y', -(this._maxRowTextLength+16) );
+		}
 	}
 	this.fire( 'changed', {
 		'attr': 'yLabel',

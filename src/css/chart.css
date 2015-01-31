@@ -28,3 +28,7 @@
 .active .name {
 	fill: #ff0000;
 }
+
+.axis .label {
+	font-size: 18px;
+}

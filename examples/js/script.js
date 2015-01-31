@@ -67,13 +67,14 @@
 		el = charts[ 0 ];
 
 		el.cScale = cScale;
+		el.zValue = Math.random;
+		el.xLabel = 'columns';
+		el.yLabel = 'rows';
+
 		el.data = new DataFrame( data, {
 			'rownames': rownames,
 			'colnames': colnames
 		});
-		el.zValue = Math.random;
-		el.xLabel = 'categories';
-		el.yLabel = 'individuals';
 
 		el.addEventListener( 'clicked.row', function onClick( evt ) {
 			var idx = evt.detail.index;

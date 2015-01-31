@@ -18,8 +18,7 @@ TODO
 		-	snap to values (?)
 		-	use delayed callbacks to only update after brush
 3. 
-4. xlabel, ylabel (??)
-	-	requires positioning finagling
+4. 
 5. Axis orientation support?
 	-	ability to choose left or right axis?
 	-	ability to choose top or bottom axis?
@@ -62,7 +61,7 @@ TODO
 			-	assume everything configured from start and on the element
 		- 	no validation
 15. media queries
-	-	at small size, remove row/column labels? ala details on demand.
+	-	at small size, remove row/column names/labels? ala details on demand.
 		-	would require keeping tabs on element size in JS --> if <, remove and reset the width; once > ensure present and reset the width. Would make the `getPadding` method more complex, as now needs to know container dimensions
 
 
