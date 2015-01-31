@@ -60,6 +60,7 @@ TODO
 		-	no attribute changed listeners
 			-	assume everything configured from start and on the element
 		- 	no validation
+		-	no data frame; can provide an array of arrays when declaring element in HTML
 15. media queries
 	-	at small size, remove row/column names/labels? ala details on demand.
 		-	would require keeping tabs on element size in JS --> if <, remove and reset the width; once > ensure present and reset the width. Would make the `getPadding` method more complex, as would need to know container dimensions
