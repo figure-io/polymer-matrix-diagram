@@ -35,6 +35,4 @@ describe( 'clear', function tests() {
 		}
 	});
 
-	it( 'should reset the chart title' );
-
 });

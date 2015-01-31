@@ -1723,6 +1723,9 @@ Chart.prototype.calculatePadding = function() {
 		h,
 		i;
 
+	if ( !this.data ) {
+		return this;
+	}
 	// NOTE: the `scalar` is something of a magic number to avoid pushing up against the canvas edge and crowding axis labels.
 
 	// Rows...
@@ -2677,7 +2680,7 @@ Chart.prototype.xLabelChanged = function( oldVal, newVal ) {
 		dy,
 		err;
 	if ( typeof newVal !== 'string' ) {
-		err = new TypeError( 'xlabel::invalid assignment. Must be a string. Value: `' + newVal + '`.' );
+		err = new TypeError( 'xLabel::invalid assignment. Must be a string. Value: `' + newVal + '`.' );
 		this.fire( 'err', err );
 		this.xLabel = oldVal;
 		return;

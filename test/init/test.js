@@ -11,8 +11,8 @@ describe( 'init', function tests() {
 		assert.ok( el.init );
 	});
 
-	it( 'should initialize a data attribute as an empty array', function test() {
-		assert.deepEqual( el.data, [] );
+	it( 'should initialize a data attribute as null', function test() {
+		assert.isNull( el.data );
 	});
 
 	it( 'should expose an events attribute listing all publicly emitted events', function test() {

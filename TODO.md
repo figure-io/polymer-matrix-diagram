@@ -62,7 +62,16 @@ TODO
 		- 	no validation
 15. media queries
 	-	at small size, remove row/column names/labels? ala details on demand.
-		-	would require keeping tabs on element size in JS --> if <, remove and reset the width; once > ensure present and reset the width. Would make the `getPadding` method more complex, as now needs to know container dimensions
+		-	would require keeping tabs on element size in JS --> if <, remove and reset the width; once > ensure present and reset the width. Would make the `getPadding` method more complex, as would need to know container dimensions
+16. all html version
+	-	use CSS
+	-	drag-n-drop would be easier
+	-	gpu for animation (classes)
+	-	`polymer-matrix-diagram-html` or vanilla
+	-	use background-color with rgba
+17. canvas
+	-	`polymer-matrix-diagram-canvas`
+18. 
 
 
 

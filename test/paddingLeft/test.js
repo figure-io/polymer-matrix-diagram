@@ -8,10 +8,10 @@ describe( 'paddingLeft', function tests() {
 	var el = document.querySelector( '#fixture' );
 
 	it( 'should expose an attribute for specifying the left padding between the canvas edge and the graph area', function test() {
-		expect( el.paddingLeft ).to.be.a( 'number' );
+		assert.isNull( el.paddingLeft );
 	});
 
-	it( 'should emit an `error` if not set to a positive integer', function test( done ) {
+	it( 'should emit an `error` if not set to a positive integer or null', function test( done ) {
 		var num = el.paddingLeft,
 			values;
 
