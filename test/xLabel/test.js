@@ -48,15 +48,15 @@ describe( 'xLabel', function tests() {
 		}
 	});
 
-	it( 'should emit a `changed` event when set to a new value', function test( done ) {
-		el.addEventListener( 'changed', onChange );
+	it( 'should emit a `change` event when set to a new value', function test( done ) {
+		el.addEventListener( 'change', onChange );
 
 		el.xLabel = 'beep';
 
 		function onChange( evt ) {
 			assert.isObject( evt.detail );
 			assert.strictEqual( evt.detail.attr, 'xLabel' );
-			el.removeEventListener( 'changed', onChange );
+			el.removeEventListener( 'change', onChange );
 			done();
 		}
 	});
@@ -64,7 +64,7 @@ describe( 'xLabel', function tests() {
 	it( 'should update the x-label', function test( done ) {
 		var label, content;
 
-		el.addEventListener( 'changed', onChange );
+		el.addEventListener( 'change', onChange );
 
 		label = el.$.chart.querySelector( '.x.axis .label' );
 
@@ -78,6 +78,7 @@ describe( 'xLabel', function tests() {
 			}
 			assert.strictEqual( el.xLabel, 'beep boop' );
 			assert.strictEqual( label.textContent, 'beep boop' );
+			el.removeEventListener( 'change', onChange );
 			done();
 		}
 	});

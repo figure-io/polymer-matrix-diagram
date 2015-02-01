@@ -49,15 +49,15 @@ describe( 'paddingTop', function tests() {
 		}
 	});
 
-	it( 'should emit a `changed` event when set to a new value', function test( done ) {
-		el.addEventListener( 'changed', onChange );
+	it( 'should emit a `change` event when set to a new value', function test( done ) {
+		el.addEventListener( 'change', onChange );
 
 		el.paddingTop = 0;
 
 		function onChange( evt ) {
 			assert.isObject( evt.detail );
 			assert.strictEqual( evt.detail.attr, 'paddingTop' );
-			el.removeEventListener( 'changed', onChange );
+			el.removeEventListener( 'change', onChange );
 			done();
 		}
 	});

@@ -49,15 +49,15 @@ describe( 'width', function tests() {
 		}
 	});
 
-	it( 'should emit a `changed` event when set to a new value', function test( done ) {
-		el.addEventListener( 'changed', onChange );
+	it( 'should emit a `change` event when set to a new value', function test( done ) {
+		el.addEventListener( 'change', onChange );
 
 		el.width = el.width + 1;
 
 		function onChange( evt ) {
 			assert.isObject( evt.detail );
 			assert.strictEqual( evt.detail.attr, 'width' );
-			el.removeEventListener( 'changed', onChange );
+			el.removeEventListener( 'change', onChange );
 			done();
 		}
 	});
@@ -69,7 +69,7 @@ describe( 'width', function tests() {
 
 		function onChange( evt ) {
 			assert.isObject( evt.detail );
-			assert.strictEqual( evt.detail.type, 'changed' );
+			assert.strictEqual( evt.detail.type, 'change' );
 			el.removeEventListener( 'width', onChange );
 			done();
 		}
