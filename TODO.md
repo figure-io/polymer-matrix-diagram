@@ -61,11 +61,16 @@ TODO
 20. x/y axis brushing
 	-	e.g., effectively a zoom
 	-	would allow for infinite x/y scrolling
+	-	may need to bring back clipPath
+	- 	may be an argument for separating axes (rownames) from cells
+		-	maybe not
 21. row/column modes
 	-	sort (sortable)
 	-	click (clickable)
 	-	scroll (scrollable) --> or brush (brushable)
 	- 	none
+22. separate/independent example using, say, phylogenetic, FB, survey, or some other data
+23. 
 
 
 ## Open Questions
