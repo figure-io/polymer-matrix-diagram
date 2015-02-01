@@ -87,23 +87,23 @@
 		});
 
 		el.addEventListener( 'clicked.cell', function onClick( evt ) {
-			console.log( evt.detail.col, evt.detail.row );
+			// console.log( evt.detail.col, evt.detail.row );
 		});
 
 		el.addEventListener( 'transitionended', function onEnd() {
-			console.log( '...transition ended...' );
+			// console.log( '...transition ended...' );
 		});
 
 		el.addEventListener( 'brushend', function onEnd( evt ) {
 			var idx = evt.detail;
 
-			// WARNING: for demo purposes only. If the rows/columns are reordered, the names will not be accurate.
-			console.log(
-				rownames[ idx.row1 ],
-				rownames[ idx.row2 ],
-				colnames[ idx.col1 ],
-				colnames[ idx.col2 ]
-			);
+			// WARNING: for demo purposes only. If the rows/columns are reordered, the names will not be accurate. To get the correct names, would need to first index into the reordered index arrays before accessing the row/column names.
+			// console.log(
+			// 	rownames[ idx.row1 ],
+			// 	rownames[ idx.row2 ],
+			// 	colnames[ idx.col1 ],
+			// 	colnames[ idx.col2 ]
+			// );
 		});
 
 		el.addEventListener( 'err', function onError( err ) {
