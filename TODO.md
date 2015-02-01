@@ -28,11 +28,12 @@ TODO
 	- could have it only accept the publicized events and do input validation
 9. favicon
 	-	needs work
-10. Wiki
+10. Wiki (?)
 11. update wct plugins
 	-	istanbul
 12. 
 13. manual sorting (via names)
+	- 	sortable rows versus sortable columns
 	- 	drag
 	-	mousedown
 	-	translate column/row
@@ -42,18 +43,7 @@ TODO
 	-	get col/row index
 	-	insert new index into domain array and shift all other indices down the array by 1
 	-	reset cols/rows (animation)
-14. should the brushable version be its own separate (super) element, which extends the base ("simple") element?
-	-	`polymer-matrix-diagram-brushable`
-		- 	would probably prefer `polymer-matrix-diagram-static`; by default, the primary component is a swiss army knife; static conveys this is a one and done component
-	- 	minimal matrix diagram
-		-	no sorting
-		-	no automatic padding calculation
-		-	no brush
-		-	no click/hover/drag listeners
-		-	no attribute changed listeners
-			-	assume everything configured from start and on the element
-		- 	no validation
-		-	no data frame; can provide an array of arrays when declaring element in HTML
+14. 
 15. media queries
 	-	at small size, remove row/column names/labels? ala details on demand.
 		-	would require keeping tabs on element size in JS --> if <, remove and reset the width; once > ensure present and reset the width. Would make the `getPadding` method more complex, as would need to know container dimensions
@@ -68,7 +58,14 @@ TODO
 18. drop new row
 19. drag off row
 	-	via rowname
-20. 
+20. x/y axis brushing
+	-	e.g., effectively a zoom
+	-	would allow for infinite x/y scrolling
+21. row/column modes
+	-	sort (sortable)
+	-	click (clickable)
+	-	scroll (scrollable) --> or brush (brushable)
+	- 	none
 
 
 ## Open Questions
@@ -84,7 +81,20 @@ Items moved from TODO, which are not actionable at the current time.
 	-	x1, x2
 	-	y1, y2
 	-	Not going to support due to reason above.
-3.
+3. should the brushable version be its own separate (super) element, which extends the base ("simple") element?
+	-	`polymer-matrix-diagram-brushable`
+		- 	would probably prefer `polymer-matrix-diagram-static`; by default, the primary component is a swiss army knife; static conveys this is a one and done component
+	- 	minimal matrix diagram
+		-	no sorting
+		-	no automatic padding calculation
+		-	no brush
+		-	no click/hover/drag listeners
+		-	no attribute changed listeners
+			-	assume everything configured from start and on the element
+		- 	no validation
+		-	no data frame; can provide an array of arrays when declaring element in HTML
+		-	no event emitting
+4. 
 
 
 

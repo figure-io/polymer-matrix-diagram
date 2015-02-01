@@ -18,7 +18,7 @@
 <link rel="import" href="../polymer-d3/polymer-d3.html">
 
 <!-- ELEMENT -->
-</head><body><polymer-element name="polymer-matrix-diagram" attributes="data rowOrder colOrder config width height paddingLeft paddingRight paddingBottom paddingTop xLabel yLabel zValue zMin zMax cScale duration autoResize autoUpdate brushable" assetpath="build/">
+</head><body><polymer-element name="polymer-matrix-diagram" attributes="data rowOrder colOrder config width height paddingLeft paddingRight paddingBottom paddingTop xLabel yLabel zValue zMin zMax colorScale duration autoResize autoUpdate brushable sortableRows sortableCols" assetpath="build/">
 
 	<template>
 
@@ -855,16 +855,16 @@ Chart.prototype.zMin = null;
 Chart.prototype.zMax = null;
 
 /**
-* METHOD: cScale( d, i )
+* METHOD: colorScale( d, i )
 *	Maps a cell datum to a color.
 *
 * @param {*} d - datum
 * @param {Number} i - index
 * @returns {String} color string
 */
-Chart.prototype.cScale = function(){
+Chart.prototype.colorScale = function(){
 	return '#474747';
-}; // end METHOD cScale()
+}; // end METHOD colorScale()
 
 /**
 * ATTRIBUTE: duration
@@ -901,6 +901,24 @@ Chart.prototype.autoResize = true;
 * @default false
 */
 Chart.prototype.brushable = false;
+
+/**
+* ATTRIBUTE: sortableRows
+*	Boolean flag indicating whether rows can be manually sorted.
+*
+* @type {Boolean}
+* @default false
+*/
+Chart.prototype.sortableRows = false;
+
+/**
+* ATTRIBUTE: sortableCols
+*	Boolean flag indicating whether columns can be manually sorted.
+*
+* @type {Boolean}
+* @default false
+*/
+Chart.prototype.sortableCols = false;
 
 /**
 * METHOD: created()
@@ -1014,6 +1032,15 @@ Chart.prototype.init = function() {
 		.x( this._xScale )
 		.y( this._yScale )
 		.on( 'brushend', this.onBrushEnd.bind( this ) );
+
+	// Drag...
+	this._rowDrag = d3.behavior.drag()
+		.on( 'dragstart', this.onRowDragStart.bind( this ) )
+		.on( 'drag', this.onRowDrag.bind( this ) )
+		.on( 'dragend', this.onRowDragEnd.bind( this ) );
+
+	// TODO: define
+	this._colDrag = null;
 
 	// Element cache...
 	this.$ = $ = {};
@@ -1309,7 +1336,7 @@ Chart.prototype.createCells = function( d, i ) {
 			.attr( 'width', this._xScale.rangeBand() )
 			.attr( 'height', this._yScale.rangeBand() )
 			.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue )
-			.attr( 'fill', this.cScale )
+			.attr( 'fill', this.colorScale )
 			.on( 'mouseover', this._onCellHover )
 			.on( 'mouseout', this._onCellHoverEnd )
 			.on( 'click', this._onCellClick );
@@ -1544,7 +1571,7 @@ Chart.prototype.resetCells = function( d, i ) {
 		.data( this.data.data()[i] )
 		.attr( 'x', this._cx )
 		.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue )
-		.attr( 'fill', this.cScale );
+		.attr( 'fill', this.colorScale );
 
 	// Remove any old cells:
 	cells.exit().remove();
@@ -1556,7 +1583,7 @@ Chart.prototype.resetCells = function( d, i ) {
 		.attr( 'width', this._xScale.rangeBand() )
 		.attr( 'height', this._yScale.rangeBand() )
 		.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue )
-		.attr( 'fill', this.cScale )
+		.attr( 'fill', this.colorScale )
 		.on( 'mouseover', this._onCellHover )
 		.on( 'mouseout', this._onCellHoverEnd )
 		.on( 'click', this._onCellClick );
@@ -2688,29 +2715,29 @@ Chart.prototype.zMaxChanged = function( oldVal, newVal ) {
 }; // end METHOD zMaxChanged()
 
 /**
-* METHOD: cScaleChanged( oldVal, newVal )
-*	Event handler invoked when the `cScale` attribute changes.
+* METHOD: colorScaleChanged( oldVal, newVal )
+*	Event handler invoked when the `colorScale` attribute changes.
 *
 * @param {Number} oldVal - old value
 * @param {Number} newVal - new value
 */
-Chart.prototype.cScaleChanged = function( oldVal, newVal ) {
+Chart.prototype.colorScaleChanged = function( oldVal, newVal ) {
 	var err;
 	if ( typeof newVal !== 'function' ) {
-		err = new TypeError( 'cScale::invalid assignment. Must be a function.  Value: `' + newVal + '.' );
+		err = new TypeError( 'colorScale::invalid assignment. Must be a function.  Value: `' + newVal + '.' );
 		this.fire( 'err', err );
-		this.cScale = oldVal;
+		this.colorScale = oldVal;
 		return;
 	}
 	if ( this.autoUpdate ) {
 		this.$.cells.attr( 'fill', newVal );
 	}
 	this.fire( 'change', {
-		'attr': 'cScale',
+		'attr': 'colorScale',
 		'prev': oldVal,
 		'curr': newVal
 	});
-}; // end METHOD cScaleChanged()
+}; // end METHOD colorScaleChanged()
 
 /**
 * METHOD: xLabelChanged( oldVal, newVal )
@@ -2977,7 +3004,7 @@ Chart.prototype.brushableChanged = function( oldVal, newVal ) {
 
 /**
 * METHOD: onBrushEnd()
-*	Event listener invoked when brush interaction ends. Adjust the brush extent in order to snap to nearest cell boundaries.
+*	Event listener invoked when brush interaction ends. Adjusts the brush extent in order to snap to nearest cell boundaries.
 */
 Chart.prototype.onBrushEnd = function() {
 	var brush = this._brush,
@@ -3038,6 +3065,95 @@ Chart.prototype.onBrushEnd = function() {
 
 	this.fire( 'brushend', idx );
 }; // end METHOD onBrushEnd()
+
+/**
+* METHOD: sortableRowsChanged( oldVal, newVal )
+*	Event handler invoked when the `sortableRows` attribute changes.
+*
+* @param {Boolean} oldVal - old value
+* @param {Boolean} newVal - new value
+*/
+Chart.prototype.sortableRowsChanged = function( oldVal, newVal ) {
+	var err;
+	if ( typeof newVal !== 'boolean' ) {
+		err = new TypeError( 'sortableRows::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.sortableRows = oldVal;
+		return;
+	}
+	if ( newVal ) {
+		this.$.rows.call( this._rowDrag );
+	} else {
+		// Remove all listeners in the `drag` namespace:
+		this.$.rows.on( '.drag', null );
+	}
+	this.fire( 'change', {
+		'attr': 'sortableRows',
+		'prev': oldVal,
+		'curr': newVal
+	});
+}; // end METHOD sortableRowsChanged()
+
+/**
+* METHOD: onRowDragStart( d, i )
+*	Event handler invoked when a user initiates a row drag.
+*
+* @param {*} d - datum
+* @param {Number} i - row index
+*/
+Chart.prototype.onRowDragStart = function( d, i ) {
+	console.log( d, i );
+}; // end METHOD onRowDragStart()
+
+/**
+* METHOD: onRowDrag( d, i )
+*	Event handler invoked when a user drags a row.
+*
+* @param {*} d - datum
+* @param {Number} i - row index
+*/
+Chart.prototype.onRowDrag = function( d, i ) {
+	var evt = this._d3.event;
+	console.log( evt.x, evt.y );
+}; // end METHOD onRowDrag()
+
+/**
+* METHOD: onRowDragEnd( d, i )
+*	Event handler invoked when a user stops dragging a row.
+*
+* @param {*} d - datum
+* @param {Number} i - row index
+*/
+Chart.prototype.onRowDragEnd = function( d, i ) {
+	console.log( d, i );
+}; // end METHOD onRowDragEnd()
+
+/**
+* METHOD: sortableColsChanged( oldVal, newVal )
+*	Event handler invoked when the `sortableCols` attribute changes.
+*
+* @param {Boolean} oldVal - old value
+* @param {Boolean} newVal - new value
+*/
+Chart.prototype.sortableColsChanged = function( oldVal, newVal ) {
+	var err;
+	if ( typeof newVal !== 'boolean' ) {
+		err = new TypeError( 'sortableCols::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.sortableCols = oldVal;
+		return;
+	}
+	if ( newVal ) {
+		// TODO: something
+	} else {
+		// TODO: something
+	}
+	this.fire( 'change', {
+		'attr': 'sortableCols',
+		'prev': oldVal,
+		'curr': newVal
+	});
+}; // end METHOD sortableColsChanged()
 
 /**
 * METHOD: onRowClick( d, i )

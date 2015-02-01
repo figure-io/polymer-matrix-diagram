@@ -66,11 +66,12 @@
 		// [1] Configure the figure...
 		el = charts[ 0 ];
 
-		el.cScale = cScale;
+		el.colorScale = colorScale;
 		el.zValue = Math.random;
 		el.xLabel = 'columns';
 		el.yLabel = 'rows';
 		el.brushable = true;
+		el.sortableRows = true;
 
 		el.data = new DataFrame( data, {
 			'rownames': rownames,
@@ -115,16 +116,16 @@
 	} // end FUNCTION onData()
 
 	/**
-	* FUNCTION: cScale( d, i )
+	* FUNCTION: colorScale( d, i )
 	*	Maps a cell datum to a color string.
 	*
 	* @param {Number} d - datum
 	* @param {Number} i - index
 	* @returns {String} color string
 	*/
-	function cScale( d ) {
+	function colorScale( d ) {
 		return ( d ) ? '#474747' : '#eee';
-	} // end FUNCTION cScale()
+	} // end FUNCTION colorScale()
 
 	/**
 	* FUNCTION: rowOrderings( arr, names )

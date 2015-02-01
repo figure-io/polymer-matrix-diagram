@@ -25,11 +25,13 @@ Matrix Diagram
 		*	[zValue](#attr-zvalue)
 		*	[zMin](#attr-zmin)
 		*	[zMax](#attr-zmax)
-		*	[cScale](#attr-cscale)
+		*	[colorScale](#attr-colorscale)
 		*	[duration](#attr-duration)
 		*	[autoUpdate](#attr-autoupdate)
 		*	[autoResize](#attr-autoresize)
 		*	[brushable](#attr-brushable)
+		*	[sortableRows](#attr-sortablerows)
+		*	[sortableCols](#attr-sortablecols)
 	-	[Methods](#methods)
 		*	[clear](#method-clear)
 	-	[Events](#events)
@@ -283,13 +285,13 @@ el.zMax = 10;
 If set to `null`, the `zMax` is dynamically calculated from the data. This attribute is only relevant when the z-value accessor is a `function`.
 
 
-<a name="attr-cscale"></a>
-#### el.cScale
+<a name="attr-colorscale"></a>
+#### el.colorScale
 
 Maps a cell datum to a color.
 
 ``` javascript
-el.cScale = function cScale( d, i ) {
+el.colorScale = function colorScale( d, i ) {
 	return ( d ) ? 'red' : 'blue';
 };
 ```
@@ -330,13 +332,34 @@ el.autoResize = false;
 <a name="attr-brushable"></a>
 #### el.brushable
 
-Specifies whether the element should be brushable. When enabled, user may select matrix elements via a brush overlay. After selection, a `brushend` event is emitted, which contains the row and column indices of the selected elements. Default is `false`.
+Specifies whether the element should be brushable. When enabled, a user may select matrix elements via a brush overlay. After selection, a `brushend` event is emitted, which contains the row and column indices of the selected elements. Default is `false`.
 
 ``` javascript
 el.brushable = true;
 ```
 
 __NOTE:__ when brushing is enabled, cell `click` events are __not__ triggered and cell `hover` events are unreliable. 
+
+
+<a name="attr-sortablerows"></a>
+#### el.sortableRows
+
+Specifies whether rows can be manually sorted. When enabled, a user may manually drag rows to change row order. Default is `false`.
+
+``` javascript
+el.sortableRows = true;
+```
+
+
+<a name="attr-sortablecols"></a>
+#### el.sortableCols
+
+Specifies whether columns can be manually sorted. When enabled, a user may manually drag columns to change column order. Default is `false`.
+
+``` javascript
+el.sortableCols = true;
+```
+
 
 
 
