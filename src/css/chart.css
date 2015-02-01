@@ -32,3 +32,10 @@
 .axis .label {
 	font-size: 18px;
 }
+
+.extent {
+	fill: #000;
+	fill-opacity: .35;
+	stroke: #fff;
+	stroke-width: 1;
+}

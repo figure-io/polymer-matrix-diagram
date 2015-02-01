@@ -39,15 +39,15 @@ var // Utility to create delayed event listeners:
 
 var EVENTS = [
 	'data',
-	'rowOrder',
-	'colOrder',
+	'roworder',
+	'colorder',
 
 	'width',
 	'height',
-	'zMin',
-	'zMax',
+	'zmin',
+	'zmax',
 
-	'changed',
+	'change',
 	'err',
 
 	'resized',
@@ -57,17 +57,19 @@ var EVENTS = [
 	'clicked.col',
 	'clicked.cell',
 
-	'hovered',
-	'hovered.row',
-	'hovered.col',
-	'hovered.cell',
+	'hover',
+	'hover.row',
+	'hover.col',
+	'hover.cell',
 
-	'hoverended',
-	'hoverended.row',
-	'hoverended.col',
-	'hoverended.cell',
+	'hoverend',
+	'hoverend.row',
+	'hoverend.col',
+	'hoverend.cell',
 
-	'transitionEnd'
+	'transitionended',
+
+	'brushend'
 ];
 
 
@@ -195,7 +197,7 @@ Chart.prototype.zMax = null;
 * @returns {String} color string
 */
 Chart.prototype.cScale = function(){
-	return '#eee';
+	return '#474747';
 }; // end METHOD cScale()
 
 /**
@@ -224,6 +226,15 @@ Chart.prototype.autoUpdate = true;
 * @default true
 */
 Chart.prototype.autoResize = true;
+
+/**
+* ATTRIBUTE: brushable
+*	Boolean flag indicating whether a chart is brushable.
+*
+* @type {Boolean}
+* @default false
+*/
+Chart.prototype.brushable = false;
 
 /**
 * METHOD: created()
@@ -332,6 +343,12 @@ Chart.prototype.init = function() {
 
 	this._onResize = delayed( this.onResize.bind( this ), 400 );
 
+	// Brush...
+	this._brush = d3.svg.brush()
+		.x( this._xScale )
+		.y( this._yScale )
+		.on( 'brushend', this.onBrushEnd.bind( this ) );
+
 	// Element cache...
 	this.$ = $ = {};
 
@@ -361,6 +378,9 @@ Chart.prototype.init = function() {
 	// Names...
 	$.rownames = null;
 	$.colnames = null;
+
+	// Brush...
+	$.brush = null;
 
 	return this;
 }; // end METHOD init()
@@ -422,9 +442,8 @@ Chart.prototype.create = function() {
 		.createBase()
 		.createBackground()
 		.createMarks()
-		.createRows()
-		.createCols()
-		.createAxes();
+		.createAxes()
+		.createBrush();
 
 	return this;
 }; // end METHOD create()
@@ -460,13 +479,6 @@ Chart.prototype.createBase = function() {
 		.attr( 'height', this.height );
 	this.$.canvas = canvas;
 
-	// Create the graph element:
-	this.$.graph = canvas.append( 'svg:g' )
-		.attr( 'property', 'graph' )
-		.attr( 'class', 'graph' )
-		.attr( 'data-graph-type', 'matrix-diagram' )
-		.attr( 'transform', 'translate(' + pLeft + ',' + pTop + ')' );
-
 	// Create a text element for auto-computing padding based on row and column names:
 	this.$.text = canvas.append( 'svg:text' )
 		.attr( 'class', 'noselect' )
@@ -478,6 +490,13 @@ Chart.prototype.createBase = function() {
 		.attr( 'opacity', 0 );
 
 	this.$.text = this.$.text.node();
+
+	// Create the graph element:
+	this.$.graph = canvas.append( 'svg:g' )
+		.attr( 'property', 'graph' )
+		.attr( 'class', 'graph' )
+		.attr( 'data-graph-type', 'matrix-diagram' )
+		.attr( 'transform', 'translate(' + pLeft + ',' + pTop + ')' );
 
 	return this;
 }; // end METHOD createBase()
@@ -505,7 +524,7 @@ Chart.prototype.createBackground = function() {
 
 /**
 * METHOD: createMarks()
-*	Creates a graph marks element.
+*	Creates the graph marks.
 *
 * @returns {DOMElement} element instance
 */
@@ -516,6 +535,10 @@ Chart.prototype.createMarks = function() {
 	this.$.marks = this.$.graph.append( 'svg:g' )
 		.attr( 'property', 'marks' )
 		.attr( 'class', 'marks' );
+
+	this.createRows()
+		.createCols();
+
 	return this;
 }; // end METHOD createMarks()
 
@@ -675,6 +698,20 @@ Chart.prototype.createAxes = function() {
 }; // end METHOD createAxes()
 
 /**
+* METHOD: createBrush()
+*	Creates a brush element which overlays the graph marks.
+*
+* @returns {DOMElement} element instance
+*/
+Chart.prototype.createBrush = function() {
+	this.$.brush = this.$.graph.append( 'svg:g' )
+		.attr( 'property', 'brush' )
+		.attr( 'class', 'brush' );
+
+	return this;
+}; // end METHOD createBrush()
+
+/**
 * METHOD: reset()
 *	Resets chart elements.
 *
@@ -683,8 +720,8 @@ Chart.prototype.createAxes = function() {
 Chart.prototype.reset = function() {
 	this.resetBase()
 		.resetAxes()
-		.resetCols()
-		.resetRows();
+		.resetRows()
+		.resetCols();
 	return this;
 }; // end METHOD reset()
 
@@ -870,6 +907,7 @@ Chart.prototype.resetCells = function( d, i ) {
 Chart.prototype.clear = function() {
 	this.$.rows.remove();
 	this.$.cols.remove();
+	this._brush.clear();
 	return this;
 }; // end METHOD clear()
 
@@ -1237,9 +1275,9 @@ Chart.prototype.dataChanged = function( oldVal, newVal ) {
 		this.reset();
 	}
 	this.fire( 'data', {
-		'type': 'changed'
+		'type': 'change'
 	});
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'data',
 		'prev': oldVal,
 		'curr': newVal
@@ -1291,18 +1329,18 @@ Chart.prototype.rowOrderChanged = function( val, newVal ) {
 			.attr( 'transform', this._y );
 	} else {
 		this.$.rows.attr( 'transform', this._y );
-		this.fire( 'transitionEnd', null );
+		this.fire( 'transitionended', null );
 	}
-	this.fire( 'rowOrder', {
-		'type': 'changed'
+	this.fire( 'roworder', {
+		'type': 'change'
 	});
 	if ( newVal === void 0 ) {
-		this.fire( 'changed', {
+		this.fire( 'change', {
 			'attr': 'rowOrder',
 			'data': val[ 0 ]
 		});
 	} else {
-		this.fire( 'changed', {
+		this.fire( 'change', {
 			'attr': 'rowOrder',
 			'prev': val,
 			'curr': newVal
@@ -1363,18 +1401,18 @@ Chart.prototype.colOrderChanged = function( val, newVal ) {
 
 		this.$.cells.attr( 'x', this._cx );
 
-		this.fire( 'transitionEnd', null );
+		this.fire( 'transitionended', null );
 	}
-	this.fire( 'colOrder', {
-		'type': 'changed'
+	this.fire( 'colorder', {
+		'type': 'change'
 	});
 	if ( newVal === void 0 ) {
-		this.fire( 'changed', {
+		this.fire( 'change', {
 			'attr': 'colOrder',
 			'data': val[ 0 ]
 		});
 	} else {
-		this.fire( 'changed', {
+		this.fire( 'change', {
 			'attr': 'colOrder',
 			'prev': val,
 			'curr': newVal
@@ -1410,7 +1448,7 @@ Chart.prototype.configChanged = function( oldConfig, newConfig ) {
 
 	// FIXME: The config should be standardized. Put in repo. Version it. Create an associated validator. NPM.
 
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'config',
 		'prev': oldConfig,
 		'curr': newConfig
@@ -1494,9 +1532,9 @@ Chart.prototype.widthChanged = function( oldVal, newVal ) {
 			.attr( 'y', -(this._maxRowTextLength+16) );
 	}
 	this.fire( 'width', {
-		'type': 'changed'
+		'type': 'change'
 	});
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'width',
 		'prev': oldVal,
 		'curr': newVal
@@ -1571,9 +1609,9 @@ Chart.prototype.heightChanged = function( oldVal, newVal ) {
 			.attr( 'y', -(this._maxRowTextLength+16) );
 	}
 	this.fire( 'height', {
-		'type': 'changed'
+		'type': 'change'
 	});
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'height',
 		'prev': oldVal,
 		'curr': newVal
@@ -1655,7 +1693,7 @@ Chart.prototype.paddingLeftChanged = function( oldVal, newVal ) {
 		this.$.yLabel
 			.attr( 'y', -(this._maxRowTextLength+16) );
 	}
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'paddingLeft',
 		'prev': oldVal,
 		'curr': newVal
@@ -1726,7 +1764,7 @@ Chart.prototype.paddingRightChanged = function( oldVal, newVal ) {
 		this.$.yLabel
 			.attr( 'y', -(this._maxRowTextLength+16) );
 	}
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'paddingRight',
 		'prev': oldVal,
 		'curr': newVal
@@ -1796,7 +1834,7 @@ Chart.prototype.paddingBottomChanged = function( oldVal, newVal ) {
 			.attr( 'x', -height / 2 )
 			.attr( 'y', -(this._maxRowTextLength+16) );
 	}
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'paddingBottom',
 		'prev': oldVal,
 		'curr': newVal
@@ -1877,7 +1915,7 @@ Chart.prototype.paddingTopChanged = function( oldVal, newVal ) {
 			.attr( 'x', -height / 2 )
 			.attr( 'y', -(this._maxRowTextLength+16) );
 	}
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'paddingTop',
 		'prev': oldVal,
 		'curr': newVal
@@ -1906,7 +1944,7 @@ Chart.prototype.zValueChanged = function( oldVal, newVal ) {
 	if ( this.autoUpdate ) {
 		this.$.cells.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
 	}
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'zValue',
 		'prev': oldVal,
 		'curr': newVal
@@ -1938,10 +1976,10 @@ Chart.prototype.zMinChanged = function( oldVal, newVal ) {
 	if ( this.autoUpdate ) {
 		this.$.cells.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
 	}
-	this.fire( 'zMin', {
-		'type': 'changed'
+	this.fire( 'zmin', {
+		'type': 'change'
 	});
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'zMin',
 		'prev': oldVal,
 		'curr': newVal
@@ -1973,10 +2011,10 @@ Chart.prototype.zMaxChanged = function( oldVal, newVal ) {
 	if ( this.autoUpdate ) {
 		this.$.cells.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue );
 	}
-	this.fire( 'zMax', {
-		'type': 'changed'
+	this.fire( 'zmax', {
+		'type': 'change'
 	});
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'zMax',
 		'prev': oldVal,
 		'curr': newVal
@@ -2001,7 +2039,7 @@ Chart.prototype.cScaleChanged = function( oldVal, newVal ) {
 	if ( this.autoUpdate ) {
 		this.$.cells.attr( 'fill', newVal );
 	}
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'cScale',
 		'prev': oldVal,
 		'curr': newVal
@@ -2083,7 +2121,7 @@ Chart.prototype.xLabelChanged = function( oldVal, newVal ) {
 				.attr( 'y', -(this._maxRowTextLength+16) );
 		}
 	}
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'xLabel',
 		'prev': oldVal,
 		'curr': newVal
@@ -2166,7 +2204,7 @@ Chart.prototype.yLabelChanged = function( oldVal, newVal ) {
 				.attr( 'y', -(this._maxRowTextLength+16) );
 		}
 	}
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'yLabel',
 		'prev': oldVal,
 		'curr': newVal
@@ -2188,7 +2226,7 @@ Chart.prototype.durationChanged = function( oldVal, newVal ) {
 		this.duration = oldVal;
 		return;
 	}
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'duration',
 		'prev': oldVal,
 		'curr': newVal
@@ -2205,12 +2243,12 @@ Chart.prototype.durationChanged = function( oldVal, newVal ) {
 Chart.prototype.autoUpdateChanged = function( oldVal, newVal ) {
 	var err;
 	if ( typeof newVal !== 'boolean' ) {
-		err = new TypeError( 'autoUpdate::invalid assignment. Must be a boolean.  Value: `' + newVal + '.' );
+		err = new TypeError( 'autoUpdate::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
 		this.fire( 'err', err );
 		this.autoUpdate = oldVal;
 		return;
 	}
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'autoUpdate',
 		'prev': oldVal,
 		'curr': newVal
@@ -2227,7 +2265,7 @@ Chart.prototype.autoUpdateChanged = function( oldVal, newVal ) {
 Chart.prototype.autoResizeChanged = function( oldVal, newVal ) {
 	var err;
 	if ( typeof newVal !== 'boolean' ) {
-		err = new TypeError( 'autoResize::invalid assignment. Must be a boolean.  Value: `' + newVal + '.' );
+		err = new TypeError( 'autoResize::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
 		this.fire( 'err', err );
 		this.autoResize = oldVal;
 		return;
@@ -2237,12 +2275,101 @@ Chart.prototype.autoResizeChanged = function( oldVal, newVal ) {
 	} else {
 		window.removeEventListener( 'resize', this._onResize );
 	}
-	this.fire( 'changed', {
+	this.fire( 'change', {
 		'attr': 'autoResize',
 		'prev': oldVal,
 		'curr': newVal
 	});
 }; // end METHOD autoResizeChanged()
+
+/**
+* METHOD: brushableChanged( oldVal, newVal )
+*	Event handler invoked when the `brushable` attribute changes.
+*
+* @param {Boolean} oldVal - old value
+* @param {Boolean} newVal - new value
+*/
+Chart.prototype.brushableChanged = function( oldVal, newVal ) {
+	var err;
+	if ( typeof newVal !== 'boolean' ) {
+		err = new TypeError( 'brushable::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.brushable = oldVal;
+		return;
+	}
+	if ( newVal ) {
+		this.$.brush.call( this._brush );
+	} else {
+		this.$.brush.remove();
+	}
+	this.fire( 'change', {
+		'attr': 'brushable',
+		'prev': oldVal,
+		'curr': newVal
+	});
+}; // end METHOD brushableChanged()
+
+/**
+* METHOD: onBrushEnd()
+*	Event listener invoked when brush interaction ends. Adjust the brush extent in order to snap to nearest cell boundaries.
+*/
+Chart.prototype.onBrushEnd = function() {
+	var brush = this._brush,
+		extent = brush.extent(),
+		xScale = this._xScale,
+		yScale = this._yScale,
+		idx = {},
+		numCols,
+		numRows,
+		x1, x2,
+		y1, y2,
+		dx, dy;
+
+	numCols = this.data.colnames().length;
+	numRows = this.data.rownames().length;
+
+	x1 = extent[ 0 ][ 0 ];
+	x2 = extent[ 1 ][ 0 ];
+	y1 = extent[ 0 ][ 1 ];
+	y2 = extent[ 1 ][ 1 ];
+
+	dx = this._xScale.rangeBand();
+	dy = this._yScale.rangeBand();
+
+	x1 = Math.round( x1 / dx );
+	y1 = Math.round( y1 / dy );
+	x2 = Math.round( x2 / dx );
+	y2 = Math.round( y2 / dy );
+
+	idx.col1 = x1;
+	idx.row1 = y1;
+	idx.col2 = x2 - 1;
+	idx.row2 = y2 - 1;
+
+	x1 = xScale( x1 );
+	y1 = yScale( y1 );
+
+	// Check if upper bounds exceeded scale domains...
+	if ( x2 > numCols-1 ) {
+		x2 = this.graphWidth();
+	} else {
+		x2 = xScale( x2 );
+	}
+	if ( y2 > numRows-1 ) {
+		y2 = this.graphHeight();
+	} else {
+		y2 = yScale( y2 );
+	}
+	extent = [
+		[ x1, y1 ],
+		[ x2, y2 ]
+	];
+
+	this.$.brush.transition()
+		.call( brush.extent( extent ) );
+
+	this.fire( 'brushend', idx );
+}; // end METHOD onBrushEnd()
 
 /**
 * METHOD: onRowClick( d, i )
@@ -2324,8 +2451,8 @@ Chart.prototype.onRowHover = function( d, i ) {
 
 	evt.datum = d;
 	evt.index = i;
-	this.fire( 'hovered.row', evt );
-	this.fire( 'hovered', evt );
+	this.fire( 'hover.row', evt );
+	this.fire( 'hover', evt );
 	return false;
 }; // end METHOD onRowHover()
 
@@ -2344,8 +2471,8 @@ Chart.prototype.onColHover = function( d, i ) {
 
 	evt.datum = d;
 	evt.index = i;
-	this.fire( 'hovered.col', evt );
-	this.fire( 'hovered', evt );
+	this.fire( 'hover.col', evt );
+	this.fire( 'hover', evt );
 	return false;
 }; // end METHOD onColHover()
 
@@ -2377,8 +2504,8 @@ Chart.prototype.onCellHover = function( d, i ) {
 	}
 	evt.row = j;
 
-	this.fire( 'hovered.cell', evt );
-	this.fire( 'hovered', evt );
+	this.fire( 'hover.cell', evt );
+	this.fire( 'hover', evt );
 	return false;
 }; // end METHOD onCellHover()
 
@@ -2397,8 +2524,8 @@ Chart.prototype.onRowHoverEnd = function( d, i ) {
 
 	evt.datum = d;
 	evt.index = i;
-	this.fire( 'hoverended.row', evt );
-	this.fire( 'hoverended', evt );
+	this.fire( 'hoverend.row', evt );
+	this.fire( 'hoverend', evt );
 	return false;
 }; // end METHOD onRowHoverEnd()
 
@@ -2417,8 +2544,8 @@ Chart.prototype.onColHoverEnd = function( d, i ) {
 
 	evt.datum = d;
 	evt.index = i;
-	this.fire( 'hoverended.col', evt );
-	this.fire( 'hoverended', evt );
+	this.fire( 'hoverend.col', evt );
+	this.fire( 'hoverend', evt );
 	return false;
 }; // end METHOD onColHoverEnd()
 
@@ -2450,8 +2577,8 @@ Chart.prototype.onCellHoverEnd = function( d, i ) {
 	}
 	evt.row = j;
 
-	this.fire( 'hoverended.cell', evt );
-	this.fire( 'hoverended', evt );
+	this.fire( 'hoverend.cell', evt );
+	this.fire( 'hoverend', evt );
 	return false;
 }; // end METHOD onCellHoverEnd()
 
@@ -2462,7 +2589,7 @@ Chart.prototype.onCellHoverEnd = function( d, i ) {
 * @returns {Boolean} false
 */
 Chart.prototype.onTransitionEnd = function() {
-	this.fire( 'transitionEnd', null );
+	this.fire( 'transitionended', null );
 	return false;
 }; // end METHOD onTransitionEnd()
 

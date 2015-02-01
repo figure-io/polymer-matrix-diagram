@@ -17,6 +17,8 @@ TODO
 	-	should be brushable elements
 		-	snap to values (?)
 		-	use delayed callbacks to only update after brush
+	- 	cScale brushable legend
+		-	loop through all cells, pass through cScale fcn, gather unique color values, sort colors, create legend element
 3. 
 4. 
 5. Axis orientation support?
@@ -36,9 +38,7 @@ TODO
 10. Wiki
 11. update wct plugins
 	-	istanbul
-12. lasso support
-	-	ability to brush over the cells
-	-	emit an array of [i,j] values
+12. 
 13. manual sorting (via names)
 	- 	drag
 	-	mousedown
@@ -72,7 +72,10 @@ TODO
 	-	use background-color with rgba
 17. canvas
 	-	`polymer-matrix-diagram-canvas`
-18. 
+18. drop new row
+19. drag off row
+	-	via rowname
+20. 
 
 
 
@@ -95,6 +98,10 @@ TODO
 	-	(1) deep copy input `array`; (2) wrap copied `array` in closure; (3) return a data frame which only references the enclosed `array`; (4) force updates via the API.
 6. `toString()`
 	- 	JSON blob with `rownames`, `colnames`, and `data` properties
+7. add/remove row (+rowname)
+8. add/remove column (+colname)
+9. update row/colname
+10. 
 
 
 

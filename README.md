@@ -29,32 +29,34 @@ Matrix Diagram
 		*	[duration](#attr-duration)
 		*	[autoUpdate](#attr-autoupdate)
 		*	[autoResize](#attr-autoresize)
+		*	[brushable](#attr-brushable)
 	-	[Methods](#methods)
 		*	[clear](#method-clear)
 	-	[Events](#events)
 		*	[err](#evt-err)
-		*	[changed](#evt-changed)
+		*	[change](#evt-change)
 		*	[data](#evt-data)
-		*	[rowOrder](#evt-roworder)
-		*	[colOrder](#evt-colorder)
+		*	[roworder](#evt-roworder)
+		*	[colorder](#evt-colorder)
 		*	[width](#evt-width)
 		*	[height](#evt-height)
-		*	[zMin](#evt-zmin)
-		* 	[zMax](#evt-zmax)
+		*	[zmin](#evt-zmin)
+		* 	[zmax](#evt-zmax)
 		*	[resized](#evt-resized)
 		*	[clicked](#evt-clicked)
 		*	[clicked.row](#evt-clicked-row)
 		*	[clicked.col](#evt-clicked-col)
 		*	[clicked.cell](#evt-clicked-cell)
-		*	[hovered](#evt-hovered)
-		*	[hovered.row](#evt-hovered-row)
-		*	[hovered.col](#evt-hovered-col)
-		*	[hovered.cell](#evt-hovered-cell)
-		*	[hoverended](#evt-hoverended)
-		*	[hoverended.row](#evt-hoverended-row)
-		*	[hoverended.col](#evt-hoverended-col)
-		*	[hoverended.cell](#evt-hoverended-cell)
-		*	[transitionEnd](#evt-transition-end)
+		*	[hover](#evt-hover)
+		*	[hover.row](#evt-hover-row)
+		*	[hover.col](#evt-hover-col)
+		*	[hover.cell](#evt-hover-cell)
+		*	[hoverend](#evt-hoverend)
+		*	[hoverend.row](#evt-hoverend-row)
+		*	[hoverend.col](#evt-hoverend-col)
+		*	[hoverend.cell](#evt-hoverend-cell)
+		*	[transitionended](#evt-transition-ended)
+		*	[brushend](#evt-brushend)
 1. 	[Examples](#examples)
 1. 	[Development](#development)
 1. 	[Build](#build)
@@ -325,6 +327,17 @@ el.autoResize = false;
 ```
 
 
+<a name="attr-brushable"></a>
+#### el.brushable
+
+Specifies whether the element should be brushable. When enabled, user may select matrix elements via a brush overlay. After selection, a `brushend` event is emitted, which contains the row and column indices of the selected elements. Default is `false`.
+
+``` javascript
+el.brushable = true;
+```
+
+__NOTE:__ when brushing is enabled, cell `click` events are __not__ triggered and cell `hover` events are unreliable. 
+
 
 
 ### Methods
@@ -359,13 +372,13 @@ el.addEventListener( 'err', function onError( err ) {
 __NOTE__: the event name will change to `error` once issue [#138](https://github.com/webcomponents/webcomponentsjs/issues/138) is resolved. The preferred name is `error`.
 
 
-<a name="evt-changed"></a>
-#### 'changed'
+<a name="evt-change"></a>
+#### 'change'
 
-The element emits a `changed` event whenever an attribute changes.
+The element emits a `change` event whenever an attribute changes.
 
 ``` javascript
-el.addEventListener( 'changed', function onChange( evt ) {
+el.addEventListener( 'change', function onChange( evt ) {
 	console.log( evt.attr, evt.prev, evt.curr, evt.data );	
 });
 ```
@@ -382,23 +395,23 @@ el.addEventListener( 'data', function onEvent( evt ) {
 ```
 
 <a name="evt-roworder"></a>
-#### 'rowOrder'
+#### 'roworder'
 
-The element emits a `rowOrder` event when the `rowOrder` attribute changes.
+The element emits a `roworder` event when the `rowOrder` attribute changes.
 
 ``` javascript
-el.addEventListener( 'rowOrder', function onEvent( evt ) {
+el.addEventListener( 'roworder', function onEvent( evt ) {
 	console.log( this.rowOrder );
 });
 ```
 
 <a name="evt-colorder"></a>
-#### 'colOrder'
+#### 'colorder'
 
-The element emits a `colOrder` event when the `colOrder` attribute changes.
+The element emits a `colorder` event when the `colOrder` attribute changes.
 
 ``` javascript
-el.addEventListener( 'colOrder', function onEvent( evt ) {
+el.addEventListener( 'colorder', function onEvent( evt ) {
 	console.log( this.colOrder );
 });
 ```
@@ -426,23 +439,23 @@ el.addEventListener( 'height', function onEvent( evt ) {
 ```
 
 <a name="evt-zmin"></a>
-#### 'zMin'
+#### 'zmin'
 
-The element emits a `zMin` event when the `zMin` attribute changes.
+The element emits a `zmin` event when the `zMin` attribute changes.
 
 ``` javascript
-el.addEventListener( 'zMin', function onEvent( evt ) {
+el.addEventListener( 'zmin', function onEvent( evt ) {
 	console.log( this.zMin );
 });
 ```
 
 <a name="evt-zmax"></a>
-#### 'zMax'
+#### 'zmax'
 
-The element emits a `zMax` event when the `zMax` attribute changes.
+The element emits a `zmax` event when the `zMax` attribute changes.
 
 ``` javascript
-el.addEventListener( 'zMax', function onEvent( evt ) {
+el.addEventListener( 'zmax', function onEvent( evt ) {
 	console.log( this.zMax );
 });
 ```
@@ -505,110 +518,124 @@ el.addEventListener( 'clicked.cell', function onClick( evt ) {
 ```
 
 
-<a name="evt-hovered"></a>
-#### 'hovered'
+<a name="evt-hover"></a>
+#### 'hover'
 
-The element emits a `hovered` event when an element having a `mouseover` handler has a `mouseover` event.
+The element emits a `hover` event when an element having a `mouseover` handler has a `mouseover` event.
 
 ``` javascript
-el.addEventListener( 'hovered', function onClick( evt ) {
+el.addEventListener( 'hover', function onClick( evt ) {
 	console.log( evt.detail.datum, evt.detail.index );
 });
 ```
 
 
-<a name="evt-hovered-row"></a>
-#### 'hovered.row'
+<a name="evt-hover-row"></a>
+#### 'hover.row'
 
-The element emits a `hovered.row` event when a row has a `mouseover` event.
+The element emits a `hover.row` event when a row has a `mouseover` event.
 
 ``` javascript
-el.addEventListener( 'hovered.row', function onClick( evt ) {
+el.addEventListener( 'hover.row', function onClick( evt ) {
 	console.log( evt.detail.datum, evt.detail.index );
 });
 ```
 
 
-<a name="evt-hovered-col"></a>
-#### 'hovered.col'
+<a name="evt-hover-col"></a>
+#### 'hover.col'
 
-The element emits a `hovered.col` event when a column has a `mouseover` event.
+The element emits a `hover.col` event when a column has a `mouseover` event.
 
 ``` javascript
-el.addEventListener( 'hovered.col', function onClick( evt ) {
+el.addEventListener( 'hover.col', function onClick( evt ) {
 	console.log( evt.detail.datum, evt.detail.index );
 });
 ```
 
 
-<a name="evt-hovered-cell"></a>
-#### 'hovered.cell'
+<a name="evt-hover-cell"></a>
+#### 'hover.cell'
 
-The element emits a `hovered.cell` event when a cell has a `mouseover` event.
+The element emits a `hover.cell` event when a cell has a `mouseover` event.
 
 ``` javascript
-el.addEventListener( 'hovered.cell', function onClick( evt ) {
+el.addEventListener( 'hover.cell', function onClick( evt ) {
 	console.log( evt.detail.datum, evt.detail.row, evt.detail.col );
 });
 ```
 
 
-<a name="evt-hoverended"></a>
-#### 'hoverended'
+<a name="evt-hoverend"></a>
+#### 'hoverend'
 
-The element emits a `hoverended` event when an element having a `mouseout` handler has a `mouseout` event.
+The element emits a `hoverend` event when an element having a `mouseout` handler has a `mouseout` event.
 
 ``` javascript
-el.addEventListener( 'hoverended', function onClick( evt ) {
+el.addEventListener( 'hoverend', function onClick( evt ) {
 	console.log( evt.detail.datum, evt.detail.index );
 });
 ```
 
 
-<a name="evt-hoverended-row"></a>
-#### 'hoverended.row'
+<a name="evt-hoverend-row"></a>
+#### 'hoverend.row'
 
-The element emits a `hoverended.row` event when a row has a `mouseout` event.
+The element emits a `hoverend.row` event when a row has a `mouseout` event.
 
 ``` javascript
-el.addEventListener( 'hoverended.row', function onClick( evt ) {
+el.addEventListener( 'hoverend.row', function onClick( evt ) {
 	console.log( evt.detail.datum, evt.detail.index );
 });
 ```
 
 
-<a name="evt-hoverended-col"></a>
-#### 'hoverended.col'
+<a name="evt-hoverend-col"></a>
+#### 'hoverend.col'
 
-The element emits a `hoverended.col` event when a column has a `mouseout` event.
+The element emits a `hoverend.col` event when a column has a `mouseout` event.
 
 ``` javascript
-el.addEventListener( 'hoverended.col', function onClick( evt ) {
+el.addEventListener( 'hoverend.col', function onClick( evt ) {
 	console.log( evt.detail.datum, evt.detail.index );
 });
 ```
 
-<a name="evt-hoverended-cell"></a>
-#### 'hoverended.cell'
+<a name="evt-hoverend-cell"></a>
+#### 'hoverend.cell'
 
-The element emits a `hoverended.cell` event when a cell has a `mouseout` event.
+The element emits a `hoverend.cell` event when a cell has a `mouseout` event.
 
 ``` javascript
-el.addEventListener( 'hoverended.cell', function onClick( evt ) {
+el.addEventListener( 'hoverend.cell', function onClick( evt ) {
 	console.log( evt.detail.datum, evt.detail.row, evt.detail.col );
 });
 ```
 
-<a name="evt-transition-end"></a>
-#### 'transitionEnd'
+<a name="evt-transition-ended"></a>
+#### 'transitionended'
 
-The element emits a `transitionEnd` event when a transition ends; e.g., as occurs after setting the row or column order.
+The element emits a `transitionended` event when a transition ends; e.g., as occurs after setting the row or column order.
 
 ``` javascript
-el.addEventListener( 'transitionEnd', function onEnd() {
+el.addEventListener( 'transitionended', function onEnd() {
 	console.log( '...transition ended...' );
 });
 ```
+
+<a name="evt-brushend"></a>
+#### 'brushend'
+
+The element emits a `brushend` event when a brush interaction ends.
+
+``` javascript
+el.addEventListener( 'brushend', function onEnd( evt ) {
+	var detail = evt.detail;
+	console.log( detail.row1, detail.row2, detail.col1, detail.col2 );
+});
+```
+
+The event `detail` contains the cell indices defining the brush extent; i.e., those cells which are selected.
 
 
 ## Examples

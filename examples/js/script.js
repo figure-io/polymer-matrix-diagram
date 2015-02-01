@@ -70,6 +70,7 @@
 		el.zValue = Math.random;
 		el.xLabel = 'columns';
 		el.yLabel = 'rows';
+		el.brushable = true;
 
 		el.data = new DataFrame( data, {
 			'rownames': rownames,
@@ -86,11 +87,21 @@
 		});
 
 		el.addEventListener( 'clicked.cell', function onClick( evt ) {
-			// console.log( evt.detail.col, evt.detail.row );
+			console.log( evt.detail.col, evt.detail.row );
 		});
 
-		el.addEventListener( 'transitionEnd', function onEnd() {
-			// console.log( '...transition ended...' );
+		el.addEventListener( 'transitionended', function onEnd() {
+			console.log( '...transition ended...' );
+		});
+
+		el.addEventListener( 'brushend', function onEnd( evt ) {
+			var idx = evt.detail;
+			console.log(
+				rownames[ idx.row1 ],
+				rownames[ idx.row2 ],
+				colnames[ idx.col1 ],
+				colnames[ idx.col2 ]
+			);
 		});
 
 		el.addEventListener( 'err', function onError( err ) {
