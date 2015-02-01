@@ -2985,46 +2985,48 @@ Chart.prototype.onBrushEnd = function() {
 		xScale = this._xScale,
 		yScale = this._yScale,
 		idx = {},
-		numCols,
-		numRows,
+		xDomain,
+		yDomain,
 		x1, x2,
 		y1, y2,
 		dx, dy;
-
-	numCols = this.data.colnames().length;
-	numRows = this.data.rownames().length;
 
 	x1 = extent[ 0 ][ 0 ];
 	x2 = extent[ 1 ][ 0 ];
 	y1 = extent[ 0 ][ 1 ];
 	y2 = extent[ 1 ][ 1 ];
 
-	dx = this._xScale.rangeBand();
-	dy = this._yScale.rangeBand();
+	dx = xScale.rangeBand();
+	dy = yScale.rangeBand();
 
 	x1 = Math.round( x1 / dx );
-	y1 = Math.round( y1 / dy );
 	x2 = Math.round( x2 / dx );
+	y1 = Math.round( y1 / dy );
 	y2 = Math.round( y2 / dy );
 
 	idx.col1 = x1;
 	idx.row1 = y1;
-	idx.col2 = x2 - 1;
-	idx.row2 = y2 - 1;
 
-	x1 = xScale( x1 );
-	y1 = yScale( y1 );
+	xDomain = xScale.domain();
+	yDomain = yScale.domain();
+
+	x1 = xScale( xDomain[ x1 ] );
+	y1 = yScale( yDomain[ y1 ] );
 
 	// Check if upper bounds exceeded scale domains...
-	if ( x2 > numCols-1 ) {
+	if ( x2 === xDomain.length ) {
+		idx.col2 = x2 - 1;
 		x2 = this.graphWidth();
 	} else {
-		x2 = xScale( x2 );
+		idx.col2 = x2;
+		x2 = xScale( xDomain[ x2 ] );
 	}
-	if ( y2 > numRows-1 ) {
+	if ( y2 === yDomain.length ) {
+		idx.row2 = y2 - 1;
 		y2 = this.graphHeight();
 	} else {
-		y2 = yScale( y2 );
+		idx.row2 = y2;
+		y2 = yScale( yDomain[ y2 ] );
 	}
 	extent = [
 		[ x1, y1 ],

@@ -96,6 +96,8 @@
 
 		el.addEventListener( 'brushend', function onEnd( evt ) {
 			var idx = evt.detail;
+
+			// WARNING: for demo purposes only. If the rows/columns are reordered, the names will not be accurate.
 			console.log(
 				rownames[ idx.row1 ],
 				rownames[ idx.row2 ],
