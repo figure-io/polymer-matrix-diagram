@@ -2436,7 +2436,7 @@ Chart.prototype.sortableRowsChanged = function( oldVal, newVal ) {
 * @param {Number} i - row index
 */
 Chart.prototype.onRowDragStart = function( d, i ) {
-	this._d3.event.__selection__ = this._d3.select( this.$.rows[ 0 ][ i ] );
+	this._activeRow = this._d3.select( this.$.rows[ 0 ][ i ] );
 }; // end METHOD onRowDragStart()
 
 /**
@@ -2447,9 +2447,7 @@ Chart.prototype.onRowDragStart = function( d, i ) {
 * @param {Number} i - row index
 */
 Chart.prototype.onRowDrag = function() {
-	var evt = this._d3.event;
-	evt.__selection__
-		.attr( 'transform', 'translate(0,' + evt.y + ')' );
+	this._activeRow.attr( 'transform', 'translate(0,' + this._d3.event.y + ')' );
 }; // end METHOD onRowDrag()
 
 /**
@@ -2459,8 +2457,8 @@ Chart.prototype.onRowDrag = function() {
 * @param {*} d - datum
 * @param {Number} i - row index
 */
-Chart.prototype.onRowDragEnd = function() {
-	this._d3.event.__selection__.attr( 'transform', this._y );
+Chart.prototype.onRowDragEnd = function( d, i ) {
+	this._activeRow.attr( 'transform', 'translate(0,' + this._yScale( i ) + ')' );
 }; // end METHOD onRowDragEnd()
 
 /**
