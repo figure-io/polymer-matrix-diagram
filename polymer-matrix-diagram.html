@@ -1039,8 +1039,18 @@ Chart.prototype.init = function() {
 		.on( 'drag', this.onRowDrag.bind( this ) )
 		.on( 'dragend', this.onRowDragEnd.bind( this ) );
 
-	// TODO: define
-	this._colDrag = null;
+	this._colDrag = d3.behavior.drag()
+		.on( 'dragstart', this.onColDragStart.bind( this ) )
+		.on( 'drag', this.onColDrag.bind( this ) )
+		.on( 'dragend', this.onColDragEnd.bind( this ) );
+
+	this._active = {
+		'row': null,
+		'col': null,
+		'x': null,
+		'y': null,
+		'dragging': false
+	};
 
 	// Element cache...
 	this.$ = $ = {};
@@ -3102,7 +3112,7 @@ Chart.prototype.sortableRowsChanged = function( oldVal, newVal ) {
 * @param {Number} i - row index
 */
 Chart.prototype.onRowDragStart = function( d, i ) {
-	this._activeRow = this._d3.select( this.$.rows[ 0 ][ i ] );
+	this._active.row = this._d3.select( this.$.rows[ 0 ][ i ] );
 }; // end METHOD onRowDragStart()
 
 /**
@@ -3113,18 +3123,89 @@ Chart.prototype.onRowDragStart = function( d, i ) {
 * @param {Number} i - row index
 */
 Chart.prototype.onRowDrag = function() {
-	this._activeRow.attr( 'transform', 'translate(0,' + this._d3.event.y + ')' );
+	var y = this._d3.event.y,
+		h;
+
+	this._active.dragging = true;
+
+	// Ensure that the row does not venture outside the graph area...
+	if ( y < 0 ) {
+		y = 0;
+	} else {
+		h = this.graphHeight() - this._yScale.rangeBand();
+		if ( y > h ) {
+			y = h;
+		}
+	}
+	this._active.row.attr( 'transform', 'translate(0,' + y + ')' );
+	this._active.y = y;
 }; // end METHOD onRowDrag()
 
 /**
-* METHOD: onRowDragEnd( d, i )
+* METHOD: onRowDragEnd( d, idx )
 *	Event handler invoked when a user stops dragging a row.
 *
 * @param {*} d - datum
 * @param {Number} i - row index
 */
 Chart.prototype.onRowDragEnd = function( d, i ) {
-	this._activeRow.attr( 'transform', 'translate(0,' + this._yScale( i ) + ')' );
+	var self = this,
+		duration = this.duration,
+		delay = this.delay,
+		order,
+		j, k,
+		idx;
+
+	if ( !this._active.dragging ) {
+		return;
+	}
+	this._active.dragging = false;
+
+	if ( this._rowOrder ) {
+		order = this._rowOrder.slice();
+	} else {
+		order = this._yScale.domain().slice();
+	}
+	// Match the element index to its place in the y-domain (use linear search as array elements may be in random order)...
+	for ( j = 0; j < order.length; j++ ) {
+		if ( i === order[ j ] ) {
+			i = j;
+			break;
+		}
+	}
+	// Determine the nearest row index:
+	j = Math.round( this._active.y / this._yScale.rangeBand() );
+
+	// Re-order the rows...
+	if ( i !== j ) {
+		idx = order[ i ];
+		if ( i < j ) {
+			// Case 1: shift elements to the left...
+			for ( k = i; k < j; k++ ) {
+				order[ k ] = order[ k+1 ];
+			}
+		} else {
+			// Case 2: shift elements to the right...
+			for ( k = i; k > j; k-- ) {
+				order[ k ] = order[ k-1 ];
+			}
+		}
+		order[ j ] = idx;
+
+		this.duration = 100;
+		this.delay = 0;
+		this.addEventListener( 'transitionended', onEnd );
+
+		this.rowOrder = order;
+	}
+	this._active.row = null;
+	this._active.y = null;
+
+	function onEnd() {
+		self.duration = duration;
+		self.delay = delay;
+		self.removeEventListener( 'transitionended', onEnd );
+	}
 }; // end METHOD onRowDragEnd()
 
 /**
@@ -3143,9 +3224,10 @@ Chart.prototype.sortableColsChanged = function( oldVal, newVal ) {
 		return;
 	}
 	if ( newVal ) {
-		// TODO: something
+		this.$.cols.call( this._colDrag );
 	} else {
-		// TODO: something
+		// Remove all listeners in the `drag` namespace:
+		this.$.cols.on( '.drag', null );
 	}
 	this.fire( 'change', {
 		'attr': 'sortableCols',
@@ -3153,6 +3235,41 @@ Chart.prototype.sortableColsChanged = function( oldVal, newVal ) {
 		'curr': newVal
 	});
 }; // end METHOD sortableColsChanged()
+
+/**
+* METHOD: onColDragStart( d, i )
+*	Event handler invoked when a user initiates a column drag.
+*
+* @param {*} d - datum
+* @param {Number} i - column index
+*/
+Chart.prototype.onColDragStart = function( d, i ) {
+	this._activeCol = this._d3.select( this.$.cols[ 0 ][ i ] );
+}; // end METHOD onColDragStart()
+
+/**
+* METHOD: onColDrag( d, i )
+*	Event handler invoked when a user drags a column.
+*
+* @param {*} d - datum
+* @param {Number} i - column index
+*/
+Chart.prototype.onColDrag = function() {
+	// TODO: translate the column name
+	// TODO: translate the row cells
+}; // end METHOD onColDrag()
+
+/**
+* METHOD: onColDragEnd( d, i )
+*	Event handler invoked when a user stops dragging a column.
+*
+* @param {*} d - datum
+* @param {Number} i - column index
+*/
+Chart.prototype.onColDragEnd = function( d, i ) {
+	// TODO: reset the column order
+	this._activeCol = null;
+}; // end METHOD onColDragEnd()
 
 /**
 * METHOD: onRowClick( d, i )
