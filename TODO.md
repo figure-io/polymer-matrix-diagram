@@ -125,7 +125,8 @@ Items moved from TODO, which are not actionable at the current time.
 7. add/remove row (+rowname)
 8. add/remove column (+colname)
 9. update row/colname
-10. 
+10. method to return dimensions
+11. 
 
 
 
