@@ -465,7 +465,7 @@ Chart.prototype.removeListeners = function() {
 }; // end METHOD removeListeners()
 
 
-// CREATE METHODS //
+// ELEMENT CREATION //
 
 Chart.prototype.create = require( './create' );
 
@@ -486,207 +486,27 @@ Chart.prototype.createAxes = require( './create/axes.js' );
 Chart.prototype.createBrush = require( './create/brush.js' );
 
 
-// RESET METHODS //
+// RESET ELEMENTS //
 
-/**
-* METHOD: reset()
-*	Resets chart elements.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.reset = function() {
-	this.resetBase()
-		.resetAxes()
-		.resetRows()
-		.resetCols();
-	return this;
-}; // end METHOD reset()
+Chart.prototype.reset = require( './reset' );
 
-/**
-* METHOD: resetBase()
-*	Resets base elements.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.resetBase = function() {
-	var pLeft, pTop;
+Chart.prototype.resetBase = require( './reset/base.js' );
 
-	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
-	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
+Chart.prototype.resetAxes = require( './reset/axes.js' );
 
-	this.$.graph
-		.attr( 'transform', 'translate(' + pLeft + ',' + pTop + ')' );
+Chart.prototype.resetRows = require( './reset/rows.js' );
 
-	this.$.bkgd
-		.attr( 'width', this.graphWidth() )
-		.attr( 'height', this.graphHeight() );
-	return this;
-}; // end METHOD resetBase()
+Chart.prototype.resetCols = require( './reset/cols.js' );
 
-/**
-* METHOD: resetAxes()
-*	Resets axis elements.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.resetAxes = function() {
-	this.$.xLabel
-		.attr( 'x', this.graphWidth() / 2 )
-		.attr( 'y', -(this._maxColTextLength+16) );
+Chart.prototype.resetCells = require( './reset/cells.js' );
 
-	this.$.yLabel
-		.attr( 'x', -this.graphHeight() / 2 )
-		.attr( 'y', -(this._maxRowTextLength+16) );
 
-	return this;
-}; // end METHOD resetAxes()
+// CLEAR //
 
-/**
-* METHOD: resetRows()
-*	Resets row elements.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.resetRows = function() {
-	// Bind the data and update existing rows:
-	var rows, gEnter;
+Chart.prototype.clear = require( './clear' );
 
-	rows = this.$.marks.selectAll( '.row' )
-		.data( this.data.rownames() )
-		.attr( 'transform', this._y );
 
-	// Remove any old rows:
-	rows.exit().remove();
-
-	// Add any new rows:
-	gEnter = rows.enter().append( 'svg:g' )
-		.attr( 'class', 'row' )
-		.attr( 'transform', this._y )
-		.on( 'mouseover', this._onRowHover )
-		.on( 'mouseout', this._onRowHoverEnd );
-
-	gEnter.append( 'svg:line' )
-		.attr( 'class', 'grid x' )
-		.attr( 'x1', this.graphWidth() );
-
-	gEnter.append( 'svg:text' )
-		.attr( 'class', 'noselect name' )
-		.attr( 'x', -6 )
-		.attr( 'y', this._yScale.rangeBand() / 2 )
-		.attr( 'dy', '.32em' )
-		.attr( 'text-anchor', 'end' )
-		.attr( 'font-size', this.fontSize() )
-		.text( this._getRowName )
-		.on( 'click', this._onRowClick );
-
-	// Update the cache references to row elements:
-	this.$.rows = rows;
-	this.$.rowGridlines = rows.selectAll( '.grid.x' );
-	this.$.rownames = rows.selectAll( '.name' );
-
-	// Create the row cells:
-	rows.each( this._resetCells );
-
-	this.$.cells = rows.selectAll( '.cell' );
-
-	return this;
-}; // end METHOD resetRows()
-
-/**
-* METHOD: resetCols()
-*	Resets column elements.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.resetCols = function() {
-	// Bind the data and update existing columns:
-	var cols, gEnter;
-
-	cols = this.$.marks.selectAll( '.col' )
-		.data( this.data.colnames() )
-		.attr( 'transform', this._x );
-
-	// Remove any old columns:
-	cols.exit().remove();
-
-	// Add any new columns:
-	gEnter = cols.enter().append( 'svg:g' )
-		.attr( 'class', 'col' )
-		.attr( 'transform', this._x )
-		.on( 'mouseover', this._onColHover )
-		.on( 'mouseout', this._onColHoverEnd );
-
-	gEnter.append( 'svg:line' )
-		.attr( 'class', 'grid y' )
-		.attr( 'x1', -this.graphHeight() );
-
-	gEnter.append( 'svg:text' )
-		.attr( 'class', 'noselect name' )
-		.attr( 'x', 6 )
-		.attr( 'y', this._xScale.rangeBand() / 2 )
-		.attr( 'dy', '.32em' )
-		.attr( 'text-anchor', 'start' )
-		.attr( 'font-size', this.fontSize() )
-		.text( this._getColName )
-		.on( 'click', this._onColClick );
-
-	// Cache a reference to the columns:
-	this.$.cols = cols;
-	this.$.colGridlines = cols.selectAll( '.grid.y' );
-	this.$.colnames = cols.selectAll( '.name' );
-
-	return this;
-}; // end METHOD resetCols()
-
-/**
-* METHOD: resetCells( d, i )
-*	Resets cell elements.
-*
-* @param {String} d - row name
-* @param {Number} i - row index
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.resetCells = function( d, i ) {
-	var row, cells;
-
-	row = this._d3.select( this.$.rows[0][i] );
-
-	cells = row.selectAll( '.cell' )
-		.data( this.data.data()[i] )
-		.attr( 'x', this._cx )
-		.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue )
-		.attr( 'fill', this.colorScale );
-
-	// Remove any old cells:
-	cells.exit().remove();
-
-	// Add any new cells:
-	cells.enter().append( 'svg:rect' )
-		.attr( 'class', 'cell' )
-		.attr( 'x', this._cx )
-		.attr( 'width', this._xScale.rangeBand() )
-		.attr( 'height', this._yScale.rangeBand() )
-		.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue )
-		.attr( 'fill', this.colorScale )
-		.on( 'mouseover', this._onCellHover )
-		.on( 'mouseout', this._onCellHoverEnd )
-		.on( 'click', this._onCellClick );
-
-	return this;
-}; // end METHOD resetCells()
-
-/**
-* METHOD: clear()
-*	Clears the chart.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.clear = function() {
-	this.$.rows.remove();
-	this.$.cols.remove();
-	this._brush.clear();
-	return this;
-}; // end METHOD clear()
+// UTILITY METHODS //
 
 /**
 * METHOD: graphWidth()
@@ -1015,230 +835,16 @@ Chart.prototype.validateOrder = function( arr ) {
 	return true;
 }; // end METHOD validateOrder()
 
-/**
-* METHOD: dataChanged( oldVal newVal )
-*	Event handler invoked when the `data` attribute changes.
-*
-* @param {Array} oldVal - old value
-* @param {Array} newVal - new value
-*/
-Chart.prototype.dataChanged = function( oldVal, newVal ) {
-	var range = this._d3.range,
-		len;
 
-	// TODO: check if data frame.
+// WATCHERS //
 
-	// [0] Set the domains:
-	len = this.data.colnames().length;
-	this._xScale.domain( range( len ) );
+Chart.prototype.dataChanged = require( './watchers/data.js' );
 
-	len = this.data.rownames().length;
-	this._yScale.domain( range( len ) );
+Chart.prototype.rowOrderChanged = require( './watchers/rowOrder.js' );
 
-	this._zScale.domain( this.zDomain( this.zMin, this.zMax ) );
+Chart.prototype.colOrderChanged = require( './watchers/colOrder.js' );
 
-	// [1] Compute padding values based on the row and column names:
-	this.calculatePadding();
-
-	// [2] Update the scales:
-	this._xScale.rangeBands( [ 0, this.graphWidth() ] );
-	this._yScale.rangeBands( [ 0, this.graphHeight() ] );
-
-	// [3] Compute max text lengths based on the row and column names:
-	this.maxTextLengths();
-
-	if ( this.autoUpdate ) {
-		// [4] Reset elements:
-		this.reset();
-	}
-	this.fire( 'data', {
-		'type': 'change'
-	});
-	this.fire( 'change', {
-		'attr': 'data',
-		'prev': oldVal,
-		'curr': newVal
-	});
-}; // end METHOD dataChanged()
-
-/**
-* METHOD: rowOrderChanged( val[, newVal] )
-*	Event handler invoked when the `rowOrder` attribute changes.
-*
-* @param {Array} val - change event value
-* @param {Array} [newVal] - new array of indices defining the row order
-*/
-Chart.prototype.rowOrderChanged = function( val, newVal ) {
-	var len = this.data.rownames().length,
-		rowOrder = this.rowOrder,
-		selection,
-		err;
-
-	// Determine if we have a new row order array...
-	if ( arguments.length > 1 && !Array.isArray( newVal ) ) {
-		err = new TypeError( 'rowOrder::invalid assignment. Row order must be an array. Value: `' + newVal + '`.' );
-		this.fire( 'err', err );
-		this.rowOrder = val;
-		return;
-	}
-	if ( rowOrder.length !== len ) {
-		err = new Error( 'rowOrder::invalid assignment. Array length must equal the number of rows. Number of rows: ' + len + '.' );
-		this.fire( 'err', err );
-		this.rowOrder = this._rowOrder.slice();
-		return;
-	}
-	if ( !this.validateOrder( rowOrder ) ) {
-		err = new Error( 'rowOrder::invalid assignment. Assigned array must be a permutation of row indices.' );
-		this.fire( 'err', err );
-		this.rowOrder = this._rowOrder.slice();
-		return;
-	}
-	this._rowOrder = rowOrder.slice();
-	this._yScale.domain( rowOrder );
-
-	if ( this.duration > 0 ) {
-		selection = this.$.marks.transition()
-			.duration( this.duration )
-			.each( 'end', this._onTransitionEnd );
-
-		selection.selectAll( '.row' )
-			.delay( this.delay )
-			.attr( 'transform', this._y );
-	} else {
-		this.$.rows.attr( 'transform', this._y );
-		this.fire( 'transitionended', null );
-	}
-	this.fire( 'roworder', {
-		'type': 'change'
-	});
-	if ( newVal === void 0 ) {
-		this.fire( 'change', {
-			'attr': 'rowOrder',
-			'data': val[ 0 ]
-		});
-	} else {
-		this.fire( 'change', {
-			'attr': 'rowOrder',
-			'prev': val,
-			'curr': newVal
-		});
-	}
-}; // end METHOD rowOrderChanged()
-
-/**
-* METHOD: colOrderChanged( val[, newVal] )
-*	Event handler invoked when the `colOrder` attribute changes.
-*
-* @param {Array} val - change event value
-* @param {Array} [newVal] - new array of indices defining the column order
-*/
-Chart.prototype.colOrderChanged = function( val, newVal ) {
-	var len = this.data.colnames().length,
-		colOrder = this.colOrder,
-		selection,
-		err;
-
-	// Determine if we have a new row order array...
-	if ( arguments.length > 1 && !Array.isArray( newVal ) ) {
-		err = new TypeError( 'colOrder::invalid assignment. Row order must be an array. Value: `' + newVal + '`.' );
-		this.fire( 'err', err );
-		this.colOrder = val;
-		return;
-	}
-	if ( colOrder.length !== len ) {
-		err = new Error( 'colOrder::invalid assignment. Array length must equal the number of columns. Number of columns: ' + len + '.' );
-		this.fire( 'err', err );
-		this.colOrder = this._colOrder.slice();
-		return;
-	}
-	if ( !this.validateOrder( colOrder ) ) {
-		err = new Error( 'colOrder::invalid assignment. Assigned array must be a permutation of column indices.' );
-		this.fire( 'err', err );
-		this.colOrder = this._colOrder.slice();
-		return;
-	}
-	this._colOrder = colOrder.slice();
-	this._xScale.domain( colOrder );
-
-	if ( this.duration > 0 ) {
-		selection = this.$.marks.transition()
-			.duration( this.duration )
-			.each( 'end', this._onTransitionEnd );
-
-		selection.selectAll( '.col' )
-			.delay( this.delay )
-			.attr( 'transform', this._x );
-
-		selection.selectAll( '.row' )
-			.selectAll( '.cell' )
-			.delay( this.delay )
-			.attr( 'x', this._cx );
-	} else {
-		this.$.cols.attr( 'transform', this._x );
-
-		this.$.cells.attr( 'x', this._cx );
-
-		this.fire( 'transitionended', null );
-	}
-	this.fire( 'colorder', {
-		'type': 'change'
-	});
-	if ( newVal === void 0 ) {
-		this.fire( 'change', {
-			'attr': 'colOrder',
-			'data': val[ 0 ]
-		});
-	} else {
-		this.fire( 'change', {
-			'attr': 'colOrder',
-			'prev': val,
-			'curr': newVal
-		});
-	}
-}; // end METHOD colOrderChanged()
-
-/**
-* METHOD: configChanged( oldConfig, newConfig )
-*	Event handler invoked when the `config` attribute changes.
-*
-* @param {Object} oldConfig - old config
-* @param {Object} newConfig - new config
-*/
-Chart.prototype.configChanged = function( oldConfig, newConfig ) {
-	var bool,
-		err;
-
-	if ( typeof newConfig !== 'object' || newConfig === null || Array.isArray( newConfig) ) {
-		err = new TypeError( 'config::invalid assignment. Must be an `object`. Value: `' + newConfig + '`.' );
-		this.fire( 'err', err );
-		this.config = oldConfig;
-		return;
-	}
-	// TODO: schema validator
-
-	// Turn off auto-update:
-	bool = this.autoUpdate;
-	this.autoUpdate = false;
-
-	// this.width = newConfig.canvas.width;
-	// this.height = newConfig.canvas.height;
-
-	// FIXME: The config should be standardized. Put in repo. Version it. Create an associated validator. NPM.
-
-	this.fire( 'change', {
-		'attr': 'config',
-		'prev': oldConfig,
-		'curr': newConfig
-	});
-
-	// Reset the auto update flag to its original value:
-	this.autoUpdate = bool;
-
-	// Only if auto update is enabled, redraw the chart...
-	if ( bool ) {
-		this.create();
-	}
-}; // end METHOD configChanged()
+Chart.prototype.configChanged = require( './watchers/config.js' );
 
 /**
 * METHOD: widthChanged( oldVal, newVal )
