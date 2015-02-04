@@ -19,7 +19,7 @@ TODO
 		-	use delayed callbacks to only update after brush
 	- 	cScale brushable legend
 		-	loop through all cells, pass through cScale fcn, gather unique color values, sort colors, create legend element
-3. split into separate files
+3. 
 4. rowdragend/coldragend events
 5. add `events` attribute to the README.
 6. `config` method
@@ -64,6 +64,13 @@ TODO
 22. separate/independent example using, say, phylogenetic, FB, survey, or some other data
 	- 	see #13
 23. 
+
+
+
+## Bugs
+
+1. on resize, cell brush overlay should scale with the graph
+
 
 
 ## Open Questions
