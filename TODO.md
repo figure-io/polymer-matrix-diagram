@@ -32,13 +32,7 @@ TODO
 11. update wct plugins
 	-	istanbul
 12. 
-13. manual sorting (via names)
-	- 	sortable columns
-	-	translate column
-	-	find nearest column
-	-	get col index
-	-	insert new index into domain array and shift all other indices down the array by 1
-	-	reset cols (animation)
+13. 
 14. 
 15. media queries
 	-	at small size, remove row/column names/labels? ala details on demand.
