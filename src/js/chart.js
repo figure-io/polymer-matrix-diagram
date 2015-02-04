@@ -878,6 +878,13 @@ Chart.prototype.autoResizeChanged = require( './watchers/autoResize.js' );
 
 Chart.prototype.brushableChanged = require( './watchers/brushable.js' );
 
+Chart.prototype.sortableRowsChanged = require( './watchers/sortableRows.js' );
+
+Chart.prototype.sortableColsChanged = require( './watchers/sortableCols.js' );
+
+
+// LISTENERS //
+
 /**
 * METHOD: onBrushEnd()
 *	Event listener invoked when brush interaction ends. Adjusts the brush extent in order to snap to nearest cell boundaries.
@@ -941,34 +948,6 @@ Chart.prototype.onBrushEnd = function() {
 
 	this.fire( 'brushend', idx );
 }; // end METHOD onBrushEnd()
-
-/**
-* METHOD: sortableRowsChanged( oldVal, newVal )
-*	Event handler invoked when the `sortableRows` attribute changes.
-*
-* @param {Boolean} oldVal - old value
-* @param {Boolean} newVal - new value
-*/
-Chart.prototype.sortableRowsChanged = function( oldVal, newVal ) {
-	var err;
-	if ( typeof newVal !== 'boolean' ) {
-		err = new TypeError( 'sortableRows::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
-		this.fire( 'err', err );
-		this.sortableRows = oldVal;
-		return;
-	}
-	if ( newVal ) {
-		this.$.rows.call( this._rowDrag );
-	} else {
-		// Remove all listeners in the `drag` namespace:
-		this.$.rows.on( '.drag', null );
-	}
-	this.fire( 'change', {
-		'attr': 'sortableRows',
-		'prev': oldVal,
-		'curr': newVal
-	});
-}; // end METHOD sortableRowsChanged()
 
 /**
 * METHOD: onRowDragStart( d, i )
@@ -1076,34 +1055,6 @@ Chart.prototype.onRowDragEnd = function( d, i ) {
 		self.removeEventListener( 'transitionended', onEnd );
 	}
 }; // end METHOD onRowDragEnd()
-
-/**
-* METHOD: sortableColsChanged( oldVal, newVal )
-*	Event handler invoked when the `sortableCols` attribute changes.
-*
-* @param {Boolean} oldVal - old value
-* @param {Boolean} newVal - new value
-*/
-Chart.prototype.sortableColsChanged = function( oldVal, newVal ) {
-	var err;
-	if ( typeof newVal !== 'boolean' ) {
-		err = new TypeError( 'sortableCols::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
-		this.fire( 'err', err );
-		this.sortableCols = oldVal;
-		return;
-	}
-	if ( newVal ) {
-		this.$.cols.call( this._colDrag );
-	} else {
-		// Remove all listeners in the `drag` namespace:
-		this.$.cols.on( '.drag', null );
-	}
-	this.fire( 'change', {
-		'attr': 'sortableCols',
-		'prev': oldVal,
-		'curr': newVal
-	});
-}; // end METHOD sortableColsChanged()
 
 /**
 * METHOD: onColDragStart( d, i )

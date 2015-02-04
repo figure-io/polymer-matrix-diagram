@@ -22,7 +22,7 @@ TODO
 3. split into separate files
 4. rowdragend/coldragend events
 5. add `events` attribute to the README.
-6. 
+6. `config` method
 7. update README regarding df
 8. `on()` as an alias to `addEventListener()`?
 	- could have it only accept the publicized events and do input validation
@@ -31,7 +31,7 @@ TODO
 10. Wiki (?)
 11. update wct plugins
 	-	istanbul
-12. 
+12. schema and validator
 13. 
 14. 
 15. media queries

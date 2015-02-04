@@ -4,7 +4,7 @@
 *
 *
 *	DESCRIPTION:
-*		- Event handler for changes to a transition duration.
+*		- Event handler for changes to a transition duration setting.
 *
 *
 *	NOTES:
@@ -30,7 +30,7 @@
 
 /**
 * FUNCTION: durationChanged( oldVal, newVal )
-*	Event handler for changes to a transition duration.
+*	Event handler for changes to a transition duration setting.
 *
 * @param {Null|Number} oldVal - old value
 * @param {Null|Number} newVal - new value
