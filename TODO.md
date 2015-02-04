@@ -32,7 +32,9 @@ TODO
 11. update wct plugins
 	-	istanbul
 12. schema and validator
-13. 
+13. github pages demo
+	- 	copy over example code and augment (datgui?)
+	- 	other datasets (?)
 14. 
 15. media queries
 	-	at small size, remove row/column names/labels? ala details on demand.
@@ -60,6 +62,7 @@ TODO
 	-	scroll (scrollable) --> or brush (brushable)
 	- 	none
 22. separate/independent example using, say, phylogenetic, FB, survey, or some other data
+	- 	see #13
 23. 
 
 

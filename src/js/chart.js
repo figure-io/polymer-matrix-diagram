@@ -26,51 +26,7 @@
 *
 */
 
-/* global document */
 'use strict';
-
-// MODULES //
-
-var // Utility to create delayed event listeners:
-	delayed = require( './utils/delayed.js' );
-
-
-// VARIABLES //
-
-var EVENTS = [
-	'data',
-	'roworder',
-	'colorder',
-
-	'width',
-	'height',
-	'zmin',
-	'zmax',
-
-	'change',
-	'err',
-
-	'resized',
-
-	'clicked',
-	'clicked.row',
-	'clicked.col',
-	'clicked.cell',
-
-	'hover',
-	'hover.row',
-	'hover.col',
-	'hover.cell',
-
-	'hoverend',
-	'hoverend.row',
-	'hoverend.col',
-	'hoverend.cell',
-
-	'transitionended',
-
-	'brushend'
-];
 
 
 // CHART //
@@ -88,6 +44,9 @@ function Chart() {
 	}
 	return this;
 } // end FUNCTION Chart()
+
+
+// ATTRIBUTES //
 
 /**
 * ATTRIBUTE: paddingLeft
@@ -189,7 +148,7 @@ Chart.prototype.zMin = null;
 Chart.prototype.zMax = null;
 
 /**
-* METHOD: colorScale( d, i )
+* ATTRIBUTE: colorScale( d, i )
 *	Maps a cell datum to a color.
 *
 * @param {*} d - datum
@@ -254,193 +213,22 @@ Chart.prototype.sortableRows = false;
 */
 Chart.prototype.sortableCols = false;
 
-/**
-* METHOD: created()
-*	Polymer hook that is called when an element is created.
-*/
-Chart.prototype.created = function() {
-	this.init();
-}; // end METHOD created()
 
-/**
-* METHOD: init()
-*	Initialization.
-*/
-Chart.prototype.init = function() {
-	var create = document.createElement.bind( document ),
-		d3,
-		el,
-		$;
+// LIFECYCLE //
 
-	// Create a new D3 element to access the library dependency:
-	el = create( 'polymer-d3' );
-	d3 = el.d3;
-	this._d3 = d3;
+Chart.prototype.created = require( './lifecycle/created.js' );
 
-	// Create a new uuid element to access the library dependency for creating uuids:
-	el = create( 'polymer-uuid' );
-	this._uuid = el.uuid;
+Chart.prototype.attached = require( './lifecycle/attached.js' );
 
-	// Assign the chart a private uuid:
-	this.__uid__ = this._uuid.v4();
-
-	// Initialize attributes...
-
-	// Config: (hint an object)
-	this.config = {};
-
-	// Events: (hint an array)
-	this.events = EVENTS.slice();
-
-	// Data:
-	this.data = null;
-	this.rowOrder = [];
-	this.colOrder = [];
-	this._rowOrder = null;
-	this._colOrder = null;
-
-	// Private attributes...
-
-	// Row and column name font size:
-	this._maxFontSize = 16; // px
-
-	// Max row and column name lengths...
-	this._maxRowTextLength = 0;
-	this._maxColTextLength = 0;
-
-	// Padding...
-	this._minPadding = 40; // px
-	this._paddingLeft = this._minPadding;
-	this._paddingRight = this._minPadding;
-	this._paddingTop = this._minPadding;
-	this._paddingBottom = this._minPadding;
-
-	// Private methods...
-
-	// Scales...
-	this._xScale = d3.scale.ordinal()
-		.rangeBands( [ 0, this.graphWidth() ] )
-		.domain( [ 0 ] );
-	this._yScale = d3.scale.ordinal()
-		.rangeBands( [ 0, this.graphHeight() ] )
-		.domain( [ 0 ] );
-	this._zScale = d3.scale.linear()
-		.domain( [ 0, 1 ] )
-		.range( [ 0, 1 ] )
-		.clamp( true );
-
-	// Labels:
-	this._getRowName = this.getRowName.bind( this );
-	this._getColName = this.getColName.bind( this );
-
-	// Marks...
-	this._x = this.x.bind( this );
-	this._y = this.y.bind( this );
-	this._z = this.z.bind( this );
-
-	this._cx = this.cx.bind( this );
-
-	this._createCells = this.createCells.bind( this );
-	this._resetCells = this.resetCells.bind( this );
-
-	// Transitions...
-	this._onTransitionEnd = this.onTransitionEnd.bind( this );
-
-	// Interaction...
-	this._onRowHover = this.onRowHover.bind( this );
-	this._onColHover = this.onColHover.bind( this );
-	this._onCellHover = this.onCellHover.bind( this );
-
-	this._onRowHoverEnd = this.onRowHoverEnd.bind( this );
-	this._onColHoverEnd = this.onColHoverEnd.bind( this );
-	this._onCellHoverEnd = this.onCellHoverEnd.bind( this );
-
-	this._onRowClick = this.onRowClick.bind( this );
-	this._onColClick = this.onColClick.bind( this );
-	this._onCellClick = this.onCellClick.bind( this );
-
-	this._onResize = delayed( this.onResize.bind( this ), 400 );
-
-	// Brush...
-	this._brush = d3.svg.brush()
-		.x( this._xScale )
-		.y( this._yScale )
-		.on( 'brushend', this.onBrushEnd.bind( this ) );
-
-	// Drag...
-	this._rowDrag = d3.behavior.drag()
-		.on( 'dragstart', this.onRowDragStart.bind( this ) )
-		.on( 'drag', this.onRowDrag.bind( this ) )
-		.on( 'dragend', this.onRowDragEnd.bind( this ) );
-
-	this._colDrag = d3.behavior.drag()
-		.on( 'dragstart', this.onColDragStart.bind( this ) )
-		.on( 'drag', this.onColDrag.bind( this ) )
-		.on( 'dragend', this.onColDragEnd.bind( this ) );
-
-	this._active = {
-		'row': null,
-		'col': null,
-		'cells': null,
-		'x': null,
-		'y': null,
-		'dragging': false
-	};
-
-	// Element cache...
-	this.$ = $ = {};
-
-	// Base elements...
-	$.root = null;
-	$.canvas = null;
-	$.graph = null;
-	$.bkgd = null;
-	$.text = null;
-
-	// Axis elements...
-	$.xAxis = null;
-	$.yAxis = null;
-	$.xLabel = null;
-	$.yLabel = null;
-
-	// Data elements...
-	$.marks = null;
-	$.rows = null;
-	$.cols = null;
-	$.cells = null;
-
-	// Grid lines...
-	$.rowGridlines = null;
-	$.colGridlines = null;
-
-	// Names...
-	$.rownames = null;
-	$.colnames = null;
-
-	// Brush...
-	$.brush = null;
-
-	return this;
-}; // end METHOD init()
-
-/**
-* METHOD: attached()
-*	Polymer hook that is called when the element is inserted in the DOM.
-*/
-Chart.prototype.attached = function() {
-	this.create().addListeners();
-}; // end METHOD attached()
-
-/**
-* METHOD: detached()
-*	Polymer hook that is called when the element is removed from the DOM.
-*/
-Chart.prototype.detached = function() {
-	this.removeListeners();
-}; // end METHOD detached()
+Chart.prototype.detached = require( './lifecycle/detached.js' );
 
 
-// ELEMENT CREATION //
+// INIT //
+
+Chart.prototype.init = require( './init' );
+
+
+// CHART CREATION //
 
 Chart.prototype.create = require( './create' );
 
