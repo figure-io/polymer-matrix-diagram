@@ -66,6 +66,17 @@ TODO
 	-	may need to bring back clipPath
 	- 	may be an argument for separating axes (rownames) from cells
 		-	maybe not
+	- 	would require
+		-	rowBrushData/colBrushData
+			-	mapped to ordinal scales
+		-	a brushable element above/left of the col/row names
+		-	some sort of visual encoding for the brush data
+			-	do we plot the names, just like we do the axes?
+			-	what if we have too many names, such that text overlaps, what then?
+		- 	a rowBrushEnd/colBrushEnd event emitted
+			-	extent payload
+		-	left to user to map the brush extent to the main diagram data
+			-	query a db; update the df; create a new view; etc
 21. row/column modes
 	-	sort (sortable)
 	-	click (clickable)
