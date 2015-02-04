@@ -19,9 +19,9 @@ TODO
 		-	use delayed callbacks to only update after brush
 	- 	cScale brushable legend
 		-	loop through all cells, pass through cScale fcn, gather unique color values, sort colors, create legend element
-3. 
-4. 
-5. 
+3. split into separate files
+4. rowdragend/coldragend events
+5. add `events` attribute to the README.
 6. 
 7. update README regarding df
 8. `on()` as an alias to `addEventListener()`?

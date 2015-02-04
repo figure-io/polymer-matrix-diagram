@@ -26,7 +26,7 @@
 *
 */
 
-/* global document */
+/* global document, window */
 'use strict';
 
 // MODULES //
@@ -290,7 +290,7 @@ Chart.prototype.init = function() {
 	this.config = {};
 
 	// Events: (hint an array)
-	this.events = EVENTS;
+	this.events = EVENTS.slice();
 
 	// Data:
 	this.data = null;
@@ -464,290 +464,29 @@ Chart.prototype.removeListeners = function() {
 	return this;
 }; // end METHOD removeListeners()
 
-/**
-* METHOD: create()
-*	Creates a chart.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.create = function() {
-	// Ensure that the width and height are set before creating a chart...
-	this.width = this.width || this.clientWidth || this.parentNode.clientWidth || 600;
-	this.height = this.height || this.clientHeight || this.parentNode.clientHeight || 400;
 
-	// Create the chart layers...
-	this
-		.createBase()
-		.createBackground()
-		.createMarks()
-		.createAxes()
-		.createBrush();
+// CREATE METHODS //
 
-	return this;
-}; // end METHOD create()
+Chart.prototype.create = require( './create' );
 
-/**
-* METHOD: createBase()
-*	Creates the chart base.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.createBase = function() {
-	var pLeft,
-		pTop,
-		canvas;
+Chart.prototype.createBase = require( './create/base.js' );
 
-	// Only cache the root element once (should not change)...
-	if ( !this.$.root ) {
-		this.$.root = this._d3.select( this.$.chart );
-	}
-	// Remove any existing canvas...
-	if ( this.$.canvas ) {
-		this.$.canvas.remove();
-	}
-	// Get the padding values:
-	pLeft = ( this.paddingLeft === null ) ? this._paddingLeft : this.paddingLeft;
-	pTop = ( this.paddingTop === null ) ? this._paddingTop : this.paddingTop;
+Chart.prototype.createBackground = require( './create/background.js' );
 
-	// Create the SVG element:
-	canvas = this.$.root.append( 'svg:svg' )
-		.attr( 'property', 'canvas' )
-		.attr( 'class', 'canvas' )
-		.attr( 'width', this.width )
-		.attr( 'height', this.height );
-	this.$.canvas = canvas;
+Chart.prototype.createMarks = require( './create/marks.js' );
 
-	// Create a text element for auto-computing padding based on row and column names:
-	this.$.text = canvas.append( 'svg:text' )
-		.attr( 'class', 'noselect' )
-		.attr( 'font-size', this._maxFontSize )
-		.attr( 'x', 6 )
-		.attr( 'y', 0 )
-		.attr( 'dy', '.32em' )
-		.attr( 'text-anchor', 'start' )
-		.attr( 'opacity', 0 );
+Chart.prototype.createRows = require( './create/rows.js' );
 
-	this.$.text = this.$.text.node();
+Chart.prototype.createCols = require( './create/cols.js' );
 
-	// Create the graph element:
-	this.$.graph = canvas.append( 'svg:g' )
-		.attr( 'property', 'graph' )
-		.attr( 'class', 'graph' )
-		.attr( 'data-graph-type', 'matrix-diagram' )
-		.attr( 'transform', 'translate(' + pLeft + ',' + pTop + ')' );
+Chart.prototype.createCells = require( './create/cells.js' );
 
-	return this;
-}; // end METHOD createBase()
+Chart.prototype.createAxes = require( './create/axes.js' );
 
-/**
-* METHOD: createBackground()
-*	Creates a background element.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.createBackground = function() {
-	// Remove any existing background...
-	if ( this.$.bkgd ) {
-		this.$.bkgd.remove();
-	}
-	this.$.bkgd = this.$.graph.append( 'svg:rect' )
-		.attr( 'class', 'background' )
-		.attr( 'x', 0 )
-		.attr( 'y', 0 )
-		.attr( 'width', this.graphWidth() )
-		.attr( 'height', this.graphHeight() );
+Chart.prototype.createBrush = require( './create/brush.js' );
 
-	return this;
-}; // end METHOD createBackground()
 
-/**
-* METHOD: createMarks()
-*	Creates the graph marks.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.createMarks = function() {
-	if ( this.$.marks ) {
-		this.$.marks.remove();
-	}
-	this.$.marks = this.$.graph.append( 'svg:g' )
-		.attr( 'property', 'marks' )
-		.attr( 'class', 'marks' );
-
-	this.createRows()
-		.createCols();
-
-	return this;
-}; // end METHOD createMarks()
-
-/**
-* METHOD: createRows()
-*	Creates row elements.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.createRows = function() {
-	var rows = this.$.marks.selectAll( '.row' )
-		.data( (this.data) ? this.data.rownames() : [] )
-		.enter()
-		.append( 'svg:g' )
-			.attr( 'class', 'row' )
-			.attr( 'transform', this._y )
-			.on( 'mouseover', this._onRowHover )
-			.on( 'mouseout', this._onRowHoverEnd );
-
-	rows.append( 'svg:line' )
-		.attr( 'class', 'grid x' )
-		.attr( 'x1', this.graphWidth() );
-
-	rows.append( 'svg:text' )
-		.attr( 'class', 'noselect name' )
-		.attr( 'x', -6 )
-		.attr( 'y', this._yScale.rangeBand() / 2 )
-		.attr( 'dy', '.32em' )
-		.attr( 'text-anchor', 'end' )
-		.attr( 'font-size', this.fontSize() )
-		.text( this._getRowName )
-		.on( 'click', this._onRowClick );
-
-	// Cache references to created elements:
-	this.$.rows = rows;
-	this.$.rowGridlines = rows.selectAll( '.grid.x' );
-	this.$.rownames = rows.selectAll( '.name' );
-
-	// Create the row cells:
-	rows.each( this._createCells );
-
-	this.$.cells = rows.selectAll( '.cell' );
-
-	return this;
-}; // end METHOD createRows()
-
-/**
-* METHOD: createCols()
-*	Creates column elements.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.createCols = function() {
-	var cols = this.$.marks.selectAll( '.col' )
-		.data( (this.data) ? this.data.colnames() :  [] )
-		.enter()
-		.append( 'svg:g' )
-			.attr( 'class', 'col y' )
-			.attr( 'transform', this._x )
-			.on( 'mouseover', this._onColHover )
-			.on( 'mouseout', this._onColHoverEnd );
-
-	cols.append( 'svg:line' )
-		.attr( 'class', 'grid y' )
-		.attr( 'x1', -this.graphHeight() );
-
-	cols.append( 'svg:text' )
-		.attr( 'class', 'noselect name' )
-		.attr( 'x', 6 )
-		.attr( 'y', this._xScale.rangeBand() / 2 )
-		.attr( 'dy', '.32em' )
-		.attr( 'text-anchor', 'start' )
-		.attr( 'font-size', this.fontSize() )
-		.text( this._getColName )
-		.on( 'click', this._onColClick );
-
-	// Cache references to created elements:
-	this.$.cols = cols;
-	this.$.colGridlines = cols.selectAll( '.grid.y' );
-	this.$.colnames = cols.selectAll( '.name' );
-
-	return this;
-}; // end METHOD createCols()
-
-/**
-* METHOD: createCells( d, i )
-*	Create cell elements.
-*
-* @param {String} d - row name
-* @param {Number} i - row index
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.createCells = function( d, i ) {
-	var row = this._d3.select( this.$.rows[0][i] );
-
-	row.selectAll( '.cell' )
-		.data( this.data.data()[i] )
-		.enter()
-		.append( 'svg:rect' )
-			.attr( 'class', 'cell' )
-			.attr( 'x', this._cx )
-			.attr( 'width', this._xScale.rangeBand() )
-			.attr( 'height', this._yScale.rangeBand() )
-			.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue )
-			.attr( 'fill', this.colorScale )
-			.on( 'mouseover', this._onCellHover )
-			.on( 'mouseout', this._onCellHoverEnd )
-			.on( 'click', this._onCellClick );
-
-	return this;
-}; // end METHOD createCells()
-
-/**
-* METHOD: createAxes()
-*	Creates the chart axis elements.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.createAxes = function() {
-	var graph = this.$.graph,
-		axis;
-
-	// Remove any existing axes...
-	if ( this.$.xAxis ) {
-		this.$.xAxis.remove();
-	}
-	if ( this.$.yAxis ) {
-		this.$.yAxis.remove();
-	}
-	axis = graph.append( 'svg:g' )
-		.attr( 'property', 'axis' )
-		.attr( 'class', 'x axis' );
-	this.$.xAxis = axis;
-
-	this.$.xLabel = axis.append( 'svg:text' )
-		.attr( 'property', 'axis.label' )
-		.attr( 'class', 'label noselect' )
-		.attr( 'text-anchor', 'middle' )
-		.attr( 'x', this.graphWidth() / 2 )
-		.attr( 'y', -(this._maxColTextLength+16) )
-		.text( this.xLabel );
-
-	axis = graph.append( 'svg:g' )
-		.attr( 'property', 'axis' )
-		.attr( 'class', 'y axis' );
-
-	this.$.yLabel = axis.append( 'svg:text' )
-		.attr( 'property', 'axis.label' )
-		.attr( 'class', 'label noselect' )
-		.attr( 'text-anchor', 'middle' )
-		.attr( 'transform', 'rotate(-90)' )
-		.attr( 'x', -this.graphHeight() / 2 )
-		.attr( 'y', -(this._maxRowTextLength+16) )
-		.text( this.xLabel );
-
-	return this;
-}; // end METHOD createAxes()
-
-/**
-* METHOD: createBrush()
-*	Creates a brush element which overlays the graph marks.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.createBrush = function() {
-	this.$.brush = this.$.graph.append( 'svg:g' )
-		.attr( 'property', 'brush' )
-		.attr( 'class', 'brush' );
-
-	return this;
-}; // end METHOD createBrush()
+// RESET METHODS //
 
 /**
 * METHOD: reset()
