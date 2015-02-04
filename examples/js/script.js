@@ -72,6 +72,7 @@
 		el.yLabel = 'rows';
 		el.brushable = true;
 		el.sortableRows = true;
+		el.sortableCols = true;
 
 		el.data = new DataFrame( data, {
 			'rownames': rownames,

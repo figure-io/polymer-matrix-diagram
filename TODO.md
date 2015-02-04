@@ -33,16 +33,12 @@ TODO
 	-	istanbul
 12. 
 13. manual sorting (via names)
-	- 	sortable rows versus sortable columns
-	- 	drag
-	-	mousedown
-	-	translate column/row
-	-	will need to disambiguate listeners; e.g., from normal click listeners
-	-	translate in direction of mouse movement, constrained either vertically or laterally, depending on if column or row name being dragged, respectively
-	-	find nearest column or row
-	-	get col/row index
+	- 	sortable columns
+	-	translate column
+	-	find nearest column
+	-	get col index
 	-	insert new index into domain array and shift all other indices down the array by 1
-	-	reset cols/rows (animation)
+	-	reset cols (animation)
 14. 
 15. media queries
 	-	at small size, remove row/column names/labels? ala details on demand.
