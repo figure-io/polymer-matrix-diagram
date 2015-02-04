@@ -93,6 +93,8 @@ TODO
 ## Bugs
 
 1. on resize, cell brush overlay should scale with the graph
+2. ensure font-size is never negative
+	-	probably want to set a flag, such that, if the font size is < X, then the names should not be shown
 
 
 

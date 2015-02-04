@@ -123,7 +123,8 @@ test-browserify: node_modules
 		-o $(BROWSERIFY_TEST_OUT)
 
 test-wct: node_modules test-tmp test-browserify
-	$(WCT)
+	$(WCT) \
+		--plugin local
 
 
 
@@ -144,7 +145,8 @@ test-istanbul-instrument: node_modules
 		--variable $(WCT_VAR)
 
 test-istanbul-wct: node_modules test-tmp test-instrument test-browserify
-	$(WCT)
+	$(WCT) \
+		--plugin local
 
 
 

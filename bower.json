@@ -33,7 +33,7 @@
     "polymer-uuid": "kgryte/polymer-uuid#~0.0.0"
   },
   "devDependencies": {
-    "web-component-tester": "~2.0.5"
+    "web-component-tester": "Polymer/web-component-tester#~2.2.1"
   },
   "ignore": [
     "test",
