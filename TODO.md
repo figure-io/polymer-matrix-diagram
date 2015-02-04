@@ -33,6 +33,7 @@ TODO
 9. favicon
 	-	needs work
 10. Wiki (?)
+	-	not thinking this is particularly necessary
 11. update wct plugins
 	-	istanbul
 12. 
@@ -72,7 +73,8 @@ TODO
 	- 	none
 22. separate/independent example using, say, phylogenetic, FB, survey, or some other data
 	- 	see #13
-23. 
+23. should `colorScale` be allowed to be a constant, similar to `zValue`?
+24. 
 
 
 
