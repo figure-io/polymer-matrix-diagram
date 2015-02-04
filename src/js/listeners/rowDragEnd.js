@@ -29,7 +29,7 @@
 'use strict';
 
 /**
-* FUNCTION: onRowDragEnd( d, idx )
+* FUNCTION: onRowDragEnd( d, i )
 *	Event listener for when a user stops dragging a row.
 *
 * @param {*} d - datum
@@ -38,6 +38,7 @@
 function onRowDragEnd( d, i ) {
 	/* jslint validthis:true */
 	var self = this,
+		evt = this._d3.event,
 		duration = this.duration,
 		delay = this.delay,
 		order,
@@ -92,10 +93,17 @@ function onRowDragEnd( d, i ) {
 	this._active.row = null;
 	this._active.y = null;
 
+	evt.datum = d;
+	evt.row = i;
+
 	function onEnd() {
 		self.duration = duration;
 		self.delay = delay;
+
 		self.removeEventListener( 'transitionended', onEnd );
+
+		self.fire( 'sortend.row', evt );
+		self.fire( 'sortend', evt );
 	}
 } // end FUNCTION onRowDragEnd()
 

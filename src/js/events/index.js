@@ -60,6 +60,10 @@ module.exports = [
 	'hoverend.col',
 	'hoverend.cell',
 
+	'sortend',
+	'sortend.row',
+	'sortend.col',
+
 	'transitionended',
 
 	'brushend'

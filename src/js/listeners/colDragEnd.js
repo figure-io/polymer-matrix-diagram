@@ -38,6 +38,7 @@
 function onColDragEnd( d, i ) {
 	/* jslint validthis:true */
 	var self = this,
+		evt = this._d3.event,
 		duration = this.duration,
 		delay = this.delay,
 		order,
@@ -93,10 +94,17 @@ function onColDragEnd( d, i ) {
 	this._active.col = null;
 	this._active.x = null;
 
+	evt.datum = d;
+	evt.col = i;
+
 	function onEnd() {
 		self.duration = duration;
 		self.delay = delay;
+
 		self.removeEventListener( 'transitionended', onEnd );
+
+		self.fire( 'sortend.col', evt );
+		self.fire( 'sortend', evt );
 	}
 } // end FUNCTION onColDragEnd()
 

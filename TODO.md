@@ -20,8 +20,8 @@ TODO
 	- 	cScale brushable legend
 		-	loop through all cells, pass through cScale fcn, gather unique color values, sort colors, create legend element
 3. 
-4. rowdragend/coldragend events
-5. add `events` attribute to the README.
+4. 
+5. 
 6. `config` method
 7. update README regarding df
 8. `on()` as an alias to `addEventListener()`?

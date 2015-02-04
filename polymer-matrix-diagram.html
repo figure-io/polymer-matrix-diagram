@@ -1791,6 +1791,10 @@ module.exports = [
 	'hoverend.col',
 	'hoverend.cell',
 
+	'sortend',
+	'sortend.row',
+	'sortend.col',
+
 	'transitionended',
 
 	'brushend'
@@ -2663,6 +2667,7 @@ module.exports = onColDrag;
 function onColDragEnd( d, i ) {
 	/* jslint validthis:true */
 	var self = this,
+		evt = this._d3.event,
 		duration = this.duration,
 		delay = this.delay,
 		order,
@@ -2718,10 +2723,17 @@ function onColDragEnd( d, i ) {
 	this._active.col = null;
 	this._active.x = null;
 
+	evt.datum = d;
+	evt.col = i;
+
 	function onEnd() {
 		self.duration = duration;
 		self.delay = delay;
+
 		self.removeEventListener( 'transitionended', onEnd );
+
+		self.fire( 'sortend.col', evt );
+		self.fire( 'sortend', evt );
 	}
 } // end FUNCTION onColDragEnd()
 
@@ -3151,7 +3163,7 @@ module.exports = onRowDrag;
 'use strict';
 
 /**
-* FUNCTION: onRowDragEnd( d, idx )
+* FUNCTION: onRowDragEnd( d, i )
 *	Event listener for when a user stops dragging a row.
 *
 * @param {*} d - datum
@@ -3160,6 +3172,7 @@ module.exports = onRowDrag;
 function onRowDragEnd( d, i ) {
 	/* jslint validthis:true */
 	var self = this,
+		evt = this._d3.event,
 		duration = this.duration,
 		delay = this.delay,
 		order,
@@ -3214,10 +3227,17 @@ function onRowDragEnd( d, i ) {
 	this._active.row = null;
 	this._active.y = null;
 
+	evt.datum = d;
+	evt.row = i;
+
 	function onEnd() {
 		self.duration = duration;
 		self.delay = delay;
+
 		self.removeEventListener( 'transitionended', onEnd );
+
+		self.fire( 'sortend.row', evt );
+		self.fire( 'sortend', evt );
 	}
 } // end FUNCTION onRowDragEnd()
 

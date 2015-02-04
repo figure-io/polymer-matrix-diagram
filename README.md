@@ -32,6 +32,7 @@ Matrix Diagram
 		*	[brushable](#attr-brushable)
 		*	[sortableRows](#attr-sortablerows)
 		*	[sortableCols](#attr-sortablecols)
+		*	[events](#attr-events)
 	-	[Methods](#methods)
 		*	[clear](#method-clear)
 	-	[Events](#events)
@@ -57,6 +58,9 @@ Matrix Diagram
 		*	[hoverend.row](#evt-hoverend-row)
 		*	[hoverend.col](#evt-hoverend-col)
 		*	[hoverend.cell](#evt-hoverend-cell)
+		*	[sortend](#evt-sortend)
+		*	[sortend.row](#evt-sortend-row)
+		*	[sortend.col](#evt-sortend-col)
 		*	[transitionended](#evt-transition-ended)
 		*	[brushend](#evt-brushend)
 1. 	[Examples](#examples)
@@ -361,6 +365,15 @@ el.sortableCols = true;
 ```
 
 
+<a name="attr-events"></a>
+#### el.events
+
+List of [event](#events) names. The `events` attribute is intended to be __read-only__. One possible use case for the `events` attribute is for programmatically determining possible events to which you can subscribe; e.g., when logging.
+
+``` javascript
+var evts = el.events;
+```
+
 
 
 ### Methods
@@ -634,6 +647,43 @@ el.addEventListener( 'hoverend.cell', function onClick( evt ) {
 	console.log( evt.detail.datum, evt.detail.row, evt.detail.col );
 });
 ```
+
+
+<a name="evt-sortend"></a>
+#### 'sortend'
+
+The element emits a `sortend` event when a user finishes sorting a sortable element; e.g., a row or column.
+
+``` javascript
+el.addEventListener( 'sortend', function onEnd( evt ) {
+	console.log( evt.detail.datum, evt.detail.row, evt.detail.col );
+});
+```
+
+
+<a name="evt-sortend-row"></a>
+#### 'sortend.row'
+
+The element emits a `sortend.row` event when a user finishes sorting a row element.
+
+``` javascript
+el.addEventListener( 'sortend.row', function onEnd( evt ) {
+	console.log( evt.detail.datum, evt.detail.row );
+});
+```
+
+
+<a name="evt-sortend-col"></a>
+#### 'sortend.col'
+
+The element emits a `sortend.col` event when a user finishes sorting a column element.
+
+``` javascript
+el.addEventListener( 'sortend.col', function onEnd( evt ) {
+	console.log( evt.detail.datum, evt.detail.col );
+});
+```
+
 
 <a name="evt-transition-ended"></a>
 #### 'transitionended'
