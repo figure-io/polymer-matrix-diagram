@@ -5,7 +5,8 @@ TODO
 	-	separate module
 	-	bundle with component
 	-	when data is set as an array of arrays, convert to DF
-		- 	cannot do, as need colnames and rownames; users will need to use DFs
+		- 	cannot do, as need colnames and rownames at the same time as setting; users will need to use DFs
+	- 	accept a data frame `View`
 2. legend support
 	-	place on bottom
 	-	two items possible
@@ -16,13 +17,16 @@ TODO
 		-	another showing colors with label
 	-	should be brushable elements
 		-	snap to values (?)
-		-	use delayed callbacks to only update after brush
+		-	use delayed callbacks to only update chart after brush
 	- 	cScale brushable legend
-		-	loop through all cells, pass through cScale fcn, gather unique color values, sort colors, create legend element
-3. 
+		-	loop through all cells (cScale empirically determined), pass through cScale fcn, gather unique color values, sort colors, create legend element
+3. resetRowOrder/resetColOrder
+	-	methods to reset rows and columns to their original order
+	-	simply sort the row/col order and set, as initial order is a range array.
 4. 
-5. 
+5. TESTS!!!!!
 6. `config` method
+	-	schema and validator
 7. update README regarding df
 8. `on()` as an alias to `addEventListener()`?
 	- could have it only accept the publicized events and do input validation
@@ -31,7 +35,7 @@ TODO
 10. Wiki (?)
 11. update wct plugins
 	-	istanbul
-12. schema and validator
+12. 
 13. github pages demo
 	- 	copy over example code and augment (datgui?)
 	- 	other datasets (?)
@@ -48,8 +52,13 @@ TODO
 17. canvas
 	-	`polymer-matrix-diagram-canvas`
 18. drop new row
+	-	see timeseries
+	-	data in payload
+	-	validate data conforms to df dimensions
 19. drag off row
 	-	via rowname
+	-	key+drag ??
+		-	some way of differentiating between a normal drag which is bounded by graph area and a drag which is for removing a row
 20. x/y axis brushing
 	-	e.g., effectively a zoom
 	-	would allow for infinite x/y scrolling
@@ -126,7 +135,9 @@ Items moved from TODO, which are not actionable at the current time.
 8. add/remove column (+colname)
 9. update row/colname
 10. method to return dimensions
-11. 
+11. a data frame view (akin to go slice)	-	method which returns a new `View` instance
+	-	`new View( [i,j], [i,j] )`
+12. 
 
 
 
