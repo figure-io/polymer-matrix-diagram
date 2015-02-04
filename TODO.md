@@ -20,9 +20,7 @@ TODO
 		-	use delayed callbacks to only update chart after brush
 	- 	cScale brushable legend
 		-	loop through all cells (cScale empirically determined), pass through cScale fcn, gather unique color values, sort colors, create legend element
-3. resetRowOrder/resetColOrder
-	-	methods to reset rows and columns to their original order
-	-	simply sort the row/col order and set, as initial order is a range array.
+3. 
 4. 
 5. TESTS!!!!!
 6. `config` method
@@ -48,7 +46,7 @@ TODO
 	-	use CSS
 	-	drag-n-drop would be easier
 	-	gpu for animation (classes)
-	-	`polymer-matrix-diagram-html` or vanilla
+	-	`polymer-matrix-diagram-html` or `vanilla` (:))
 	-	use background-color with rgba
 17. canvas
 	-	`polymer-matrix-diagram-canvas`
@@ -64,15 +62,18 @@ TODO
 	-	e.g., effectively a zoom
 	-	would allow for infinite x/y scrolling
 	-	may need to bring back clipPath
+		-	may be not; may not want that; may want columns/rows flying in from the outside
 	- 	may be an argument for separating axes (rownames) from cells
 		-	maybe not
 	- 	would require
 		-	rowBrushData/colBrushData
+			- 	1d array
 			-	mapped to ordinal scales
 		-	a brushable element above/left of the col/row names
 		-	some sort of visual encoding for the brush data
 			-	do we plot the names, just like we do the axes?
 			-	what if we have too many names, such that text overlaps, what then?
+			- 	may be no visual encoding, just a 1d brush
 		- 	a rowBrushEnd/colBrushEnd event emitted
 			-	extent payload
 		-	left to user to map the brush extent to the main diagram data
@@ -121,7 +122,11 @@ Items moved from TODO, which are not actionable at the current time.
 		- 	no validation
 		-	no data frame; can provide an array of arrays when declaring element in HTML
 		-	no event emitting
-4. 
+4. resetRowOrder/resetColOrder
+	-	methods to reset rows and columns to their original order
+	-	simply sort the row/col order and set, as initial order is a range array.
+	-	no! this should be left to the user, as only they will know the proper way to "reset" the order
+5. 
 
 
 
