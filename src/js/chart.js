@@ -26,7 +26,7 @@
 *
 */
 
-/* global document, window */
+/* global document */
 'use strict';
 
 // MODULES //
@@ -438,31 +438,6 @@ Chart.prototype.attached = function() {
 Chart.prototype.detached = function() {
 	this.removeListeners();
 }; // end METHOD detached()
-
-/**
-* METHOD: addListeners()
-*	Adds event listeners.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.addListeners = function() {
-	this.removeListeners();
-	if ( this.autoResize ) {
-		window.addEventListener( 'resize', this._onResize, false );
-	}
-	return this;
-}; // end METHOD addListeners()
-
-/**
-* METHOD: removeListeners()
-*	Removes event listeners.
-*
-* @returns {DOMElement} element instance
-*/
-Chart.prototype.removeListeners = function() {
-	window.removeEventListener( 'resize', this._onResize );
-	return this;
-}; // end METHOD removeListeners()
 
 
 // ELEMENT CREATION //
@@ -885,531 +860,45 @@ Chart.prototype.sortableColsChanged = require( './watchers/sortableCols.js' );
 
 // LISTENERS //
 
-/**
-* METHOD: onBrushEnd()
-*	Event listener invoked when brush interaction ends. Adjusts the brush extent in order to snap to nearest cell boundaries.
-*/
-Chart.prototype.onBrushEnd = function() {
-	var brush = this._brush,
-		extent = brush.extent(),
-		xScale = this._xScale,
-		yScale = this._yScale,
-		idx = {},
-		xDomain,
-		yDomain,
-		x1, x2,
-		y1, y2,
-		dx, dy;
+Chart.prototype.addListeners = require( './listeners/add.js' );
 
-	x1 = extent[ 0 ][ 0 ];
-	x2 = extent[ 1 ][ 0 ];
-	y1 = extent[ 0 ][ 1 ];
-	y2 = extent[ 1 ][ 1 ];
+Chart.prototype.removeListeners = require( './listeners/remove.js' );
 
-	dx = xScale.rangeBand();
-	dy = yScale.rangeBand();
+Chart.prototype.onRowClick = require( './listeners/rowClick.js' );
 
-	x1 = Math.round( x1 / dx );
-	x2 = Math.round( x2 / dx );
-	y1 = Math.round( y1 / dy );
-	y2 = Math.round( y2 / dy );
+Chart.prototype.onColClick = require( './listeners/colClick.js' );
 
-	idx.col1 = x1;
-	idx.row1 = y1;
+Chart.prototype.onCellClick = require( './listeners/cellClick.js' );
 
-	xDomain = xScale.domain();
-	yDomain = yScale.domain();
+Chart.prototype.onRowHover = require( './listeners/rowHover.js' );
 
-	x1 = xScale( xDomain[ x1 ] );
-	y1 = yScale( yDomain[ y1 ] );
+Chart.prototype.onRowHoverEnd = require( './listeners/rowHoverEnd.js' );
 
-	// Check if upper bounds exceeded scale domains...
-	if ( x2 === xDomain.length ) {
-		idx.col2 = x2 - 1;
-		x2 = this.graphWidth();
-	} else {
-		idx.col2 = x2;
-		x2 = xScale( xDomain[ x2 ] );
-	}
-	if ( y2 === yDomain.length ) {
-		idx.row2 = y2 - 1;
-		y2 = this.graphHeight();
-	} else {
-		idx.row2 = y2;
-		y2 = yScale( yDomain[ y2 ] );
-	}
-	extent = [
-		[ x1, y1 ],
-		[ x2, y2 ]
-	];
+Chart.prototype.onColHover = require( './listeners/colHover.js' );
 
-	this.$.brush.transition()
-		.call( brush.extent( extent ) );
+Chart.prototype.onColHoverEnd = require( './listeners/colHoverEnd.js' );
 
-	this.fire( 'brushend', idx );
-}; // end METHOD onBrushEnd()
+Chart.prototype.onCellHover = require( './listeners/cellHover.js' );
 
-/**
-* METHOD: onRowDragStart( d, i )
-*	Event handler invoked when a user initiates a row drag.
-*
-* @param {*} d - datum
-* @param {Number} i - row index
-*/
-Chart.prototype.onRowDragStart = function( d, i ) {
-	this._active.row = this._d3.select( this.$.rows[ 0 ][ i ] );
-}; // end METHOD onRowDragStart()
+Chart.prototype.onCellHoverEnd = require( './listeners/cellHoverEnd.js' );
 
-/**
-* METHOD: onRowDrag( d, i )
-*	Event handler invoked when a user drags a row.
-*
-* @param {*} d - datum
-* @param {Number} i - row index
-*/
-Chart.prototype.onRowDrag = function() {
-	var y = this._d3.event.y,
-		h;
+Chart.prototype.onRowDragStart = require( './listeners/rowDragStart.js' );
 
-	this._active.dragging = true;
+Chart.prototype.onRowDrag = require( './listeners/rowDrag.js' );
 
-	// Ensure that the row does not venture outside the graph area...
-	if ( y < 0 ) {
-		y = 0;
-	} else {
-		h = this.graphHeight() - this._yScale.rangeBand();
-		if ( y > h ) {
-			y = h;
-		}
-	}
-	this._active.row.attr( 'transform', 'translate(0,' + y + ')' );
-	this._active.y = y;
-}; // end METHOD onRowDrag()
+Chart.prototype.onRowDragEnd = require( './listeners/rowDragEnd.js' );
 
-/**
-* METHOD: onRowDragEnd( d, idx )
-*	Event handler invoked when a user stops dragging a row.
-*
-* @param {*} d - datum
-* @param {Number} i - row index
-*/
-Chart.prototype.onRowDragEnd = function( d, i ) {
-	var self = this,
-		duration = this.duration,
-		delay = this.delay,
-		order,
-		j, k,
-		idx;
+Chart.prototype.onColDragStart = require( './listeners/colDragStart.js' );
 
-	if ( !this._active.dragging ) {
-		return;
-	}
-	this._active.dragging = false;
+Chart.prototype.onColDrag = require( './listeners/colDrag.js' );
 
-	if ( this._rowOrder ) {
-		order = this._rowOrder.slice();
-	} else {
-		order = this._yScale.domain().slice();
-	}
-	// Match the element index to its place in the y-domain (use linear search as array elements may be in random order)...
-	for ( j = 0; j < order.length; j++ ) {
-		if ( i === order[ j ] ) {
-			i = j;
-			break;
-		}
-	}
-	// Determine the nearest row index:
-	j = Math.round( this._active.y / this._yScale.rangeBand() );
+Chart.prototype.onColDragEnd = require( './listeners/colDragEnd.js' );
 
-	// Re-order the rows...
-	idx = order[ i ];
-	if ( i === j ) {
-		this._active.row.attr( 'transform', this._y( d, idx ) );
-	} else {
-		if ( i < j ) {
-			// Case 1: shift elements to the left...
-			for ( k = i; k < j; k++ ) {
-				order[ k ] = order[ k+1 ];
-			}
-		} else {
-			// Case 2: shift elements to the right...
-			for ( k = i; k > j; k-- ) {
-				order[ k ] = order[ k-1 ];
-			}
-		}
-		order[ j ] = idx;
+Chart.prototype.onTransitionEnd = require( './listeners/transitionEnd.js' );
 
-		// Modify the transition properties when sorting...
-		this.duration = 100;
-		this.delay = 0;
-		this.addEventListener( 'transitionended', onEnd );
+Chart.prototype.onBrushEnd = require( './listeners/brushEnd.js' );
 
-		this.rowOrder = order;
-	}
-	this._active.row = null;
-	this._active.y = null;
-
-	function onEnd() {
-		self.duration = duration;
-		self.delay = delay;
-		self.removeEventListener( 'transitionended', onEnd );
-	}
-}; // end METHOD onRowDragEnd()
-
-/**
-* METHOD: onColDragStart( d, i )
-*	Event handler invoked when a user initiates a column drag.
-*
-* @param {*} d - datum
-* @param {Number} i - column index
-*/
-Chart.prototype.onColDragStart = function( d, i ) {
-	var len = this.data.rownames().length,
-		cells = this.$.cells,
-		arr = new Array( len );
-
-	this._active.col = this._d3.select( this.$.cols[ 0 ][ i ] );
-
-	for ( var j = 0; j < len; j++ ) {
-		arr[ j ] = cells[ j ][ i ];
-	}
-	this._active.cells = this._d3.selectAll( arr );
-}; // end METHOD onColDragStart()
-
-/**
-* METHOD: onColDrag( d, i )
-*	Event handler invoked when a user drags a column.
-*
-* @param {*} d - datum
-* @param {Number} i - column index
-*/
-Chart.prototype.onColDrag = function() {
-	var x = this._d3.event.x,
-		w;
-
-	this._active.dragging = true;
-
-	// Ensure that the column does not venture outside the graph area...
-	if ( x < 0 ) {
-		x = 0;
-	} else {
-		w = this.graphWidth() - this._xScale.rangeBand();
-		if ( x > w ) {
-			x = w;
-		}
-	}
-	this._active.col.attr( 'transform', 'translate(' + x + ')rotate(-90)' );
-	this._active.cells.attr( 'x', x );
-	this._active.x = x;
-}; // end METHOD onColDrag()
-
-/**
-* METHOD: onColDragEnd( d, i )
-*	Event handler invoked when a user stops dragging a column.
-*
-* @param {*} d - datum
-* @param {Number} i - column index
-*/
-Chart.prototype.onColDragEnd = function( d, i ) {
-	var self = this,
-		duration = this.duration,
-		delay = this.delay,
-		order,
-		j, k,
-		idx;
-
-	if ( !this._active.dragging ) {
-		return;
-	}
-	this._active.dragging = false;
-
-	if ( this._colOrder ) {
-		order = this._colOrder.slice();
-	} else {
-		order = this._xScale.domain().slice();
-	}
-	// Match the element index to its place in the x-domain (use linear search as array elements may be in random order)...
-	for ( j = 0; j < order.length; j++ ) {
-		if ( i === order[ j ] ) {
-			i = j;
-			break;
-		}
-	}
-	// Determine the nearest column index:
-	j = Math.round( this._active.x / this._xScale.rangeBand() );
-
-	// Re-order the columns...
-	idx = order[ i ];
-	if ( i === j ) {
-		this._active.col.attr( 'transform', this._x( d, idx ) );
-		this._active.cells.attr( 'x', this._cx( d, idx ) );
-	} else {
-		if ( i < j ) {
-			// Case 1: shift elements to the left...
-			for ( k = i; k < j; k++ ) {
-				order[ k ] = order[ k+1 ];
-			}
-		} else {
-			// Case 2: shift elements to the right...
-			for ( k = i; k > j; k-- ) {
-				order[ k ] = order[ k-1 ];
-			}
-		}
-		order[ j ] = idx;
-
-		// Modify the transition properties when sorting...
-		this.duration = 100;
-		this.delay = 0;
-		this.addEventListener( 'transitionended', onEnd );
-
-		this.colOrder = order;
-	}
-	this._active.col = null;
-	this._active.x = null;
-
-	function onEnd() {
-		self.duration = duration;
-		self.delay = delay;
-		self.removeEventListener( 'transitionended', onEnd );
-	}
-}; // end METHOD onColDragEnd()
-
-/**
-* METHOD: onRowClick( d, i )
-*	Click listener for rows.
-*
-* @param {String} d - row name
-* @param {Number} i - row index
-* @returns {Boolean} false
-*/
-Chart.prototype.onRowClick = function( d, i ) {
-	var evt = this._d3.event;
-	evt.datum = d;
-	evt.index = i;
-	this.fire( 'clicked.row', evt );
-	this.fire( 'clicked', evt );
-	return false;
-}; // end METHOD onRowClick()
-
-/**
-* METHOD: onColClick( d, i )
-*	Click listener for columns.
-*
-* @param {String} d - row name
-* @param {Number} i - row index
-* @returns {Boolean} false
-*/
-Chart.prototype.onColClick = function( d, i ) {
-	var evt = this._d3.event;
-	evt.datum = d;
-	evt.index = i;
-	this.fire( 'clicked.col', evt );
-	this.fire( 'clicked', evt );
-	return false;
-}; // end METHOD onColClick()
-
-/**
-* METHOD: onCellClick( d, i )
-*	Click listener for cells.
-*
-* @param {String} d - cell data
-* @param {Number} i - cell index
-* @returns {Boolean} false
-*/
-Chart.prototype.onCellClick = function( d, i ) {
-	var evt = this._d3.event,
-		rows = this.$.rows[ 0 ],
-		row,
-		j;
-
-	evt.datum = d;
-	evt.col = i;
-
-	// Determine the row index...
-	row = evt.path[ 1 ];
-	for ( j = 0; j < rows.length; j++ ) {
-		if ( rows[ j ] === row ) {
-			break;
-		}
-	}
-	evt.row = j;
-
-	this.fire( 'clicked.cell', evt );
-	this.fire( 'clicked', evt );
-	return false;
-}; // end METHOD onCellClick()
-
-/**
-* METHOD: onRowHover( d, i )
-*	Mouseover listener for rows.
-*
-* @param {String} d - row name
-* @param {Number} i - row index
-* @returns {Boolean} false
-*/
-Chart.prototype.onRowHover = function( d, i ) {
-	var evt = this._d3.event;
-
-	this.$.rows[ 0 ][ i ].classList.add( 'active' );
-
-	evt.datum = d;
-	evt.index = i;
-	this.fire( 'hover.row', evt );
-	this.fire( 'hover', evt );
-	return false;
-}; // end METHOD onRowHover()
-
-/**
-* METHOD: onColHover( d, i )
-*	Mouseover listener for columns.
-*
-* @param {String} d - row name
-* @param {Number} i - row index
-* @returns {Boolean} false
-*/
-Chart.prototype.onColHover = function( d, i ) {
-	var evt = this._d3.event;
-
-	this.$.cols[ 0 ][ i ].classList.add( 'active' );
-
-	evt.datum = d;
-	evt.index = i;
-	this.fire( 'hover.col', evt );
-	this.fire( 'hover', evt );
-	return false;
-}; // end METHOD onColHover()
-
-/**
-* METHOD: onCellHover( d, i )
-*	Mouseover listener for cells.
-*
-* @param {String} d - cell data
-* @param {Number} i - cell index
-* @returns {Boolean} false
-*/
-Chart.prototype.onCellHover = function( d, i ) {
-	var evt = this._d3.event,
-		rows = this.$.rows[ 0 ],
-		row,
-		j;
-
-	this.$.cols[ 0 ][ i ].classList.add( 'active' );
-
-	evt.datum = d;
-	evt.col = i;
-
-	// Determine the row index...
-	row = evt.path[ 1 ];
-	for ( j = 0; j < rows.length; j++ ) {
-		if ( rows[ j ] === row ) {
-			break;
-		}
-	}
-	evt.row = j;
-
-	this.fire( 'hover.cell', evt );
-	this.fire( 'hover', evt );
-	return false;
-}; // end METHOD onCellHover()
-
-/**
-* METHOD: onRowHoverEnd( d, i )
-*	Mouseout listener for rows.
-*
-* @param {String} d - row name
-* @param {Number} i - row index
-* @returns {Boolean} false
-*/
-Chart.prototype.onRowHoverEnd = function( d, i ) {
-	var evt = this._d3.event;
-
-	this.$.rows[ 0 ][ i ].classList.remove( 'active' );
-
-	evt.datum = d;
-	evt.index = i;
-	this.fire( 'hoverend.row', evt );
-	this.fire( 'hoverend', evt );
-	return false;
-}; // end METHOD onRowHoverEnd()
-
-/**
-* METHOD: onColHoverEnd( d, i )
-*	Mouseout listener for columns.
-*
-* @param {String} d - row name
-* @param {Number} i - row index
-* @returns {Boolean} false
-*/
-Chart.prototype.onColHoverEnd = function( d, i ) {
-	var evt = this._d3.event;
-
-	this.$.cols[ 0 ][ i ].classList.remove( 'active' );
-
-	evt.datum = d;
-	evt.index = i;
-	this.fire( 'hoverend.col', evt );
-	this.fire( 'hoverend', evt );
-	return false;
-}; // end METHOD onColHoverEnd()
-
-/**
-* METHOD: onCellHoverEnd( d, i )
-*	Mouseout listener for cells.
-*
-* @param {String} d - cell data
-* @param {Number} i - cell index
-* @returns {Boolean} false
-*/
-Chart.prototype.onCellHoverEnd = function( d, i ) {
-	var evt = this._d3.event,
-		rows = this.$.rows[ 0 ],
-		row,
-		j;
-
-	this.$.cols[ 0 ][ i ].classList.remove( 'active' );
-
-	evt.datum = d;
-	evt.col = i;
-
-	// Determine the row index...
-	row = evt.path[ 1 ];
-	for ( j = 0; j < rows.length; j++ ) {
-		if ( rows[ j ] === row ) {
-			break;
-		}
-	}
-	evt.row = j;
-
-	this.fire( 'hoverend.cell', evt );
-	this.fire( 'hoverend', evt );
-	return false;
-}; // end METHOD onCellHoverEnd()
-
-/**
-* METHOD: onTransitionEnd()
-*	Event listener for transition `end` events.
-*
-* @returns {Boolean} false
-*/
-Chart.prototype.onTransitionEnd = function() {
-	this.fire( 'transitionended', null );
-	return false;
-}; // end METHOD onTransitionEnd()
-
-/**
-* METHOD: onResize()
-*	Resize listener.
-*/
-Chart.prototype.onResize = function() {
-	this.fire( 'resized', {
-		'el': 'polymer-matrix-diagram',
-		'msg': 'Received a resize event.'
-	});
-	if ( !this.$.canvas ) {
-		return;
-	}
-	this.width = this.clientWidth;
-}; // end METHOD onResize()
+Chart.prototype.onResize = require( './listeners/resize.js' );
 
 
 // EXPORTS //
