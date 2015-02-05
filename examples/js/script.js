@@ -70,9 +70,9 @@
 		el.zValue = Math.random;
 		el.xLabel = 'columns';
 		el.yLabel = 'rows';
-		el.brushable = true;
-		el.sortableRows = true;
-		el.sortableCols = true;
+		el.isBrushable = true;
+		el.isSortableRows = true;
+		el.isSortableCols = true;
 
 		el.data = new DataFrame( data, {
 			'rownames': rownames,
