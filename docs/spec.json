@@ -1,0 +1,179 @@
+{
+	"name": "{{ chart_name }}",
+	"type": "matrix-diagram",
+	"meta": {
+		"title": "{{ chart_title }}",
+		"description": "{{ chart_description }}"
+	},
+	"data": [
+		{
+			"name": "{{ data_name }}",
+			"description": "{{ data_description }}",
+			"rownames": [],
+			"colnames": [],
+			"values": [[]],
+			"transforms": [
+				{
+					"type": "{{ transform_type }}"
+				}
+			]
+		},
+		{
+			"name": "{{ data_name }}",
+			"description": "{{ data_description }}",
+			"url": "{{ url }}",
+			"format": {
+				"type": "{{ JSON | CSV | TSV }}",
+				"fields": {
+					"rownames": "{{ json_path }}",
+					"colnames": "{{ json_path }}",
+					"values": "{{ json_path }}"
+				}
+			},
+			"transforms": [
+				{
+					"type": "{{ transform_type }}"
+				}
+			]
+		},
+		{
+			"name": "{{ data_name }}",
+			"description": "{{ data_description }}",
+			"source": "{{ source_data_name }}",
+			"transforms": [
+				{
+					"type": "{{ transform_type }}"
+				}
+			]
+		}
+	],
+	"canvas": {
+		"width": 100,
+		"height": 100,
+		"padding": {
+			"left": null,
+			"right": null,
+			"top": null,
+			"bottom": null
+		}
+	},
+	"scales": {
+		"x": {
+			"type": "ordinal",
+			"description": "{{ domain is an array of indices specifying the column order }}",
+			"domain": [],
+			"range": "width"
+		},
+		"y": {
+			"type": "ordinal",
+			"description": "{{ domain is an array of indices specifying the row order }}",
+			"domain": [],
+			"range": "height"
+		},
+		"z": {
+			"type": "linear",
+			"description": "{{ maps data values to fill-opacity }}",
+			"domain": {
+				"min": null,
+				"max": null
+			},
+			"range": {
+				"min": 0,
+				"max": 1
+			}
+		},
+		"color": {
+			"type": "ordinal",
+			"description": "{{ maps data values to colors }}",
+			"domain": {
+				"min": null,
+				"max": null
+			},
+			"range": []
+		}
+	},
+	"axes": [
+		{
+			"type": "x",
+			"scale": "x",
+			"label": "{{ x-label }}"
+		},
+		{
+			"type": "y",
+			"scale": "y",
+			"label": "{{ y-label }}"
+		}
+	],
+	"marks": [
+		{
+			"name": "{{ mark_name }}",
+			"type": "rect",
+			"description": "{{ marks_desc }}",
+			"data": {
+				"name": "{{ data_name }}",
+				"transforms": [
+					{
+						"type": "{{ transform_type }}"
+					}
+				]
+			},
+			"properties": {
+				"fill": {
+					"scale": "color",
+					"field": "{{ field_name }}"
+				},
+				"fillOpacity": {
+					"scale": "z",
+					"field": "{{ field_name }}"
+				}
+			}
+		}
+	],
+	"brushes": {
+		"x": {
+			"data": {
+				"name": "{{ data_name }}",
+				"transforms": [
+					{
+						"type": "{{ transform_type }}"
+					}
+				]
+			}
+		},
+		"y": {
+			"data": {
+				"name": "{{ data_name }}",
+				"transforms": [
+					{
+						"type": "{{ transform_type }}"
+					}
+				]
+			}
+		}
+	},
+	"legend": {
+		"entries": [
+			{
+				"scale": "z",
+				"label": "{{ entry_label }}"
+			},
+			{
+				"scale": "color",
+				"label": "{{ entry_label }}"
+			}
+		]
+	},
+	"transitions": {
+		"duration": null
+	},
+	"interactions": {
+		"brushable": false,
+		"brushableRows": false,
+		"brushableCols": false,
+		"sortableRows": false,
+		"sortableCols": false,
+		"resizable": false
+	},
+	"autoResize": true,
+	"autoUpdate": true
+}

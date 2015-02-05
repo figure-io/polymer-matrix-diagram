@@ -1,0 +1,131 @@
+{
+	"name": "",
+	"type": "matrix-diagram",
+	"meta": {
+		"title": "",
+		"description": ""
+	},
+	"data": [
+		{
+			"name": "",
+			"description": "",
+			"rownames": [],
+			"colnames": [],
+			"values": [[]]
+		}
+	],
+	"canvas": {
+		"width": null,
+		"height": null,
+		"padding": {
+			"left": null,
+			"right": null,
+			"top": null,
+			"bottom": null
+		}
+	},
+	"scales": {
+		"x": {
+			"type": "ordinal",
+			"description": "",
+			"domain": [],
+			"range": "width"
+		},
+		"y": {
+			"type": "ordinal",
+			"description": "",
+			"domain": [],
+			"range": "height"
+		},
+		"z": {
+			"type": "linear",
+			"description": "",
+			"domain": {
+				"min": null,
+				"max": null
+			},
+			"range": {
+				"min": 0,
+				"max": 1
+			}
+		},
+		"color": {
+			"type": "ordinal",
+			"description": "",
+			"domain": {
+				"min": null,
+				"max": null
+			},
+			"range": []
+		}
+	},
+	"axes": [
+		{
+			"type": "x",
+			"scale": "x",
+			"label": ""
+		},
+		{
+			"type": "y",
+			"scale": "y",
+			"label": ""
+		}
+	],
+	"marks": [
+		{
+			"name": "",
+			"type": "rect",
+			"description": "",
+			"data": {
+				"name": ""
+			},
+			"properties": {
+				"fill": {
+					"scale": "color",
+					"field": null
+				},
+				"fillOpacity": {
+					"scale": "z",
+					"field": null
+				}
+			}
+		}
+	],
+	"brushes": {
+		"x": {
+			"data": {
+				"name": ""
+			}
+		},
+		"y": {
+			"data": {
+				"name": ""
+			}
+		}
+	},
+	"legend": {
+		"entries": [
+			{
+				"scale": "z",
+				"label": ""
+			},
+			{
+				"scale": "color",
+				"label": ""
+			}
+		]
+	},
+	"transitions": {
+		"duration": 2500
+	},
+	"interactions": {
+		"brushable": false,
+		"brushableRows": false,
+		"brushableCols": false,
+		"sortableRows": false,
+		"sortableCols": false,
+		"resizable": false
+	},
+	"autoResize": true,
+	"autoUpdate": true
+}

@@ -50,7 +50,7 @@
 
 		body = JSON.parse( body );
 
-		data = body.data;
+		data = body.values;
 		rownames = body.rownames;
 		colnames = body.colnames;
 

@@ -55,10 +55,12 @@ TODO
 	-	see timeseries
 	-	data in payload
 	-	validate data conforms to df dimensions
+	-	since modifying df, will not trigger `data` changed watcher; will have to repeat steps within that watcher elsewhere
 19. drag off row
 	-	via rowname
-	-	key+drag ??
+	-	key+drag ?? [modality](http://bl.ocks.org/mbostock/6123708)
 		-	some way of differentiating between a normal drag which is bounded by graph area and a drag which is for removing a row
+		- 	if `y` position outside of `y` bounds, then remove from df and update similar to the `data` changed watcher
 20. x/y axis brushing
 	-	e.g., effectively a zoom
 	-	would allow for infinite x/y scrolling
