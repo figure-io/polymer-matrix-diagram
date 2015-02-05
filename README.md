@@ -29,9 +29,9 @@ Matrix Diagram
 		*	[duration](#attr-duration)
 		*	[autoUpdate](#attr-autoupdate)
 		*	[autoResize](#attr-autoresize)
-		*	[brushable](#attr-brushable)
-		*	[sortableRows](#attr-sortablerows)
-		*	[sortableCols](#attr-sortablecols)
+		*	[isBrushable](#attr-isbrushable)
+		*	[isSortableRows](#attr-issortablerows)
+		*	[isSortableCols](#attr-issortablecols)
 		*	[events](#attr-events)
 	-	[Methods](#methods)
 		*	[clear](#method-clear)
@@ -333,35 +333,35 @@ el.autoResize = false;
 ```
 
 
-<a name="attr-brushable"></a>
-#### el.brushable
+<a name="attr-isbrushable"></a>
+#### el.isBrushable
 
 Specifies whether the element should be brushable. When enabled, a user may select matrix elements via a brush overlay. After selection, a `brushend` event is emitted, which contains the row and column indices of the selected elements. Default is `false`.
 
 ``` javascript
-el.brushable = true;
+el.isBrushable = true;
 ```
 
 __NOTE:__ when brushing is enabled, cell `click` events are __not__ triggered and cell `hover` events are unreliable. 
 
 
-<a name="attr-sortablerows"></a>
-#### el.sortableRows
+<a name="attr-issortablerows"></a>
+#### el.isSortableRows
 
 Specifies whether rows can be manually sorted. When enabled, a user may manually drag rows to change row order. Default is `false`.
 
 ``` javascript
-el.sortableRows = true;
+el.isSortableRows = true;
 ```
 
 
-<a name="attr-sortablecols"></a>
-#### el.sortableCols
+<a name="attr-issortablecols"></a>
+#### el.isSortableCols
 
 Specifies whether columns can be manually sorted. When enabled, a user may manually drag columns to change column order. Default is `false`.
 
 ``` javascript
-el.sortableCols = true;
+el.isSortableCols = true;
 ```
 
 

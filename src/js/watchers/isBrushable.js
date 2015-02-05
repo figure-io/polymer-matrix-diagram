@@ -1,10 +1,10 @@
 /**
 *
-*	FUNCTION: brushableChanged
+*	FUNCTION: isBrushableChanged
 *
 *
 *	DESCRIPTION:
-*		- Event handler for changes to a `brushable` setting.
+*		- Event handler for changes to a `isBrushable` setting.
 *
 *
 *	NOTES:
@@ -29,19 +29,19 @@
 'use strict';
 
 /**
-* FUNCTION: brushableChanged( oldVal, newVal )
-*	Event handler for changes to a `brushable` setting.
+* FUNCTION: isBrushableChanged( oldVal, newVal )
+*	Event handler for changes to a `isBrushable` setting.
 *
 * @param {Boolean} oldVal - old value
 * @param {Boolean} newVal - new value
 */
-function brushableChanged( oldVal, newVal ) {
+function isBrushableChanged( oldVal, newVal ) {
 	/* jslint validthis:true */
 	var err;
 	if ( typeof newVal !== 'boolean' ) {
-		err = new TypeError( 'brushable::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
+		err = new TypeError( 'isBrushable::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
 		this.fire( 'err', err );
-		this.brushable = oldVal;
+		this.isBrushable = oldVal;
 		return;
 	}
 	if ( newVal ) {
@@ -50,13 +50,13 @@ function brushableChanged( oldVal, newVal ) {
 		this.$.brush.remove();
 	}
 	this.fire( 'change', {
-		'attr': 'brushable',
+		'attr': 'isBrushable',
 		'prev': oldVal,
 		'curr': newVal
 	});
-} // end FUNCTION brushableChanged()
+} // end FUNCTION isBrushableChanged()
 
 
 // EXPORTS //
 
-module.exports = brushableChanged;
+module.exports = isBrushableChanged;

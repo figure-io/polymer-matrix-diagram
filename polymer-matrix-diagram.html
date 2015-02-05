@@ -18,7 +18,7 @@
 <link rel="import" href="../polymer-d3/polymer-d3.html">
 
 <!-- ELEMENT -->
-</head><body><polymer-element name="polymer-matrix-diagram" attributes="data rowOrder colOrder config width height paddingLeft paddingRight paddingBottom paddingTop xLabel yLabel zValue zMin zMax colorScale duration autoResize autoUpdate brushable sortableRows sortableCols" assetpath="build/">
+</head><body><polymer-element name="polymer-matrix-diagram" attributes="data rowOrder colOrder config width height paddingLeft paddingRight paddingBottom paddingTop xLabel yLabel zValue zMin zMax colorScale duration autoResize autoUpdate isBrushable isSortableRows isSortableCols" assetpath="build/">
 
 	<template>
 
@@ -853,31 +853,31 @@ Chart.prototype.autoUpdate = true;
 Chart.prototype.autoResize = true;
 
 /**
-* ATTRIBUTE: brushable
+* ATTRIBUTE: isBrushable
 *	Boolean flag indicating whether a chart is brushable.
 *
 * @type {Boolean}
 * @default false
 */
-Chart.prototype.brushable = false;
+Chart.prototype.isBrushable = false;
 
 /**
-* ATTRIBUTE: sortableRows
+* ATTRIBUTE: isSortableRows
 *	Boolean flag indicating whether rows can be manually sorted.
 *
 * @type {Boolean}
 * @default false
 */
-Chart.prototype.sortableRows = false;
+Chart.prototype.isSortableRows = false;
 
 /**
-* ATTRIBUTE: sortableCols
+* ATTRIBUTE: isSortableCols
 *	Boolean flag indicating whether columns can be manually sorted.
 *
 * @type {Boolean}
 * @default false
 */
-Chart.prototype.sortableCols = false;
+Chart.prototype.isSortableCols = false;
 
 
 // LIFECYCLE //
@@ -1006,11 +1006,11 @@ Chart.prototype.autoUpdateChanged = require( './watchers/autoUpdate.js' );
 
 Chart.prototype.autoResizeChanged = require( './watchers/autoResize.js' );
 
-Chart.prototype.brushableChanged = require( './watchers/brushable.js' );
+Chart.prototype.isBrushableChanged = require( './watchers/isBrushable.js' );
 
-Chart.prototype.sortableRowsChanged = require( './watchers/sortableRows.js' );
+Chart.prototype.isSortableRowsChanged = require( './watchers/isSortableRows.js' );
 
-Chart.prototype.sortableColsChanged = require( './watchers/sortableCols.js' );
+Chart.prototype.isSortableColsChanged = require( './watchers/isSortableCols.js' );
 
 
 // LISTENERS //
@@ -1060,7 +1060,7 @@ Chart.prototype.onResize = require( './listeners/resize.js' );
 
 module.exports = Chart;
 
-},{"./clear":2,"./create":9,"./create/axes.js":3,"./create/background.js":4,"./create/base.js":5,"./create/brush.js":6,"./create/cells.js":7,"./create/cols.js":8,"./create/marks.js":10,"./create/rows.js":11,"./init":13,"./lifecycle/attached.js":14,"./lifecycle/created.js":15,"./lifecycle/detached.js":16,"./listeners/add.js":17,"./listeners/brushEnd.js":18,"./listeners/cellClick.js":19,"./listeners/cellHover.js":20,"./listeners/cellHoverEnd.js":21,"./listeners/colClick.js":22,"./listeners/colDrag.js":23,"./listeners/colDragEnd.js":24,"./listeners/colDragStart.js":25,"./listeners/colHover.js":26,"./listeners/colHoverEnd.js":27,"./listeners/remove.js":28,"./listeners/resize.js":29,"./listeners/rowClick.js":30,"./listeners/rowDrag.js":31,"./listeners/rowDragEnd.js":32,"./listeners/rowDragStart.js":33,"./listeners/rowHover.js":34,"./listeners/rowHoverEnd.js":35,"./listeners/transitionEnd.js":36,"./reset":42,"./reset/axes.js":38,"./reset/base.js":39,"./reset/cells.js":40,"./reset/cols.js":41,"./reset/rows.js":43,"./utils/calculatePadding.js":44,"./utils/cx.js":45,"./utils/delay.js":46,"./utils/fontSize.js":48,"./utils/getColName.js":49,"./utils/getRowName.js":50,"./utils/graphHeight.js":51,"./utils/graphWidth.js":52,"./utils/maxTextLengths.js":53,"./utils/validateOrder.js":54,"./utils/x.js":55,"./utils/y.js":56,"./utils/z.js":57,"./utils/zDomain.js":58,"./watchers/autoResize.js":59,"./watchers/autoUpdate.js":60,"./watchers/brushable.js":61,"./watchers/colOrder.js":62,"./watchers/colorScale.js":63,"./watchers/config.js":64,"./watchers/data.js":65,"./watchers/duration.js":66,"./watchers/height.js":67,"./watchers/paddingBottom.js":68,"./watchers/paddingLeft.js":69,"./watchers/paddingRight.js":70,"./watchers/paddingTop.js":71,"./watchers/rowOrder.js":72,"./watchers/sortableCols.js":73,"./watchers/sortableRows.js":74,"./watchers/width.js":75,"./watchers/xLabel.js":76,"./watchers/yLabel.js":77,"./watchers/zMax.js":78,"./watchers/zMin.js":79,"./watchers/zValue.js":80}],2:[function(require,module,exports){
+},{"./clear":2,"./create":9,"./create/axes.js":3,"./create/background.js":4,"./create/base.js":5,"./create/brush.js":6,"./create/cells.js":7,"./create/cols.js":8,"./create/marks.js":10,"./create/rows.js":11,"./init":13,"./lifecycle/attached.js":14,"./lifecycle/created.js":15,"./lifecycle/detached.js":16,"./listeners/add.js":17,"./listeners/brushEnd.js":18,"./listeners/cellClick.js":19,"./listeners/cellHover.js":20,"./listeners/cellHoverEnd.js":21,"./listeners/colClick.js":22,"./listeners/colDrag.js":23,"./listeners/colDragEnd.js":24,"./listeners/colDragStart.js":25,"./listeners/colHover.js":26,"./listeners/colHoverEnd.js":27,"./listeners/remove.js":28,"./listeners/resize.js":29,"./listeners/rowClick.js":30,"./listeners/rowDrag.js":31,"./listeners/rowDragEnd.js":32,"./listeners/rowDragStart.js":33,"./listeners/rowHover.js":34,"./listeners/rowHoverEnd.js":35,"./listeners/transitionEnd.js":36,"./reset":42,"./reset/axes.js":38,"./reset/base.js":39,"./reset/cells.js":40,"./reset/cols.js":41,"./reset/rows.js":43,"./utils/calculatePadding.js":44,"./utils/cx.js":45,"./utils/delay.js":46,"./utils/fontSize.js":48,"./utils/getColName.js":49,"./utils/getRowName.js":50,"./utils/graphHeight.js":51,"./utils/graphWidth.js":52,"./utils/maxTextLengths.js":53,"./utils/validateOrder.js":54,"./utils/x.js":55,"./utils/y.js":56,"./utils/z.js":57,"./utils/zDomain.js":58,"./watchers/autoResize.js":59,"./watchers/autoUpdate.js":60,"./watchers/colOrder.js":61,"./watchers/colorScale.js":62,"./watchers/config.js":63,"./watchers/data.js":64,"./watchers/duration.js":65,"./watchers/height.js":66,"./watchers/isBrushable.js":67,"./watchers/isSortableCols.js":68,"./watchers/isSortableRows.js":69,"./watchers/paddingBottom.js":70,"./watchers/paddingLeft.js":71,"./watchers/paddingRight.js":72,"./watchers/paddingTop.js":73,"./watchers/rowOrder.js":74,"./watchers/width.js":75,"./watchers/xLabel.js":76,"./watchers/yLabel.js":77,"./watchers/zMax.js":78,"./watchers/zMin.js":79,"./watchers/zValue.js":80}],2:[function(require,module,exports){
 /**
 *
 *	FUNCTION: clear
@@ -4946,70 +4946,6 @@ module.exports = autoUpdateChanged;
 },{}],61:[function(require,module,exports){
 /**
 *
-*	FUNCTION: brushableChanged
-*
-*
-*	DESCRIPTION:
-*		- Event handler for changes to a `brushable` setting.
-*
-*
-*	NOTES:
-*		[1]
-*
-*
-*	TODO:
-*		[1]
-*
-*
-*	LICENSE:
-*		MIT
-*
-*	Copyright (c) 2015. Athan Reines.
-*
-*
-*	AUTHOR:
-*		Athan Reines. kgryte@gmail.com. 2015.
-*
-*/
-
-'use strict';
-
-/**
-* FUNCTION: brushableChanged( oldVal, newVal )
-*	Event handler for changes to a `brushable` setting.
-*
-* @param {Boolean} oldVal - old value
-* @param {Boolean} newVal - new value
-*/
-function brushableChanged( oldVal, newVal ) {
-	/* jslint validthis:true */
-	var err;
-	if ( typeof newVal !== 'boolean' ) {
-		err = new TypeError( 'brushable::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
-		this.fire( 'err', err );
-		this.brushable = oldVal;
-		return;
-	}
-	if ( newVal ) {
-		this.$.brush.call( this._brush );
-	} else {
-		this.$.brush.remove();
-	}
-	this.fire( 'change', {
-		'attr': 'brushable',
-		'prev': oldVal,
-		'curr': newVal
-	});
-} // end FUNCTION brushableChanged()
-
-
-// EXPORTS //
-
-module.exports = brushableChanged;
-
-},{}],62:[function(require,module,exports){
-/**
-*
 *	FUNCTION: colOrderChanged
 *
 *
@@ -5116,7 +5052,7 @@ function colOrderChanged( val, newVal ) {
 
 module.exports = colOrderChanged;
 
-},{}],63:[function(require,module,exports){
+},{}],62:[function(require,module,exports){
 /**
 *
 *	FUNCTION: colorScaleChanged
@@ -5178,7 +5114,7 @@ function colorScaleChanged( oldVal, newVal ) {
 
 module.exports = colorScaleChanged;
 
-},{}],64:[function(require,module,exports){
+},{}],63:[function(require,module,exports){
 /**
 *
 *	FUNCTION: configChanged
@@ -5258,7 +5194,7 @@ function configChanged( oldConfig, newConfig ) {
 
 module.exports = configChanged;
 
-},{}],65:[function(require,module,exports){
+},{}],64:[function(require,module,exports){
 /**
 *
 *	FUNCTION: dataChanged
@@ -5341,7 +5277,7 @@ function dataChanged( oldVal, newVal ) {
 
 module.exports = dataChanged;
 
-},{}],66:[function(require,module,exports){
+},{}],65:[function(require,module,exports){
 /**
 *
 *	FUNCTION: durationChanged
@@ -5400,7 +5336,7 @@ function durationChanged( oldVal, newVal ) {
 
 module.exports = durationChanged;
 
-},{}],67:[function(require,module,exports){
+},{}],66:[function(require,module,exports){
 /**
 *
 *	FUNCTION: heightChanged
@@ -5514,7 +5450,201 @@ function heightChanged( oldVal, newVal ) {
 
 module.exports = heightChanged;
 
+},{}],67:[function(require,module,exports){
+/**
+*
+*	FUNCTION: isBrushableChanged
+*
+*
+*	DESCRIPTION:
+*		- Event handler for changes to a `isBrushable` setting.
+*
+*
+*	NOTES:
+*		[1]
+*
+*
+*	TODO:
+*		[1]
+*
+*
+*	LICENSE:
+*		MIT
+*
+*	Copyright (c) 2015. Athan Reines.
+*
+*
+*	AUTHOR:
+*		Athan Reines. kgryte@gmail.com. 2015.
+*
+*/
+
+'use strict';
+
+/**
+* FUNCTION: isBrushableChanged( oldVal, newVal )
+*	Event handler for changes to a `isBrushable` setting.
+*
+* @param {Boolean} oldVal - old value
+* @param {Boolean} newVal - new value
+*/
+function isBrushableChanged( oldVal, newVal ) {
+	/* jslint validthis:true */
+	var err;
+	if ( typeof newVal !== 'boolean' ) {
+		err = new TypeError( 'isBrushable::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.isBrushable = oldVal;
+		return;
+	}
+	if ( newVal ) {
+		this.$.brush.call( this._brush );
+	} else {
+		this.$.brush.remove();
+	}
+	this.fire( 'change', {
+		'attr': 'isBrushable',
+		'prev': oldVal,
+		'curr': newVal
+	});
+} // end FUNCTION isBrushableChanged()
+
+
+// EXPORTS //
+
+module.exports = isBrushableChanged;
+
 },{}],68:[function(require,module,exports){
+/**
+*
+*	FUNCTION: isSortableCols
+*
+*
+*	DESCRIPTION:
+*		- Event handler for changes to a setting for sorting columns.
+*
+*
+*	NOTES:
+*		[1]
+*
+*
+*	TODO:
+*		[1]
+*
+*
+*	LICENSE:
+*		MIT
+*
+*	Copyright (c) 2015. Athan Reines.
+*
+*
+*	AUTHOR:
+*		Athan Reines. kgryte@gmail.com. 2015.
+*
+*/
+
+'use strict';
+
+/**
+* FUNCTION: isSortableColsChanged( oldVal, newVal )
+*	Event handler for changes to a setting for sorting columns.
+*
+* @param {Boolean} oldVal - old value
+* @param {Boolean} newVal - new value
+*/
+function isSortableColsChanged( oldVal, newVal ) {
+	/* jslint validthis:true */
+	var err;
+	if ( typeof newVal !== 'boolean' ) {
+		err = new TypeError( 'isSortableCols::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.isSortableCols = oldVal;
+		return;
+	}
+	if ( newVal ) {
+		this.$.cols.call( this._colDrag );
+	} else {
+		// Remove all listeners in the `drag` namespace:
+		this.$.cols.on( '.drag', null );
+	}
+	this.fire( 'change', {
+		'attr': 'isSortableCols',
+		'prev': oldVal,
+		'curr': newVal
+	});
+} // end FUNCTION isSortableColsChanged()
+
+
+// EXPORTS //
+
+module.exports = isSortableColsChanged;
+
+},{}],69:[function(require,module,exports){
+/**
+*
+*	FUNCTION: isSortableRowsChanged
+*
+*
+*	DESCRIPTION:
+*		- Event handler for changes to a setting for row sorting.
+*
+*
+*	NOTES:
+*		[1]
+*
+*
+*	TODO:
+*		[1]
+*
+*
+*	LICENSE:
+*		MIT
+*
+*	Copyright (c) 2015. Athan Reines.
+*
+*
+*	AUTHOR:
+*		Athan Reines. kgryte@gmail.com. 2015.
+*
+*/
+
+'use strict';
+
+/**
+* FUNCTION: isSortableRowsChanged( oldVal, newVal )
+*	Event handler for changes to a setting for sorting rows.
+*
+* @param {Boolean} oldVal - old value
+* @param {Boolean} newVal - new value
+*/
+function isSortableRowsChanged( oldVal, newVal ) {
+	/* jslint validthis:true */
+	var err;
+	if ( typeof newVal !== 'boolean' ) {
+		err = new TypeError( 'isSortableRows::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
+		this.fire( 'err', err );
+		this.isSortableRows = oldVal;
+		return;
+	}
+	if ( newVal ) {
+		this.$.rows.call( this._rowDrag );
+	} else {
+		// Remove all listeners in the `drag` namespace:
+		this.$.rows.on( '.drag', null );
+	}
+	this.fire( 'change', {
+		'attr': 'isSortableRows',
+		'prev': oldVal,
+		'curr': newVal
+	});
+} // end FUNCTION isSortableRowsChanged()
+
+
+// EXPORTS //
+
+module.exports = isSortableRowsChanged;
+
+},{}],70:[function(require,module,exports){
 /**
 *
 *	FUNCTION: paddingBottom
@@ -5621,7 +5751,7 @@ function paddingBottomChanged( oldVal, newVal ) {
 
 module.exports = paddingBottomChanged;
 
-},{}],69:[function(require,module,exports){
+},{}],71:[function(require,module,exports){
 /**
 *
 *	FUNCTION: paddingLeft
@@ -5740,7 +5870,7 @@ function paddingLeftChanged( oldVal, newVal ) {
 
 module.exports = paddingLeftChanged;
 
-},{}],70:[function(require,module,exports){
+},{}],72:[function(require,module,exports){
 /**
 *
 *	FUNCTION: paddingRight
@@ -5848,7 +5978,7 @@ function paddingRightChanged( oldVal, newVal ) {
 
 module.exports = paddingRightChanged;
 
-},{}],71:[function(require,module,exports){
+},{}],73:[function(require,module,exports){
 /**
 *
 *	FUNCTION: paddingTopChanged
@@ -5966,7 +6096,7 @@ function paddingTopChanged( oldVal, newVal ) {
 
 module.exports = paddingTopChanged;
 
-},{}],72:[function(require,module,exports){
+},{}],74:[function(require,module,exports){
 /**
 *
 *	FUNCTION: rowOrderChanged
@@ -6066,136 +6196,6 @@ function rowOrderChanged( val, newVal ) {
 // EXPORTS //
 
 module.exports = rowOrderChanged;
-
-},{}],73:[function(require,module,exports){
-/**
-*
-*	FUNCTION: sortableCols
-*
-*
-*	DESCRIPTION:
-*		- Event handler for changes to a setting for sorting columns.
-*
-*
-*	NOTES:
-*		[1]
-*
-*
-*	TODO:
-*		[1]
-*
-*
-*	LICENSE:
-*		MIT
-*
-*	Copyright (c) 2015. Athan Reines.
-*
-*
-*	AUTHOR:
-*		Athan Reines. kgryte@gmail.com. 2015.
-*
-*/
-
-'use strict';
-
-/**
-* FUNCTION: sortableColsChanged( oldVal, newVal )
-*	Event handler for changes to a setting for sorting columns.
-*
-* @param {Boolean} oldVal - old value
-* @param {Boolean} newVal - new value
-*/
-function sortableColsChanged( oldVal, newVal ) {
-	/* jslint validthis:true */
-	var err;
-	if ( typeof newVal !== 'boolean' ) {
-		err = new TypeError( 'sortableCols::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
-		this.fire( 'err', err );
-		this.sortableCols = oldVal;
-		return;
-	}
-	if ( newVal ) {
-		this.$.cols.call( this._colDrag );
-	} else {
-		// Remove all listeners in the `drag` namespace:
-		this.$.cols.on( '.drag', null );
-	}
-	this.fire( 'change', {
-		'attr': 'sortableCols',
-		'prev': oldVal,
-		'curr': newVal
-	});
-} // end FUNCTION sortableColsChanged()
-
-
-// EXPORTS //
-
-module.exports = sortableColsChanged;
-
-},{}],74:[function(require,module,exports){
-/**
-*
-*	FUNCTION: sortableRowsChanged
-*
-*
-*	DESCRIPTION:
-*		- Event handler for changes to a setting for row sorting.
-*
-*
-*	NOTES:
-*		[1]
-*
-*
-*	TODO:
-*		[1]
-*
-*
-*	LICENSE:
-*		MIT
-*
-*	Copyright (c) 2015. Athan Reines.
-*
-*
-*	AUTHOR:
-*		Athan Reines. kgryte@gmail.com. 2015.
-*
-*/
-
-'use strict';
-
-/**
-* FUNCTION: sortableRowsChanged( oldVal, newVal )
-*	Event handler for changes to a setting for sorting rows.
-*
-* @param {Boolean} oldVal - old value
-* @param {Boolean} newVal - new value
-*/
-function sortableRowsChanged( oldVal, newVal ) {
-	/* jslint validthis:true */
-	var err;
-	if ( typeof newVal !== 'boolean' ) {
-		err = new TypeError( 'sortableRows::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
-		this.fire( 'err', err );
-		this.sortableRows = oldVal;
-		return;
-	}
-	if ( newVal ) {
-		this.$.rows.call( this._rowDrag );
-	} else {
-		// Remove all listeners in the `drag` namespace:
-		this.$.rows.on( '.drag', null );
-	}
-	this.fire( 'change', {
-		'attr': 'sortableRows',
-		'prev': oldVal,
-		'curr': newVal
-	});
-} // end FUNCTION sortableRowsChanged()
-
-
-// EXPORTS //
-
-module.exports = sortableRowsChanged;
 
 },{}],75:[function(require,module,exports){
 /**

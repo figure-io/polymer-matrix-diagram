@@ -1,6 +1,6 @@
 /**
 *
-*	FUNCTION: sortableCols
+*	FUNCTION: isSortableCols
 *
 *
 *	DESCRIPTION:
@@ -29,19 +29,19 @@
 'use strict';
 
 /**
-* FUNCTION: sortableColsChanged( oldVal, newVal )
+* FUNCTION: isSortableColsChanged( oldVal, newVal )
 *	Event handler for changes to a setting for sorting columns.
 *
 * @param {Boolean} oldVal - old value
 * @param {Boolean} newVal - new value
 */
-function sortableColsChanged( oldVal, newVal ) {
+function isSortableColsChanged( oldVal, newVal ) {
 	/* jslint validthis:true */
 	var err;
 	if ( typeof newVal !== 'boolean' ) {
-		err = new TypeError( 'sortableCols::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
+		err = new TypeError( 'isSortableCols::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
 		this.fire( 'err', err );
-		this.sortableCols = oldVal;
+		this.isSortableCols = oldVal;
 		return;
 	}
 	if ( newVal ) {
@@ -51,13 +51,13 @@ function sortableColsChanged( oldVal, newVal ) {
 		this.$.cols.on( '.drag', null );
 	}
 	this.fire( 'change', {
-		'attr': 'sortableCols',
+		'attr': 'isSortableCols',
 		'prev': oldVal,
 		'curr': newVal
 	});
-} // end FUNCTION sortableColsChanged()
+} // end FUNCTION isSortableColsChanged()
 
 
 // EXPORTS //
 
-module.exports = sortableColsChanged;
+module.exports = isSortableColsChanged;

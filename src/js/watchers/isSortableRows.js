@@ -1,6 +1,6 @@
 /**
 *
-*	FUNCTION: sortableRowsChanged
+*	FUNCTION: isSortableRowsChanged
 *
 *
 *	DESCRIPTION:
@@ -29,19 +29,19 @@
 'use strict';
 
 /**
-* FUNCTION: sortableRowsChanged( oldVal, newVal )
+* FUNCTION: isSortableRowsChanged( oldVal, newVal )
 *	Event handler for changes to a setting for sorting rows.
 *
 * @param {Boolean} oldVal - old value
 * @param {Boolean} newVal - new value
 */
-function sortableRowsChanged( oldVal, newVal ) {
+function isSortableRowsChanged( oldVal, newVal ) {
 	/* jslint validthis:true */
 	var err;
 	if ( typeof newVal !== 'boolean' ) {
-		err = new TypeError( 'sortableRows::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
+		err = new TypeError( 'isSortableRows::invalid assignment. Must be a boolean. Value: `' + newVal + '`.' );
 		this.fire( 'err', err );
-		this.sortableRows = oldVal;
+		this.isSortableRows = oldVal;
 		return;
 	}
 	if ( newVal ) {
@@ -51,13 +51,13 @@ function sortableRowsChanged( oldVal, newVal ) {
 		this.$.rows.on( '.drag', null );
 	}
 	this.fire( 'change', {
-		'attr': 'sortableRows',
+		'attr': 'isSortableRows',
 		'prev': oldVal,
 		'curr': newVal
 	});
-} // end FUNCTION sortableRowsChanged()
+} // end FUNCTION isSortableRowsChanged()
 
 
 // EXPORTS //
 
-module.exports = sortableRowsChanged;
+module.exports = isSortableRowsChanged;

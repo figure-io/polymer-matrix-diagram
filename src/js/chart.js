@@ -187,31 +187,31 @@ Chart.prototype.autoUpdate = true;
 Chart.prototype.autoResize = true;
 
 /**
-* ATTRIBUTE: brushable
+* ATTRIBUTE: isBrushable
 *	Boolean flag indicating whether a chart is brushable.
 *
 * @type {Boolean}
 * @default false
 */
-Chart.prototype.brushable = false;
+Chart.prototype.isBrushable = false;
 
 /**
-* ATTRIBUTE: sortableRows
+* ATTRIBUTE: isSortableRows
 *	Boolean flag indicating whether rows can be manually sorted.
 *
 * @type {Boolean}
 * @default false
 */
-Chart.prototype.sortableRows = false;
+Chart.prototype.isSortableRows = false;
 
 /**
-* ATTRIBUTE: sortableCols
+* ATTRIBUTE: isSortableCols
 *	Boolean flag indicating whether columns can be manually sorted.
 *
 * @type {Boolean}
 * @default false
 */
-Chart.prototype.sortableCols = false;
+Chart.prototype.isSortableCols = false;
 
 
 // LIFECYCLE //
@@ -340,11 +340,11 @@ Chart.prototype.autoUpdateChanged = require( './watchers/autoUpdate.js' );
 
 Chart.prototype.autoResizeChanged = require( './watchers/autoResize.js' );
 
-Chart.prototype.brushableChanged = require( './watchers/brushable.js' );
+Chart.prototype.isBrushableChanged = require( './watchers/isBrushable.js' );
 
-Chart.prototype.sortableRowsChanged = require( './watchers/sortableRows.js' );
+Chart.prototype.isSortableRowsChanged = require( './watchers/isSortableRows.js' );
 
-Chart.prototype.sortableColsChanged = require( './watchers/sortableCols.js' );
+Chart.prototype.isSortableColsChanged = require( './watchers/isSortableCols.js' );
 
 
 // LISTENERS //
