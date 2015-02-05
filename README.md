@@ -504,7 +504,7 @@ The element emits a `resized` event when the element's resize listener is trigge
 
 ``` javascript
 el.addEventListener( 'resized', function onResize( evt ) {
-	console.log( 'Chart received a resize event.' );
+	console.log( evt.detail );
 });
 ```
 

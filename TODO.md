@@ -23,6 +23,8 @@ TODO
 3. 
 4. 
 5. TESTS!!!!!
+	- 	Makefile targets for running tests locally and remotely
+	-	wct-istanbul
 6. `config` method
 	-	schema and validator
 7. update README regarding df
@@ -32,8 +34,7 @@ TODO
 	-	needs work
 10. Wiki (?)
 	-	not thinking this is particularly necessary
-11. update wct plugins
-	-	istanbul
+11. 
 12. 
 13. github pages demo
 	- 	copy over example code and augment (datgui?)
@@ -92,7 +93,8 @@ TODO
 
 ## Bugs
 
-1. on resize, cell brush overlay should scale with the graph
+1. on resize/changes to chart dimensions, cell brush overlay should scale with the graph
+	-	see `brushEnd.js`
 2. ensure font-size is never negative
 	-	probably want to set a flag, such that, if the font size is < X, then the names should not be shown
 
@@ -128,7 +130,17 @@ Items moved from TODO, which are not actionable at the current time.
 	-	methods to reset rows and columns to their original order
 	-	simply sort the row/col order and set, as initial order is a range array.
 	-	no! this should be left to the user, as only they will know the proper way to "reset" the order
-5. 
+5. should a `resizable` attribute exist?
+	-	if set to `true`, would
+		-	add resize sprites
+		-	mousedown/mousemove/mouseup listeners
+		-	track mouse x,y coords
+		-	provide visual feedback to user regarding resize dimensions
+			- e.g., dotted outline, actually resizing the chart (not recommended, as expensive with each mousemove)
+		- 	calculate the width/height of element
+		-	set chart width/height
+		- 	emit a resized event, with dimensions
+6. 	 
 
 
 
