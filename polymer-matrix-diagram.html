@@ -5265,6 +5265,7 @@ function dataChanged( oldVal, newVal ) {
 	this.fire( 'data', {
 		'type': 'change'
 	});
+	// TODO: consider whether you want to actually publish the old and new data values (e.g., this could be sizable when logging)
 	this.fire( 'change', {
 		'attr': 'data',
 		'prev': oldVal,
