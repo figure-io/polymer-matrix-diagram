@@ -89,7 +89,15 @@ TODO
 22. separate/independent example using, say, phylogenetic, FB, survey, or some other data
 	- 	see #13
 23. should `colorScale` be allowed to be a constant, similar to `zValue`?
-24. 
+	-	scale should adhere to specification; notably, provide a domain and range
+		-	domain.min (null)
+		-	domain.max (null)
+		-	colors (array)
+	-	internally, create an ordinal scale with relevant colors
+	-	similar to timeseries, if colors is a string name, use included colors as range
+24. `toJSON()` method
+	-	generate configuration in accordance with specification
+25. 
 
 
 
