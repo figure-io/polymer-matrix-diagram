@@ -25,9 +25,9 @@ Matrix Diagram
 		*	[zValue](#attr-zvalue)
 		*	[zMin](#attr-zmin)
 		*	[zMax](#attr-zmax)
+		*	[colors](#attr-colors)
 		*	[cValue](#attr-cvalue)
 		*	[colorOrder](#attr-colororder)
-		*	[colors](#attr-colors)
 		*	[duration](#attr-duration)
 		*	[autoUpdate](#attr-autoupdate)
 		*	[autoResize](#attr-autoresize)
@@ -293,6 +293,23 @@ el.zMax = 10;
 If set to `null`, the `zMax` is dynamically calculated from the data. This attribute is only relevant when the z-value accessor is a `function`.
 
 
+<a name="attr-colors"></a>
+#### el.colors
+
+Defines the [range](https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_range) of possible color values. If set to an `array`, the range should be an `array` of color `strings`. The default range is `[ '#474747' ]`.
+
+
+``` javascript
+el.colors = [ '#474747', '#ccc', '#fff' ];
+```
+
+For convenience, the range can also be set to one of the following strings: `category10`, `category20`, `category20b`, and `category20c`. [`category10`](https://github.com/mbostock/d3/wiki/Ordinal-Scales#category10) corresponds to a predefined set of 10 colors, and [`category20`](https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20), [`category20b`](https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20b), and [`category20c`](https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20c) correspond to three different predefined sets of 20 colors.
+
+``` javascript
+el.colors = 'category20b';
+```
+
+
 <a name="attr-cvalue"></a>
 #### el.cValue
 
@@ -324,22 +341,6 @@ Rearranging the order `array` reorders how data values are mapped to colors, thu
 
 Note: the `colorOrder` differs from `rowOrder` and `colOrder` in that the ordered `array` should contain the raw data which is mapped to color values, rather than indices. 
 
-
-<a name="attr-colors"></a>
-#### el.colors
-
-Defines the [range](https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_range) of possible color values. If set to an `array`, the range should be an `array` of color `strings`. The default range is `[ '#474747' ]`.
-
-
-``` javascript
-el.colors = [ '#474747', '#ccc', '#fff' ];
-```
-
-For convenience, the range can also be set to one of the following strings: `category10`, `category20`, `category20b`, and `category20c`. [`category10`](https://github.com/mbostock/d3/wiki/Ordinal-Scales#category10) corresponds to a predefined set of 10 colors, and [`category20`](https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20), [`category20b`](https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20b), and [`category20c`](https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20c) correspond to three different predefined sets of 20 colors.
-
-``` javascript
-el.colors = 'category20b';
-```
 
 
 
