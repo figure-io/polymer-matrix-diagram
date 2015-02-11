@@ -88,10 +88,10 @@ TODO
 22. separate/independent example using, say, phylogenetic, FB, survey, or some other data
 	- 	see #13
 23. 
-24. `toJSON()` method
+24**. `toJSON()` method
 	-	generate configuration in accordance with specification
 25. reference specification in README
-26. how does specification fit in with the `config` method?
+26. how does specification fit in with the `config` attribute?
 	-	stipulate that a partial object be merged with a spec template
 	-	could handle this internally; always merge and then validate. +1
 27. 
