@@ -77,6 +77,9 @@ function colorsChanged( val, newVal ) {
 	if ( this.autoUpdate ) {
 		this.$.cells.attr( 'fill', this._color );
 	}
+	this.fire( 'colors', {
+		'type': 'changed'
+	});
 	if ( newVal === void 0 ) {
 		this.fire( 'change', {
 			'attr': 'colors',

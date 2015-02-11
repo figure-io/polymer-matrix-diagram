@@ -1773,6 +1773,8 @@ module.exports = [
 	'data',
 	'roworder',
 	'colorder',
+	'colors',
+	'colorOrder',
 
 	'width',
 	'height',
@@ -5327,6 +5329,9 @@ function colorOrderChanged( val, newVal ) {
 	if ( this.autoUpdate ) {
 		this.$.cells.attr( 'fill', this._color );
 	}
+	this.fire( 'colorOrder', {
+		'type': 'changed'
+	});
 	if ( newVal === void 0 ) {
 		this.fire( 'change', {
 			'attr': 'colorOrder',
@@ -5426,6 +5431,9 @@ function colorsChanged( val, newVal ) {
 	if ( this.autoUpdate ) {
 		this.$.cells.attr( 'fill', this._color );
 	}
+	this.fire( 'colors', {
+		'type': 'changed'
+	});
 	if ( newVal === void 0 ) {
 		this.fire( 'change', {
 			'attr': 'colors',

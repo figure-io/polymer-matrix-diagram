@@ -47,6 +47,8 @@ Matrix Diagram
 		*	[height](#evt-height)
 		*	[zmin](#evt-zmin)
 		* 	[zmax](#evt-zmax)
+		*	[colors](#evt-colors)
+		*	[colororder](#evt-colororder)
 		*	[resized](#evt-resized)
 		*	[clicked](#evt-clicked)
 		*	[clicked.row](#evt-clicked-row)
@@ -536,6 +538,28 @@ el.addEventListener( 'zmax', function onEvent( evt ) {
 });
 ```
 
+
+<a name="evt-colors"></a>
+#### 'colors'
+
+The element emits a `colors` event when the `colors` attribute changes.
+
+``` javascript
+el.addEventListener( 'colors', function onEvent( evt ) {
+	console.log( this.colors );
+});
+```
+
+<a name="evt-colororder"></a>
+#### 'colororder'
+
+The element emits a `colororder` event when the `colorOrder` attribute changes.
+
+``` javascript
+el.addEventListener( 'colororder', function onEvent( evt ) {
+	console.log( this.colorOrder );
+});
+```
 
 <a name="evt-resized"></a>
 #### 'resized'

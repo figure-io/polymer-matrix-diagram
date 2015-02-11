@@ -56,6 +56,9 @@ function colorOrderChanged( val, newVal ) {
 	if ( this.autoUpdate ) {
 		this.$.cells.attr( 'fill', this._color );
 	}
+	this.fire( 'colorOrder', {
+		'type': 'changed'
+	});
 	if ( newVal === void 0 ) {
 		this.fire( 'change', {
 			'attr': 'colorOrder',

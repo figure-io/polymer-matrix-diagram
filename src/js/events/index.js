@@ -34,6 +34,8 @@ module.exports = [
 	'data',
 	'roworder',
 	'colorder',
+	'colors',
+	'colorOrder',
 
 	'width',
 	'height',
