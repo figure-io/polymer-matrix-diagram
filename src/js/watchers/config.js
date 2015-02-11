@@ -28,6 +28,13 @@
 
 'use strict';
 
+// MODULES //
+
+var validate = require( 'matrix-diagram-spec' );
+
+
+// WATCHER //
+
 /**
 * FUNCTION: configChanged( oldConfig, newConfig )
 *	Event handler for changes to a chart configuration object.
@@ -47,6 +54,9 @@ function configChanged( oldConfig, newConfig ) {
 		return;
 	}
 	// TODO: schema validator
+	// [1] Merge the new config object with schema template
+	// [2] Validate the merged config object
+	// [3] Check if errors; if not, proceed.
 
 	// Turn off auto-update:
 	bool = this.autoUpdate;

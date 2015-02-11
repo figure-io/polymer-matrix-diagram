@@ -49,7 +49,7 @@ function createCells( d, i ) {
 			.attr( 'width', this._xScale.rangeBand() )
 			.attr( 'height', this._yScale.rangeBand() )
 			.attr( 'fill-opacity', ( typeof this.zValue === 'function' ) ? this._z : this.zValue )
-			.attr( 'fill', this.colorScale )
+			.attr( 'fill', this._color )
 			.on( 'mouseover', this._onCellHover )
 			.on( 'mouseout', this._onCellHoverEnd )
 			.on( 'click', this._onCellClick );

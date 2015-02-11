@@ -148,16 +148,16 @@ Chart.prototype.zMin = null;
 Chart.prototype.zMax = null;
 
 /**
-* ATTRIBUTE: colorScale( d, i )
-*	Maps a cell datum to a color.
+* ATTRIBUTE: cValue( d, i )
+*	color-value accessor.
 *
 * @param {*} d - datum
 * @param {Number} i - index
-* @returns {String} color string
+* @returns {Number} 0
 */
-Chart.prototype.colorScale = function(){
-	return '#474747';
-}; // end METHOD colorScale()
+Chart.prototype.cValue = function() {
+	return 0;
+};
 
 /**
 * ATTRIBUTE: duration
@@ -283,11 +283,15 @@ Chart.prototype.z = require( './utils/z.js' );
 
 Chart.prototype.cx = require( './utils/cx.js' );
 
+Chart.prototype.color = require( './utils/color.js' );
+
 Chart.prototype.getRowName = require( './utils/getRowName.js' );
 
 Chart.prototype.getColName = require( './utils/getColName.js' );
 
 Chart.prototype.zDomain = require( './utils/zDomain.js' );
+
+Chart.prototype.colorDomain = require( './utils/colorDomain.js' );
 
 Chart.prototype.delay = require( './utils/delay.js' );
 
@@ -328,7 +332,11 @@ Chart.prototype.zMinChanged = require( './watchers/zMin.js' );
 
 Chart.prototype.zMaxChanged = require( './watchers/zMax.js' );
 
-Chart.prototype.colorScaleChanged = require( './watchers/colorScale.js' );
+Chart.prototype.cValueChanged = require( './watchers/cValue.js' );
+
+Chart.prototype.colorOrderChanged = require( './watchers/colorOrder.js' );
+
+Chart.prototype.colorsChanged = require( './watchers/colors.js' );
 
 Chart.prototype.xLabelChanged = require( './watchers/xLabel.js' );
 

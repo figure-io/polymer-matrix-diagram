@@ -26,14 +26,13 @@ TODO
 	- 	Makefile targets for running tests locally and remotely
 	-	wct-istanbul
 6. `config` method
-	-	schema and validator
+	-	see #26
 7. update README regarding df
 8. `on()` as an alias to `addEventListener()`?
 	- could have it only accept the publicized events and do input validation
 9. favicon
 	-	needs work
-10. Wiki (?)
-	-	not thinking this is particularly necessary
+10. 
 11. 
 12. 
 13. github pages demo
@@ -65,7 +64,7 @@ TODO
 	-	e.g., effectively a zoom
 	-	would allow for infinite x/y scrolling
 	-	may need to bring back clipPath
-		-	may be not; may not want that; may want columns/rows flying in from the outside
+		-	maybe not; may not want that; may want columns/rows flying in from the outside
 	- 	may be an argument for separating axes (rownames) from cells
 		-	maybe not
 	- 	would require
@@ -88,16 +87,16 @@ TODO
 	- 	none
 22. separate/independent example using, say, phylogenetic, FB, survey, or some other data
 	- 	see #13
-23. should `colorScale` be allowed to be a constant, similar to `zValue`?
-	-	scale should adhere to specification; notably, provide a domain and range
-		-	domain.min (null)
-		-	domain.max (null)
-		-	colors (array)
-	-	internally, create an ordinal scale with relevant colors
-	-	similar to timeseries, if colors is a string name, use included colors as range
+23. 
 24. `toJSON()` method
 	-	generate configuration in accordance with specification
-25. 
+25. reference specification in README
+26. how does specification fit in with the `config` method?
+	-	stipulate that a partial object be merged with a spec template
+	-	could handle this internally; always merge and then validate. +1
+27. 
+28. 
+29. 
 
 
 
@@ -176,7 +175,7 @@ Items moved from TODO, which are not actionable at the current time.
 7. add/remove row (+rowname)
 8. add/remove column (+colname)
 9. update row/colname
-10. method to return dimensions
+10. 
 11. a data frame view (akin to go slice)	-	method which returns a new `View` instance
 	-	`new View( [i,j], [i,j] )`
 12. 

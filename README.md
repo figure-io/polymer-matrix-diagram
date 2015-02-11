@@ -25,7 +25,9 @@ Matrix Diagram
 		*	[zValue](#attr-zvalue)
 		*	[zMin](#attr-zmin)
 		*	[zMax](#attr-zmax)
-		*	[colorScale](#attr-colorscale)
+		*	[cValue](#attr-cvalue)
+		*	[colorOrder](#attr-colororder)
+		*	[colors](#attr-colors)
 		*	[duration](#attr-duration)
 		*	[autoUpdate](#attr-autoupdate)
 		*	[autoResize](#attr-autoresize)
@@ -289,16 +291,50 @@ el.zMax = 10;
 If set to `null`, the `zMax` is dynamically calculated from the data. This attribute is only relevant when the z-value accessor is a `function`.
 
 
-<a name="attr-colorscale"></a>
-#### el.colorScale
+<a name="attr-cvalue"></a>
+#### el.cValue
 
-Maps a cell datum to a color.
+Defines the color-value accessor. color-values are mapped to cell `fill` colors.
 
 ``` javascript
-el.colorScale = function colorScale( d, i ) {
-	return ( d ) ? 'red' : 'blue';
+// Default:
+el.cValue = function( d, i ) {
+	return 0;
+};
+
+// Example of an object based accessor:
+el.cValue = function cValue( d, i ) {
+	return d.group;
 };
 ```
+
+
+<a name="attr-colororder"></a>
+#### el.colorOrder
+
+Defines the [domain](https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_domain) for color values. If set to `null`, the domain is computed from the data values and sorted in ([non-stable](http://en.wikipedia.org/wiki/Sorting_algorithm#Stability)) ascending order.
+
+``` javascript
+el.colorOrder = [ 'beep', 'boop', 'bup' ];
+```
+
+Rearranging the order `array` reorders how data values are mapped to colors, thus effectively rearranging the color order. Updating the color order could also be accomplished by rearranging the [colors](#attr-colors) `array`, but using this attribute provides a deterministic means for color assignment.
+
+Note: the `colorOrder` differs from `rowOrder` and `colOrder` in that the ordered `array` should contain the raw data which is mapped to color values, rather than indices. 
+
+
+<a name="attr-colors"></a>
+#### el.colors
+
+Defines the [range](https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_range) of possible color values. If set to an `array`, the range should be an `array` of color `strings`. The default range is `[ '#474747' ]`.
+
+
+``` javascript
+el.colors = [ '#474747', '#ccc', '#fff' ];
+```
+
+For convenience, the range can also be set to one of the following strings: `category10`, `category20`, `category20b`, and `category20c`. The first name corresponds to a predefined set of 10 colors and the remaining three names correspond to three different predefined sets of 20 colors.
+
 
 
 <a name="attr-duration"></a>

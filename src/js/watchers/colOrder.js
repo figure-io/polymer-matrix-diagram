@@ -44,7 +44,7 @@ function colOrderChanged( val, newVal ) {
 
 	// Determine if we have a new row order array...
 	if ( arguments.length > 1 && !Array.isArray( newVal ) ) {
-		err = new TypeError( 'colOrder::invalid assignment. Row order must be an array. Value: `' + newVal + '`.' );
+		err = new TypeError( 'colOrder::invalid assignment. Column order must be an array. Value: `' + newVal + '`.' );
 		this.fire( 'err', err );
 		this.colOrder = val;
 		return;

@@ -66,7 +66,9 @@
 		// [1] Configure the figure...
 		el = charts[ 0 ];
 
-		el.colorScale = colorScale;
+		el.cValue = cValue;
+		el.colors = 'category10';
+		el.colorOrder = [ 0, 1, 2, 3, 4, 5 ];
 		el.zValue = Math.random;
 		el.xLabel = 'columns';
 		el.yLabel = 'rows';
@@ -117,16 +119,16 @@
 	} // end FUNCTION onData()
 
 	/**
-	* FUNCTION: colorScale( d, i )
-	*	Maps a cell datum to a color string.
+	* FUNCTION: cValue( d, i )
+	*	Returns a color value.
 	*
 	* @param {Number} d - datum
 	* @param {Number} i - index
-	* @returns {String} color string
+	* @returns {Number} color value
 	*/
-	function colorScale( d ) {
-		return ( d ) ? '#474747' : '#eee';
-	} // end FUNCTION colorScale()
+	function cValue() {
+		return 0;
+	} // end FUNCTION cValue()
 
 	/**
 	* FUNCTION: rowOrderings( arr, names )
@@ -327,6 +329,16 @@
 		this._colnames = names;
 		return this;
 	}; // end METHOD colnames()
+
+	/**
+	* METHOD: size()
+	*	Returns the data frame size as a two-element array.
+	*
+	* @returns {Array} [nrows, ncols]
+	*/
+	DataFrame.prototype.size = function() {
+		return [ this._nRows, this._nCols ];
+	}; // end METHOD size()
 
 
 	// SCRIPT //
