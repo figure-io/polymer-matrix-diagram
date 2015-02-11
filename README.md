@@ -335,6 +335,10 @@ el.colors = [ '#474747', '#ccc', '#fff' ];
 
 For convenience, the range can also be set to one of the following strings: `category10`, `category20`, `category20b`, and `category20c`. [`category10`](https://github.com/mbostock/d3/wiki/Ordinal-Scales#category10) corresponds to a predefined set of 10 colors, and [`category20`](https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20), [`category20b`](https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20b), and [`category20c`](https://github.com/mbostock/d3/wiki/Ordinal-Scales#category20c) correspond to three different predefined sets of 20 colors.
 
+``` javascript
+el.colors = 'category20b';
+```
+
 
 
 <a name="attr-duration"></a>
