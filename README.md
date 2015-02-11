@@ -318,7 +318,7 @@ Defines the [domain](https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_
 el.colorOrder = [ 'beep', 'boop', 'bup' ];
 ```
 
-Rearranging the order `array` reorders how data values are mapped to colors, thus effectively rearranging the color order. Updating the color order could also be accomplished by rearranging the [colors](#attr-colors) `array`, but using this attribute provides a deterministic means for color assignment.
+Rearranging the order `array` reorders how data values are mapped to colors, thus effectively rearranging the color order. Updating the color order could also be accomplished by rearranging the [colors](#attr-colors) `array`, but using the `colorOrder` attribute provides deterministic color assignment.
 
 Note: the `colorOrder` differs from `rowOrder` and `colOrder` in that the ordered `array` should contain the raw data which is mapped to color values, rather than indices. 
 
@@ -333,7 +333,7 @@ Defines the [range](https://github.com/mbostock/d3/wiki/Ordinal-Scales#ordinal_r
 el.colors = [ '#474747', '#ccc', '#fff' ];
 ```
 
-For convenience, the range can also be set to one of the following strings: `category10`, `category20`, `category20b`, and `category20c`. The first name corresponds to a predefined set of 10 colors and the remaining three names correspond to three different predefined sets of 20 colors.
+For convenience, the range can also be set to one of the following strings: `category10`, `category20`, `category20b`, and `category20c`. `category10` corresponds to a predefined set of 10 colors and `category20`, `category20b`, and `category20c` correspond to three different predefined sets of 20 colors.
 
 
 
