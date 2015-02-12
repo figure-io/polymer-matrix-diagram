@@ -36,8 +36,8 @@ Matrix Diagram
 		*	[isSortableCols](#attr-issortablecols)
 		*	[events](#attr-events)
 	-	[Methods](#methods)
-		*	[clear](#method-clear)
-		*	[toJSON](#method-tojson)
+		*	[clear()](#method-clear)
+		*	[toJSON()](#method-tojson)
 	-	[Events](#events)
 		*	[err](#evt-err)
 		*	[change](#evt-change)
@@ -442,7 +442,7 @@ var config = el.toJSON();
 // returns {...}
 ```
 
-If the matrix diagram does not have data, the method returns a template configuration object in which __no__ attributes will have been set.
+If the matrix diagram does not have data, the method returns a template configuration object in which __no__ attributes have been set.
 
 
 
