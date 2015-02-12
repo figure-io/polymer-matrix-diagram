@@ -303,6 +303,8 @@ Chart.prototype.maxTextLengths = require( './utils/maxTextLengths.js' );
 
 Chart.prototype.validateOrder = require( './utils/validateOrder.js' );
 
+Chart.prototype.toJSON = require( './utils/toJSON.js' );
+
 
 // WATCHERS //
 

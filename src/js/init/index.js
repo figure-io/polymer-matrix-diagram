@@ -79,15 +79,15 @@ function init() {
 
 	// Colors:
 	this.colors = [ '#474747' ];
-	this.colorOrder = [];
+	this.colorOrder = null;
 
 	// Private attributes...
 
 	this._rowOrder = null;
 	this._colOrder = null;
 
-	this._colors = null;
-	this._colorOrder = null;
+	this._colors = this.colors.slice();
+	this._colorOrder = [];
 
 	// Row and column name font size:
 	this._maxFontSize = 16; // px
@@ -117,8 +117,8 @@ function init() {
 		.range( [ 0, 1 ] )
 		.clamp( true );
 	this._cScale = d3.scale.ordinal()
-		.domain( this.colorOrder )
-		.range( this.colors );
+		.domain( this._colorOrder )
+		.range( this._colors );
 
 	// Labels:
 	this._getRowName = this.getRowName.bind( this );

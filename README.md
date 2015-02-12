@@ -37,6 +37,7 @@ Matrix Diagram
 		*	[events](#attr-events)
 	-	[Methods](#methods)
 		*	[clear](#method-clear)
+		*	[toJSON](#method-tojson)
 	-	[Events](#events)
 		*	[err](#evt-err)
 		*	[change](#evt-change)
@@ -429,6 +430,19 @@ Clears the chart.
 ``` javascript
 el.clear();
 ```
+
+
+<a name="method-tojson"></a>
+#### el.toJSON()
+
+Returns a matrix diagram configuration object in accordance with the [matrix diagram specification](https://github.com/figure-io/matrix-diagram-spec).
+
+``` javascript
+var config = el.toJSON();
+// returns {...}
+```
+
+If the matrix diagram does not have data, the method returns a template configuration object in which __no__ attributes will have been set.
 
 
 

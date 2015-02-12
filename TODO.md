@@ -88,15 +88,21 @@ TODO
 22. separate/independent example using, say, phylogenetic, FB, survey, or some other data
 	- 	see #13
 23. 
-24**. `toJSON()` method
-	-	generate configuration in accordance with specification
+24. `toJSON()` method
 25. reference specification in README
 26. how does specification fit in with the `config` attribute?
 	-	stipulate that a partial object be merged with a spec template
 	-	could handle this internally; always merge and then validate. +1
 27. 
-28. 
-29. 
+28. zRangeMin/zRangeMax ??
+	- 	yes, could adjust zMin and zMax so that values map to a particular opacity value, but this requires some arithmetic and will be buggy for users. Could just do this internally.
+29. `_width` and `_height`
+	-	have `_` variables for other attributes; should `wh` be exempt? 
+	-	affects `toJSON` method
+30. should `zValue` be allowed to be a constant?
+	-	could just do like `cValue` does and be a fcn which returns a constant.
+	-	makes `toJSON` somewhat more straightfoward
+31. 
 
 
 
@@ -178,7 +184,9 @@ Items moved from TODO, which are not actionable at the current time.
 10. 
 11. a data frame view (akin to go slice)	-	method which returns a new `View` instance
 	-	`new View( [i,j], [i,j] )`
-12. 
+12. copy (?)
+	-	similar to toString and view, but a full duplication.
+13. 
 
 
 
