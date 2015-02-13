@@ -94,6 +94,8 @@ TODO
 	-	stipulate that a partial object be merged with a spec template
 	-	need to write a custom merge method; a deep merge, as on NPM, will merge leaf arrays, which is not acceptable. Would like to merge until a certain depth
 		-	e.g., 0,1,2,3,...,N || -1,-2,-3,...,-N, where -N = 0
+		- 	tricky because will need to know the depth before merging
+		- 	what if flatten and use regexp pattern to determine depth?
 	-	could handle this internally; always merge and then validate. +1
 27. 
 28. zRangeMin/zRangeMax ??
