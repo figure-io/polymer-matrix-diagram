@@ -92,6 +92,8 @@ TODO
 25. reference specification in README
 26. how does specification fit in with the `config` attribute?
 	-	stipulate that a partial object be merged with a spec template
+	-	need to write a custom merge method; a deep merge, as on NPM, will merge leaf arrays, which is not acceptable. Would like to merge until a certain depth
+		-	e.g., 0,1,2,3,...,N || -1,-2,-3,...,-N, where -N = 0
 	-	could handle this internally; always merge and then validate. +1
 27. 
 28. zRangeMin/zRangeMax ??
